@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Inter, Poppins, Tajawal } from 'next/font/google'
+import { Inter, Tajawal } from 'next/font/google'
 import { NextIntlClientProvider } from 'next-intl'
 import { getMessages, getLocale } from 'next-intl/server'
 import { ThemeProvider } from '@/providers/theme-provider'
@@ -9,13 +9,6 @@ import './globals.css'
 const inter = Inter({
   subsets: ['latin'],
   variable: '--font-inter',
-  display: 'swap',
-})
-
-const poppins = Poppins({
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700', '900'],
-  variable: '--font-poppins',
   display: 'swap',
 })
 
@@ -118,7 +111,7 @@ export default async function RootLayout({
       lang={locale}
       dir={locale === 'ar' ? 'rtl' : 'ltr'}
       suppressHydrationWarning
-      className={`${inter.variable} ${poppins.variable} ${tajawal.variable}`}
+      className={`${inter.variable} ${tajawal.variable}`}
     >
       <head>
         <script

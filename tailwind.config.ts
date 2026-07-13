@@ -49,7 +49,7 @@ const config: Config = {
         "surface-3": "rgb(var(--surface-3) / <alpha-value>)",
       },
       fontFamily: {
-        english: ["var(--font-inter)", "var(--font-poppins)", "system-ui", "sans-serif"],
+        english: ["var(--font-inter)", "system-ui", "sans-serif"],
         arabic: ["var(--font-arabic)", "'El Messiri'", "system-ui", "sans-serif"],
       },
       fontSize: {
