@@ -1,0 +1,175 @@
+{
+  "site": {
+    "title": "ماب-كي | البوابة العقارية الآمنة",
+    "description": "منصة عقارية رقمية آمنة وموثوقة"
+  },
+  "nav": {
+    "home": "الرئيسية",
+    "properties": "العقارات",
+    "dashboard": "لوحة التحكم",
+    "login": "تسجيل الدخول",
+    "register": "إنشاء حساب",
+    "logout": "تسجيل الخروج",
+    "profile": "الملف الشخصي",
+    "settings": "الإعدادات",
+    "language": "English"
+  },
+  "hero": {
+    "title": "ابحث عن عقارك المثالي",
+    "subtitle": "منصة عقارية آمنة وموثوقة تربطك بأفضل العقارات",
+    "cta": "استكشف الآن",
+    "ctaSecondary": "ابحث عن عقار",
+    "learn": "اعرف المزيد"
+  },
+  "properties": {
+    "title": "العقارات المميزة",
+    "subtitle": "اختر من بين آلاف العقارات الموثقة",
+    "forSale": "للبيع",
+    "forRent": "للإيجار",
+    "price": "السعر",
+    "location": "الموقع",
+    "area": "المساحة",
+    "bedrooms": "غرف النوم",
+    "bathrooms": "الحمامات",
+    "details": "التفاصيل",
+    "contact": "تواصل معنا"
+  },
+  "auth": {
+    "welcome": "مرحباً بعودتك",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "remember": "تذكرني",
+    "forgotPassword": "نسيت كلمة المرور؟",
+    "noAccount": "ليس لديك حساب؟",
+    "createAccount": "إنشاء حساب",
+    "haveAccount": "لديك حساب بالفعل؟",
+    "signIn": "تسجيل الدخول",
+    "signUp": "إنشاء حساب",
+    "name": "الاسم الكامل",
+    "phone": "رقم الهاتف",
+    "confirmPassword": "تأكيد كلمة المرور",
+    "agreeTerms": "أوافق على الشروط والأحكام"
+  },
+  "features": {
+    "title": "لماذا ماب-كي؟",
+    "subtitle": "مبني على الثقة، مدعوم بالتكنولوجيا",
+    "items": [
+      {
+        "title": "رؤية استثمارية",
+        "desc": "تحليلات دقيقة لتعظيم عوائدك العقارية"
+      },
+      {
+        "title": "خيارات حصرية",
+        "desc": "عقارات منسقة لن تجدها في أي مكان آخر"
+      },
+      {
+        "title": "شفافية كاملة",
+        "desc": "كل التفاصيل والمستندات متاحة دائماً"
+      },
+      {
+        "title": "دعم رقمي",
+        "desc": "دعم ذكي على مدار الساعة بالعربية والإنجليزية"
+      }
+    ]
+  },
+  "projects": {
+    "title": "استكشف مشاريعنا",
+    "subtitle": "اكتشف أبرز التطورات العقارية الفاخرة",
+    "tabs": {
+      "all": "جميع المشاريع",
+      "residential": "سكني",
+      "commercial": "تجاري",
+      "mixed": "استخدامات متعددة"
+    },
+    "discoverMore": "اكتشف المزيد",
+    "type": "النوع",
+    "apartment": "شقق",
+    "office": "مكاتب",
+    "shops": "محلات",
+    "delivery": "التسليم",
+    "startingFrom": "يبدأ من",
+    "by": "بواسطة"
+  },
+  "articles": {
+    "title": "آخر المقالات",
+    "subtitle": "ابق على اطلاع بأخبار السوق العقاري",
+    "readMore": "اقرأ المزيد",
+    "readTime": "دقائق للقراءة",
+    "by": "بواسطة",
+    "categories": {
+      "all": "الكل",
+      "market": "السوق",
+      "legal": "قانوني",
+      "investment": "استثمار",
+      "tech": "تقنية"
+    }
+  },
+  "stats": {
+    "title": "ماب-كي بالأرقام",
+    "subtitle": "ثقة مبنية على النتائج",
+    "items": [
+      { "value": "6", "suffix": "B+", "label": "قيمة استثمارية", "labelAr": "قيمة استثمارية" },
+      { "value": "50", "suffix": "+", "label": "مشروع", "labelAr": "مشروع" },
+      { "value": "1000", "suffix": "+", "label": "عميل", "labelAr": "عميل" },
+      { "value": "10", "suffix": "+", "label": "مدينة", "labelAr": "مدينة" }
+    ]
+  },
+  "actions": {
+    "ownProperty": "Have a Property?",
+    "ownPropertyAr": "عندك عقار؟",
+    "ownPropertyDesc": "أضف عقارك ووصل لآلاف المشترين المحتملين فوراً",
+    "ownPropertyDescAr": "أضف عقارك ووصل لآلاف المشترين المحتملين فوراً",
+    "looking": "Looking for an Opportunity?",
+    "lookingAr": "تبحث عن فرصة؟",
+    "lookingDesc": "احصل على إشعارات بالصفقات الحصرية التي تناسب تفضيلاتك",
+    "lookingDescAr": "احصل على إشعارات بالصفقات الحصرية التي تناسب تفضيلاتك",
+    "addProperty": "Add Property",
+    "addPropertyAr": "أضف عقارك",
+    "requestProperty": "Request Property",
+    "requestPropertyAr": "اطلب عقاراً"
+  },
+  "app": {
+    "title": "ماب-كي في جيبك",
+    "subtitle": "حمل تطبيقنا وأدر رحلتك العقارية من أي مكان",
+    "features": [
+      "Real-time property alerts",
+      "Instant chat with agents",
+      "Virtual tour booking",
+      "Digital document signing"
+    ],
+    "featuresAr": [
+      "تنبيهات عقارية فورية",
+      "محادثة فورية مع الوسطاء",
+      "حجز جولة افتراضية",
+      "توقيع المستندات الرقمية"
+    ],
+    "playStore": "Google Play",
+    "appStore": "App Store"
+  },
+  "footer": {
+    "description": "منصة عقارية آمنة وموثوقة مع أمان على مستوى المؤسسات وهندسة عدم الثقة.",
+    "quickLinks": "روابط سريعة",
+    "contactUs": "اتصل بنا",
+    "phone": "+966 55 000 0000",
+    "email": "info@map-key.com",
+    "address": "الرياض، جدة، الدمام",
+    "privacy": "سياسة الخصوصية",
+    "terms": "الشروط والأحكام",
+    "about": "عن ماب-كي",
+    "faq": "الأسئلة الشائعة",
+    "rights": "جميع الحقوق محفوظة",
+    "backToTop": "العودة للأعلى"
+  },
+  "theme": {
+    "light": "فاتح",
+    "dark": "داكن"
+  },
+  "errors": {
+    "notFound": "الصفحة غير موجودة",
+    "serverError": "خطأ في الخادم",
+    "unauthorized": "غير مصرح",
+    "forbidden": "ممنوع الوصول",
+    "backHome": "العودة إلى الرئيسية",
+    "retry": "إعادة المحاولة"
+  }
+}

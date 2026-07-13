@@ -1,0 +1,175 @@
+{
+  "site": {
+    "title": "Map-Key | The Secure Real Estate Gateway",
+    "description": "A secure and trusted digital real estate platform"
+  },
+  "nav": {
+    "home": "Home",
+    "properties": "Properties",
+    "dashboard": "Dashboard",
+    "login": "Sign In",
+    "register": "Create Account",
+    "logout": "Sign Out",
+    "profile": "Profile",
+    "settings": "Settings",
+    "language": "العربية"
+  },
+  "hero": {
+    "title": "Find Your Perfect Property",
+    "subtitle": "A secure and trusted real estate platform connecting you with the best properties",
+    "cta": "Explore Now",
+    "ctaSecondary": "Search Properties",
+    "learn": "Learn More"
+  },
+  "properties": {
+    "title": "Featured Properties",
+    "subtitle": "Choose from thousands of verified properties",
+    "forSale": "For Sale",
+    "forRent": "For Rent",
+    "price": "Price",
+    "location": "Location",
+    "area": "Area",
+    "bedrooms": "Bedrooms",
+    "bathrooms": "Bathrooms",
+    "details": "Details",
+    "contact": "Contact Us"
+  },
+  "auth": {
+    "welcome": "Welcome Back",
+    "email": "Email Address",
+    "password": "Password",
+    "remember": "Remember Me",
+    "forgotPassword": "Forgot Password?",
+    "noAccount": "Don't have an account?",
+    "createAccount": "Create Account",
+    "haveAccount": "Already have an account?",
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "name": "Full Name",
+    "phone": "Phone Number",
+    "confirmPassword": "Confirm Password",
+    "agreeTerms": "I agree to the Terms & Conditions"
+  },
+  "features": {
+    "title": "Why Map-Key?",
+    "subtitle": "Built on trust, powered by technology",
+    "items": [
+      {
+        "title": "Investment Vision",
+        "desc": "Data-driven insights to maximize your real estate returns"
+      },
+      {
+        "title": "Exclusive Options",
+        "desc": "Curated properties you won't find anywhere else"
+      },
+      {
+        "title": "Full Transparency",
+        "desc": "Every detail, every document, always accessible"
+      },
+      {
+        "title": "Digital Support",
+        "desc": "24/7 AI-powered assistance in Arabic & English"
+      }
+    ]
+  },
+  "projects": {
+    "title": "Explore Our Projects",
+    "subtitle": "Discover premium real estate developments",
+    "tabs": {
+      "all": "All Projects",
+      "residential": "Residential",
+      "commercial": "Commercial",
+      "mixed": "Mixed Use"
+    },
+    "discoverMore": "Discover More",
+    "type": "Type",
+    "apartment": "Apartment",
+    "office": "Office",
+    "shops": "Shops",
+    "delivery": "Delivery",
+    "startingFrom": "Starting from",
+    "by": "by"
+  },
+  "articles": {
+    "title": "Latest Insights",
+    "subtitle": "Stay informed with real estate market news",
+    "readMore": "Read More",
+    "readTime": "min read",
+    "by": "by",
+    "categories": {
+      "all": "All",
+      "market": "Market",
+      "legal": "Legal",
+      "investment": "Investment",
+      "tech": "Technology"
+    }
+  },
+  "stats": {
+    "title": "Map-Key by the Numbers",
+    "subtitle": "Trust built through results",
+    "items": [
+      { "value": "6", "suffix": "B+", "label": "Investment Value", "labelAr": "قيمة استثمارية" },
+      { "value": "50", "suffix": "+", "label": "Projects", "labelAr": "مشروع" },
+      { "value": "1000", "suffix": "+", "label": "Clients", "labelAr": "عميل" },
+      { "value": "10", "suffix": "+", "label": "Cities", "labelAr": "مدينة" }
+    ]
+  },
+  "actions": {
+    "ownProperty": "Have a Property?",
+    "ownPropertyAr": "عندك عقار؟",
+    "ownPropertyDesc": "List your property and reach thousands of potential buyers instantly",
+    "ownPropertyDescAr": "أضف عقارك ووصل لآلاف المشترين المحتملين فوراً",
+    "looking": "Looking for an Opportunity?",
+    "lookingAr": "تبحث عن فرصة؟",
+    "lookingDesc": "Get notified about exclusive deals matching your preferences",
+    "lookingDescAr": "احصل على إشعارات بالصفقات الحصرية التي تناسب تفضيلاتك",
+    "addProperty": "Add Property",
+    "addPropertyAr": "أضف عقارك",
+    "requestProperty": "Request Property",
+    "requestPropertyAr": "اطلب عقاراً"
+  },
+  "app": {
+    "title": "Map-Key on the Go",
+    "subtitle": "Download our app and manage your real estate journey from anywhere",
+    "features": [
+      "Real-time property alerts",
+      "Instant chat with agents",
+      "Virtual tour booking",
+      "Digital document signing"
+    ],
+    "featuresAr": [
+      "تنبيهات عقارية فورية",
+      "محادثة فورية مع الوسطاء",
+      "حجز جولة افتراضية",
+      "توقيع المستندات الرقمية"
+    ],
+    "playStore": "Google Play",
+    "appStore": "App Store"
+  },
+  "footer": {
+    "description": "A secure and trusted real estate platform with enterprise-grade security and zero-trust architecture.",
+    "quickLinks": "Quick Links",
+    "contactUs": "Contact Us",
+    "phone": "+966 55 000 0000",
+    "email": "info@map-key.com",
+    "address": "Riyadh, Jeddah, Dammam",
+    "privacy": "Privacy Policy",
+    "terms": "Terms & Conditions",
+    "about": "About Us",
+    "faq": "FAQ",
+    "rights": "All Rights Reserved",
+    "backToTop": "Back to top"
+  },
+  "theme": {
+    "light": "Light",
+    "dark": "Dark"
+  },
+  "errors": {
+    "notFound": "Page Not Found",
+    "serverError": "Server Error",
+    "unauthorized": "Unauthorized",
+    "forbidden": "Forbidden",
+    "backHome": "Back to Home",
+    "retry": "Retry"
+  }
+}
