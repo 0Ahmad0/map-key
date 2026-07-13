@@ -26,7 +26,7 @@ export function ArticleCard({ article, featured, index }: ArticleCardProps) {
       animate={isInView ? { opacity: 1, scale: 1 } : {}}
       transition={{ duration: 0.5, delay: featured ? 0 : index * 0.1 }}
       className={cn(
-        'group relative overflow-hidden rounded-2xl border border/10 bg-bg-card/50',
+        'group relative overflow-hidden rounded-2xl border border-border/10 bg-bg-card/50',
         featured ? 'lg:col-span-2 lg:row-span-1' : ''
       )}
     >

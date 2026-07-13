@@ -326,11 +326,20 @@ export function Footer() {
         <div className="border-t border-border/30">
           <div className="container mx-auto px-4 py-6">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-              <p className="text-xs text-text-muted text-center sm:text-start">
-                &copy; {new Date().getFullYear()}{' '}
-                <span className="text-gold-gradient font-semibold">Map-Key</span>.{' '}
-                {t('rights')}.
-              </p>
+              <div className="text-center sm:text-start">
+                <p className="text-xs text-text-muted">
+                  &copy; {new Date().getFullYear()}{' '}
+                  <span className="text-gold-gradient font-semibold">Map-Key</span>.{' '}
+                  {t('rights')}.
+                </p>
+                <p className="text-xs text-text-muted mt-1">
+                  {isRTL ? (
+                    <>طُوّر بواسطة <span className="text-accent-gold font-semibold">المهندس أحمد الحريري</span></>
+                  ) : (
+                    <>Developed by <span className="text-accent-gold font-semibold">Eng. Ahmad Al-Hariri</span></>
+                  )}
+                </p>
+              </div>
 
               {/* Decorative element */}
               <div className="flex items-center gap-3 text-text-muted/40">

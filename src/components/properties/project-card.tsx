@@ -27,7 +27,7 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
       initial={{ opacity: 0, y: 40 }}
       animate={isInView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.5, delay }}
-      className="group relative overflow-hidden rounded-2xl border border/10 bg-bg-card/50 cursor-pointer"
+      className="group relative overflow-hidden rounded-2xl border border-border/10 bg-bg-card/50 cursor-pointer"
     >
       <div className="relative h-56 overflow-hidden">
         <motion.div

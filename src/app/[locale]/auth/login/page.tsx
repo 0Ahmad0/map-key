@@ -35,7 +35,7 @@ export default function LoginPage() {
         animate={{ opacity: 1, y: 0 }}
         className="w-full max-w-md"
       >
-        <div className="bg-bg-card/85 card-gradient rounded-2xl border border/10 p-6 sm:p-8">
+        <div className="bg-bg-card/85 rounded-2xl border border-border/10 p-6 sm:p-8">
           <div className="text-center mb-8">
             <h1 className="text-h2 font-bold text-text-primary mb-2">
               {t('welcome')}

@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Inter, Poppins, IBM_Plex_Sans_Arabic, Noto_Kufi_Arabic } from 'next/font/google'
+import { Inter, Poppins, Tajawal } from 'next/font/google'
 import { NextIntlClientProvider } from 'next-intl'
 import { getMessages, getLocale } from 'next-intl/server'
 import { ThemeProvider } from '@/providers/theme-provider'
@@ -19,18 +19,15 @@ const poppins = Poppins({
   display: 'swap',
 })
 
-const plexArabic = IBM_Plex_Sans_Arabic({
+const tajawal = Tajawal({
   subsets: ['arabic'],
-  weight: ['300', '400', '500', '600', '700'],
+  weight: ['400', '500', '700', '900'],
   variable: '--font-arabic',
   display: 'swap',
 })
 
-const kufiArabic = Noto_Kufi_Arabic({
-  subsets: ['arabic'],
-  variable: '--font-arabic-heading',
-  display: 'swap',
-})
+// El Messiri (Arabic headings) is self-hosted in public/fonts via @font-face in globals.css
+// ponytail: the local network kept aborting Google Fonts downloads mid-build, so it lives locally like the images
 
 export const metadata: Metadata = {
   title: {
@@ -121,7 +118,7 @@ export default async function RootLayout({
       lang={locale}
       dir={locale === 'ar' ? 'rtl' : 'ltr'}
       suppressHydrationWarning
-      className={`${inter.variable} ${poppins.variable} ${plexArabic.variable} ${kufiArabic.variable}`}
+      className={`${inter.variable} ${poppins.variable} ${tajawal.variable}`}
     >
       <head>
         <script

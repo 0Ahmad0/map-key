@@ -41,6 +41,7 @@ const config: Config = {
         "accent-emerald": "rgb(var(--accent-emerald) / <alpha-value>)",
         "accent-rose": "rgb(var(--accent-rose) / <alpha-value>)",
         "accent-blue": "rgb(var(--accent-blue) / <alpha-value>)",
+      "accent-cyan": "rgb(var(--accent-cyan) / <alpha-value>)",
         border: "rgb(var(--border) / <alpha-value>)",
         "border-hover": "rgb(var(--border-hover) / <alpha-value>)",
         "surface-1": "rgb(var(--surface-1) / <alpha-value>)",
@@ -49,10 +50,10 @@ const config: Config = {
       },
       fontFamily: {
         english: ["var(--font-inter)", "var(--font-poppins)", "system-ui", "sans-serif"],
-        arabic: ["var(--font-arabic)", "var(--font-arabic-heading)", "system-ui", "sans-serif"],
+        arabic: ["var(--font-arabic)", "'El Messiri'", "system-ui", "sans-serif"],
       },
       fontSize: {
-        "display": ["clamp(3rem, 8vw, 6rem)", { lineHeight: "1.05", fontWeight: "900", letterSpacing: "-0.02em" }],
+        "display": ["clamp(3.5rem, 10vw, 8rem)", { lineHeight: "1.08", fontWeight: "900", letterSpacing: "-0.02em" }],
         "h1": ["clamp(2.25rem, 6vw, 4rem)", { lineHeight: "1.1", fontWeight: "800", letterSpacing: "-0.015em" }],
         "h2": ["clamp(1.75rem, 4vw, 3rem)", { lineHeight: "1.15", fontWeight: "700", letterSpacing: "-0.01em" }],
         "h3": ["clamp(1.25rem, 2.5vw, 1.75rem)", { lineHeight: "1.25", fontWeight: "600" }],

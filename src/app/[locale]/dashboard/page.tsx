@@ -24,7 +24,7 @@ export default function DashboardPage() {
           ].map((stat) => (
             <div
               key={stat.label}
-              className="bg-bg-card/85 card-gradient rounded-2xl border border/10 p-6"
+              className="bg-bg-card/85 rounded-2xl border border-border/10 p-6"
             >
               <p className="text-sm text-text-secondary mb-1">{stat.label}</p>
               <p className={`text-3xl font-bold ${stat.className}`}>
@@ -34,7 +34,7 @@ export default function DashboardPage() {
           ))}
         </div>
 
-        <div className="bg-bg-card/85 card-gradient rounded-2xl border border/10 p-8 text-center text-text-secondary">
+        <div className="bg-bg-card/85 rounded-2xl border border-border/10 p-8 text-center text-text-secondary">
           Dashboard features coming soon.
         </div>
       </motion.div>

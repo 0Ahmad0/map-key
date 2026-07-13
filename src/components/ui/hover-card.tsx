@@ -17,7 +17,7 @@ export function HoverCard({ children, className, as: Tag = 'div' }: HoverCardPro
       whileHover={{ y: -4, boxShadow: '0 12px 40px rgb(0 0 0 / 0.12)' }}
       transition={{ duration: 0.25, ease: 'easeOut' }}
       className={cn(
-        'rounded-2xl border border/10 bg-bg-card/85 card-gradient',
+        'rounded-2xl border border-border/10 bg-bg-card/85',
         'transition-colors duration-300',
         className
       )}

@@ -14,7 +14,7 @@ export function StickySection({ children, className, offset = 0 }: StickySection
       className={cn(
         'sticky z-10',
         'backdrop-blur-xl bg-bg-secondary/80',
-        'border-b border/10',
+        'border-b border-border/10',
         className
       )}
       style={{ top: offset }}

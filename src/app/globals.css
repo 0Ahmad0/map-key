@@ -2,6 +2,24 @@
 @tailwind components;
 @tailwind utilities;
 
+/* El Messiri — self-hosted (Arabic display font for headings) */
+@font-face {
+  font-family: 'El Messiri';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('/fonts/el-messiri-arabic.woff2') format('woff2');
+  unicode-range: U+0600-06FF, U+0750-077F, U+0870-088E, U+0890-0891, U+0897-08E1, U+08E3-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74, U+FE76-FEFC;
+}
+@font-face {
+  font-family: 'El Messiri';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('/fonts/el-messiri-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122, U+2212, U+FEFF, U+FFFD;
+}
+
 /* ═══════════════════════════════════════════════════════
    MAP KEY - Premium Luxury Design System
    ═══════════════════════════════════════════════════════ */
@@ -30,6 +48,7 @@
     --accent-emerald: 16 185 129;
     --accent-rose: 244 63 94;
     --accent-blue: 59 130 246;
+    --accent-cyan: 6 182 212;
 
     /* Border & Divider */
     --border: 230 230 235;
@@ -70,6 +89,7 @@
     --accent-emerald: 52 211 153;
     --accent-rose: 251 113 133;
     --accent-blue: 96 165 250;
+    --accent-cyan: 34 211 238;
 
     --border: 38 38 52;
     --border-hover: 55 55 72;
@@ -104,15 +124,19 @@
 
   [dir='rtl'] body,
   [lang='ar'] body {
-    font-family: var(--font-arabic), var(--font-arabic-heading), system-ui, sans-serif;
+    font-family: var(--font-arabic), 'El Messiri', system-ui, sans-serif;
     letter-spacing: 0;
   }
 
-  /* Kufi for Arabic headings — more presence for the luxury look */
+  /* El Messiri for Arabic headings — elegant display look */
   [dir='rtl'] h1,
   [dir='rtl'] h2,
-  [dir='rtl'] h3 {
-    font-family: var(--font-arabic-heading), var(--font-arabic), system-ui, sans-serif;
+  [dir='rtl'] h3,
+  [dir='rtl'] .text-display,
+  [dir='rtl'] .text-h1,
+  [dir='rtl'] .text-h2,
+  [dir='rtl'] .text-h3 {
+    font-family: 'El Messiri', var(--font-arabic), system-ui, sans-serif;
   }
 
   /* Premium Selection */

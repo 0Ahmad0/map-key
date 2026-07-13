@@ -33,8 +33,8 @@ export function PropertyCard({ property, index = 0 }: PropertyCardProps) {
       viewport={{ once: true }}
       variants={cardVariants}
       className={cn(
-        'group relative overflow-hidden rounded-2xl border border/10 transition-all duration-300',
-        'bg-bg-card/85 card-gradient',
+        'group relative overflow-hidden rounded-2xl border border-border/10 transition-all duration-300',
+        'bg-bg-card/85',
         'shadow-card hover:shadow-lg hover:-translate-y-1'
       )}
     >

@@ -104,7 +104,7 @@ export default function PropertiesPage() {
               <p className="text-sm text-text-secondary">
                 <span className="text-accent-gold font-semibold">{filtered.length}</span> properties found
               </p>
-              <div className="flex items-center gap-1 p-1 rounded-xl bg-bg-primary border border/10">
+              <div className="flex items-center gap-1 p-1 rounded-xl bg-bg-primary border border-border/10">
                 <button
                   onClick={() => setViewMode('grid')}
                   className={cn(
@@ -174,7 +174,7 @@ export default function PropertiesPage() {
           </div>
 
           <div className="lg:col-span-5 order-1 lg:order-2 max-lg:h-[300px] lg:h-auto">
-            <div className="sticky top-24 h-full max-lg:h-full rounded-2xl overflow-hidden border border/10">
+            <div className="sticky top-24 h-full max-lg:h-full rounded-2xl overflow-hidden border border-border/10">
               <PropertyMap
                 properties={filtered}
                 selectedId={selectedId}
