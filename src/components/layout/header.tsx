@@ -1,423 +1,327 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { useTranslations, useLocale } from 'next-intl'
-import { useTheme } from 'next-themes'
-import { Link, usePathname } from '@/i18n/navigation'
-import { cn } from '@/lib/utils'
-import * as Dialog from '@radix-ui/react-dialog'
-import {
-  Menu,
-  X,
-  Sun,
-  Moon,
-  Globe,
-  ChevronRight,
-  Home,
-  Building2,
-  LayoutDashboard,
-  LogIn,
-} from 'lucide-react'
+import { FormEvent, useEffect, useState } from 'react'
 import Image from 'next/image'
+import * as Dialog from '@radix-ui/react-dialog'
+import { motion } from 'framer-motion'
+import { useLocale } from 'next-intl'
+import { Link, usePathname, useRouter } from '@/i18n/navigation'
+import { cn } from '@/lib/utils'
+import { ChevronDown, Eye, EyeOff, Globe2, Headphones, Loader2, LogIn, Menu, Phone, X } from 'lucide-react'
+import { useAuthStore } from '@/lib/auth-store'
+import { toast } from '@/components/ui/toast-provider'
 
-/* ═══════════════════════════════════════════════════════
-   NAV LINK — Desktop underline animation
-   ═══════════════════════════════════════════════════════ */
-function NavLink({
-  href,
-  label,
-  isActive,
-}: {
-  href: string
-  label: string
-  isActive: boolean
-}) {
+const labels = {
+  ar: {
+    home: 'الرئيسية',
+    sale: 'للبيع',
+    commercial: 'تجاري',
+    projects: 'المشاريع',
+    signature: 'سيجنتشر',
+    more: 'المزيد',
+    login: 'تسجيل دخول',
+    lang: 'EN',
+    arabic: 'ع',
+    currency: 'SAR',
+    phone: '+966 55 000 0000',
+  },
+  en: {
+    home: 'Home',
+    sale: 'For Sale',
+    commercial: 'Commercial',
+    projects: 'Projects',
+    signature: 'Signature',
+    more: 'More',
+    login: 'Sign in',
+    lang: 'AR',
+    arabic: 'EN',
+    currency: 'SAR',
+    phone: '+966 55 000 0000',
+  },
+}
+
+function LoginDialog({ trigger, locale }: { trigger: React.ReactNode; locale: 'ar' | 'en' }) {
+  const router = useRouter()
+  const { setAuth, deviceId } = useAuthStore()
+  const [open, setOpen] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
+  const [error, setError] = useState('')
+  const isRTL = locale === 'ar'
+  const text = {
+    ar: {
+      title: 'تسجيل الدخول',
+      subtitle: 'أدخل بيانات حسابك للوصول إلى لوحة التحكم.',
+      email: 'البريد الإلكتروني',
+      password: 'كلمة المرور',
+      remember: 'تذكرني',
+      forgot: 'نسيت كلمة المرور؟',
+      submit: 'تسجيل الدخول',
+      noAccount: 'لا تملك حساباً؟',
+      create: 'إنشاء حساب جديد',
+      demo: 'تجريبي: admin@map-key.com / Admin@123',
+      fail: 'تعذر تسجيل الدخول',
+    },
+    en: {
+      title: 'Sign in',
+      subtitle: 'Enter your account details to access the dashboard.',
+      email: 'Email address',
+      password: 'Password',
+      remember: 'Remember me',
+      forgot: 'Forgot password?',
+      submit: 'Sign in',
+      noAccount: 'No account?',
+      create: 'Create a new account',
+      demo: 'Demo: admin@map-key.com / Admin@123',
+      fail: 'Unable to sign in',
+    },
+  }[locale]
+
+  const submit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    setError('')
+    setLoading(true)
+    const form = new FormData(event.currentTarget)
+
+    try {
+      const response = await fetch('/api/auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Device-Id': deviceId },
+        body: JSON.stringify({
+          email: form.get('email'),
+          password: form.get('password'),
+          deviceId,
+        }),
+      })
+      const json = await response.json()
+      if (!response.ok) {
+        setError(json.message || text.fail)
+        return
+      }
+      setAuth(json.data.user, json.data.tokens)
+      toast.success(isRTL ? 'تم تسجيل الدخول بنجاح' : 'Signed in successfully')
+      setOpen(false)
+      router.push('/dashboard')
+    } catch {
+      setError(text.fail)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
-    <Link href={href} className="relative group py-2 px-1">
-      <span
-        className={cn(
-          'text-sm font-medium tracking-wide transition-colors duration-300',
-          isActive
-            ? 'text-accent-gold'
-            : 'text-text-secondary group-hover:text-text-primary'
-        )}
-      >
-        {label}
-      </span>
+    <Dialog.Root open={open} onOpenChange={setOpen}>
+      <Dialog.Trigger asChild>{trigger}</Dialog.Trigger>
+      <Dialog.Portal>
+        <Dialog.Overlay className="fixed inset-0 z-[70] bg-black/65 backdrop-blur-md" />
+        <Dialog.Content className="fixed inset-0 z-[80] grid place-items-center p-4">
+          <motion.div
+            initial={{ opacity: 0, y: 18, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            className="relative w-[min(92vw,520px)] overflow-hidden rounded-[32px] bg-white p-6 shadow-2xl md:p-9"
+            dir={isRTL ? 'rtl' : 'ltr'}
+          >
+            <Dialog.Close className="absolute start-5 top-5 grid h-10 w-10 place-items-center rounded-full bg-neutral-100 text-neutral-700 transition hover:bg-neutral-200">
+              <X className="h-5 w-5" />
+            </Dialog.Close>
+            <div className="text-center">
+              <Image src="/new_logo.svg" alt="Map Key" width={180} height={106} className="mx-auto h-16 w-auto" />
+              <Dialog.Title className="mt-7 text-3xl font-black text-neutral-950">{text.title}</Dialog.Title>
+              <Dialog.Description className="mt-3 text-neutral-500">{text.subtitle}</Dialog.Description>
+            </div>
 
-      {/* Gold underline indicator */}
-      <motion.span
-        className="absolute -bottom-0.5 left-0 right-0 h-[2px] rounded-full bg-gold-gradient origin-left"
-        initial={false}
-        animate={{
-          scaleX: isActive ? 1 : 0,
-          opacity: isActive ? 1 : 0,
-        }}
-        transition={{ duration: 0.35, ease: [0.25, 0.1, 0.25, 1] }}
-      />
+            <form onSubmit={submit} className="mt-8 space-y-4">
+              <label className="block">
+                <span className="mb-2 block text-sm font-bold text-neutral-700">{text.email}</span>
+                <input
+                  name="email"
+                  type="email"
+                  defaultValue="admin@map-key.com"
+                  autoComplete="email"
+                  required
+                  className="h-14 w-full rounded-2xl border border-neutral-200 px-5 outline-none transition focus:border-[#b99750] focus:ring-4 focus:ring-[#b99750]/10"
+                />
+              </label>
+              <label className="block">
+                <span className="mb-2 block text-sm font-bold text-neutral-700">{text.password}</span>
+                <span className="flex h-14 items-center rounded-2xl border border-neutral-200 px-5 transition focus-within:border-[#b99750] focus-within:ring-4 focus-within:ring-[#b99750]/10">
+                  <input
+                    name="password"
+                    type={showPassword ? 'text' : 'password'}
+                    defaultValue="Admin@123"
+                    autoComplete="current-password"
+                    required
+                    className="min-w-0 flex-1 bg-transparent outline-none"
+                  />
+                  <button type="button" onClick={() => setShowPassword((value) => !value)} className="text-neutral-400 hover:text-[#b99750]" aria-label="Toggle password visibility">
+                    {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                  </button>
+                </span>
+              </label>
 
-      {/* Hover underline (only when NOT active) */}
-      {!isActive && (
-        <span className="absolute -bottom-0.5 left-0 right-0 h-[2px] rounded-full bg-accent-gold/40 origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out" />
-      )}
-    </Link>
+              <div className="flex items-center justify-between gap-4 text-sm">
+                <label className="flex items-center gap-2 text-neutral-500">
+                  <input type="checkbox" className="h-4 w-4 rounded border-neutral-300 accent-[#b99750]" />
+                  {text.remember}
+                </label>
+                <button type="button" className="font-bold text-[#a58742]">{text.forgot}</button>
+              </div>
+
+              {error && <p className="rounded-2xl bg-red-50 px-4 py-3 text-sm font-bold text-red-600">{error}</p>}
+
+              <button disabled={loading} className="flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-[#b99750] font-bold text-white shadow-lg shadow-[#b99750]/25 transition hover:bg-[#a58742] disabled:opacity-70">
+                {loading && <Loader2 className="h-5 w-5 animate-spin" />}
+                {text.submit}
+              </button>
+            </form>
+
+            <p className="mt-6 text-center text-sm text-neutral-500">
+              {text.noAccount}{' '}
+              <Link href="/auth/register" onClick={() => setOpen(false)} className="font-bold text-[#a58742] underline">
+                {text.create}
+              </Link>
+            </p>
+            <p className="mt-3 text-center text-xs text-neutral-400">{text.demo}</p>
+          </motion.div>
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
   )
 }
 
-/* ═══════════════════════════════════════════════════════
-   MOBILE NAV LINK — Drawer link with icon + chevron
-   ═══════════════════════════════════════════════════════ */
-const navIcons = {
-  '/': Home,
-  '/properties': Building2,
-  '/dashboard': LayoutDashboard,
-} as const
-
-function MobileNavLink({
-  href,
-  label,
-  isActive,
-  index,
-  isRTL,
-  onClose,
-}: {
-  href: string
-  label: string
-  isActive: boolean
-  index: number
-  isRTL: boolean
-  onClose: () => void
-}) {
-  const Icon = navIcons[href as keyof typeof navIcons] || Home
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, x: isRTL ? 24 : -24 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ delay: 0.1 + index * 0.06, duration: 0.4, ease: 'easeOut' }}
-    >
-      <Link
-        href={href}
-        onClick={onClose}
-        className={cn(
-          'flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm font-medium transition-all duration-300 group',
-          isActive
-            ? 'bg-accent-gold/10 text-accent-gold border border-accent-gold/20'
-            : 'text-text-secondary hover:bg-surface-1 hover:text-text-primary'
-        )}
-      >
-        <Icon
-          className={cn(
-            'w-[18px] h-[18px] transition-colors',
-            isActive ? 'text-accent-gold' : 'text-text-muted group-hover:text-accent-gold'
-          )}
-        />
-        <span className="flex-1">{label}</span>
-        <ChevronRight
-          className={cn(
-            'w-4 h-4 text-text-muted/50 transition-transform duration-300',
-            isRTL ? 'rotate-180 group-hover:-translate-x-1' : 'group-hover:translate-x-1'
-          )}
-        />
-      </Link>
-    </motion.div>
-  )
-}
-
-/* ═══════════════════════════════════════════════════════
-   HEADER COMPONENT
-   ═══════════════════════════════════════════════════════ */
 export function Header() {
-  const t = useTranslations('nav')
   const locale = useLocale() as 'ar' | 'en'
-  const { resolvedTheme, setTheme } = useTheme()
   const pathname = usePathname()
   const [scrolled, setScrolled] = useState(false)
-  const [mounted, setMounted] = useState(false)
-
-  const isRTL = locale === 'ar'
+  const t = labels[locale]
 
   useEffect(() => {
-    setMounted(true)
+    const onScroll = () => setScrolled(window.scrollY > 24)
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  const handleScroll = useCallback(() => {
-    setScrolled(window.scrollY > 20)
-  }, [])
-
-  useEffect(() => {
-    window.addEventListener('scroll', handleScroll, { passive: true })
-    handleScroll()
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [handleScroll])
-
-  const navLinks = [
-    { href: '/', label: t('home') },
-    { href: '/properties', label: t('properties') },
-    { href: '/dashboard', label: t('dashboard') },
+  const nav = [
+    { href: '/', label: t.home },
+    { href: '/properties?purpose=sale', label: t.sale },
+    { href: '/properties?purpose=commercial', label: t.commercial },
+    { href: '/properties?type=projects', label: t.projects },
+    { href: '/properties?signature=1', label: t.signature, accent: true },
   ]
 
-  const toggleLocale = () => {
-    // ponytail: hard navigation — <html dir/lang> lives in the root layout which
-    // never re-renders on soft navigation, so a full load is the reliable switch
-    const next = isRTL ? 'en' : 'ar'
+  const switchLocale = () => {
+    const next = locale === 'ar' ? 'en' : 'ar'
     window.location.assign(`/${next}${pathname === '/' ? '' : pathname}`)
   }
 
   return (
     <motion.header
-      initial={{ y: -100, opacity: 0 }}
+      initial={{ y: -30, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.7, ease: [0.25, 0.1, 0.25, 1] }}
       className={cn(
-        'fixed top-0 left-0 right-0 z-50 transition-all duration-500',
-        scrolled
-          ? 'py-2 backdrop-blur-2xl bg-bg-primary/80 shadow-lg shadow-black/[0.03] dark:shadow-black/20 border-b border-border/50'
-          : 'py-3 backdrop-blur-md bg-transparent border-b border-transparent'
+        'fixed inset-x-0 top-0 z-50 border-b transition-all duration-300',
+        scrolled ? 'border-neutral-200 bg-white/95 shadow-lg shadow-black/5 backdrop-blur-xl' : 'border-white/10 bg-white/90 backdrop-blur-md'
       )}
     >
-      {/* Subtle gold accent line at the very top */}
-      <motion.div
-        className="absolute top-0 left-0 right-0 h-[1px] bg-gold-gradient opacity-0"
-        animate={{ opacity: scrolled ? 0.4 : 0 }}
-        transition={{ duration: 0.5 }}
-      />
+      <div className="container mx-auto flex h-[108px] items-center justify-between gap-6 px-4">
+        <Link href="/" className="flex shrink-0 items-center">
+          <Image src="/new_logo.svg" alt="Map Key" width={210} height={124} priority className="h-16 w-auto" />
+        </Link>
 
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
-          {/* ── Logo ── */}
-          <Link href="/" className="relative flex items-center group">
-            <motion.div
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
-              transition={{ type: 'spring', stiffness: 400, damping: 17 }}
-            >
-              <Image
-                src="/logo.png"
-                alt="MAP KEY"
-                width={140}
-                height={40}
-                className="h-10 w-auto object-contain"
-                priority
-              />
-            </motion.div>
-
-            {/* Soft glow behind logo on hover */}
-            <div className="absolute -inset-3 rounded-2xl bg-accent-gold/0 group-hover:bg-accent-gold/5 transition-colors duration-500 -z-10" />
-          </Link>
-
-          {/* ── Desktop Navigation ── */}
-          <nav
-            className={cn(
-              'hidden lg:flex items-center gap-8',
-              isRTL ? 'mr-auto ml-8' : 'ml-auto mr-8'
-            )}
-          >
-            {navLinks.map((link) => (
-              <NavLink
-                key={link.href}
-                href={link.href}
-                label={link.label}
-                isActive={pathname === link.href}
-              />
-            ))}
-          </nav>
-
-          {/* ── Actions ── */}
-          <div className="flex items-center gap-2">
-            {/* Theme Toggle */}
-            <motion.button
-              whileTap={{ scale: 0.88 }}
-              whileHover={{ scale: 1.08 }}
-              onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
-              className={cn(
-                'relative p-2.5 rounded-xl transition-all duration-300',
-                'text-text-secondary hover:text-accent-gold',
-                'hover:bg-accent-gold/8 active:bg-accent-gold/12'
-              )}
-              aria-label="Toggle theme"
-            >
-              <AnimatePresence mode="wait" initial={false}>
-                {mounted && (
-                  <motion.div
-                    key={resolvedTheme}
-                    initial={{ rotate: -90, opacity: 0, scale: 0.5 }}
-                    animate={{ rotate: 0, opacity: 1, scale: 1 }}
-                    exit={{ rotate: 90, opacity: 0, scale: 0.5 }}
-                    transition={{ duration: 0.3, ease: 'easeOut' }}
-                  >
-                    {resolvedTheme === 'dark' ? (
-                      <Sun className="w-[18px] h-[18px]" />
-                    ) : (
-                      <Moon className="w-[18px] h-[18px]" />
-                    )}
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </motion.button>
-
-            {/* Language Toggle */}
-            <motion.button
-              whileTap={{ scale: 0.92 }}
-              whileHover={{ scale: 1.04 }}
-              onClick={toggleLocale}
-              className={cn(
-                'flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold',
-                'border border-border/60 text-text-secondary',
-                'hover:border-accent-gold/40 hover:text-accent-gold hover:bg-accent-gold/5',
-                'transition-all duration-300'
-              )}
-            >
-              <Globe className="w-3.5 h-3.5" />
-              <span>{t('language')}</span>
-            </motion.button>
-
-            {/* Login Button — Desktop only */}
+        <nav className="hidden flex-1 items-center justify-center gap-8 lg:flex">
+          {nav.map((item) => (
             <Link
-              href="/auth/login"
+              key={item.label}
+              href={item.href}
               className={cn(
-                'hidden lg:inline-flex items-center gap-2',
-                'btn-gold px-6 py-2.5 text-xs font-bold uppercase tracking-wider rounded-xl',
-                'gold-shimmer'
+                'text-lg font-medium text-neutral-950 transition hover:text-[#b99750]',
+                item.accent && 'text-[#d1ad63]',
+                pathname === item.href && 'text-[#b99750]'
               )}
             >
-              <LogIn className="w-3.5 h-3.5" />
-              {t('login')}
+              {item.label}
             </Link>
+          ))}
+          <button className="inline-flex items-center gap-2 text-lg font-medium text-neutral-950 transition hover:text-[#b99750]">
+            <ChevronDown className="h-4 w-4 text-neutral-500" />
+            {t.more}
+          </button>
+        </nav>
 
-            {/* Mobile Menu Trigger */}
-            <Dialog.Root>
-              <Dialog.Trigger asChild>
-                <motion.button
-                  whileTap={{ scale: 0.88 }}
-                  whileHover={{ scale: 1.08 }}
-                  className={cn(
-                    'lg:hidden p-2.5 rounded-xl transition-all duration-300',
-                    'text-text-secondary hover:text-accent-gold',
-                    'hover:bg-accent-gold/8'
-                  )}
-                  aria-label="Open menu"
-                >
-                  <Menu className="w-5 h-5" />
-                </motion.button>
-              </Dialog.Trigger>
-
-              <Dialog.Portal>
-                {/* Overlay */}
-                <Dialog.Overlay asChild>
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.3 }}
-                    className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm"
-                  />
-                </Dialog.Overlay>
-
-                {/* Drawer Panel */}
-                <Dialog.Content asChild>
-                  <motion.aside
-                    initial={{ x: isRTL ? '-100%' : '100%' }}
-                    animate={{ x: 0 }}
-                    exit={{ x: isRTL ? '-100%' : '100%' }}
-                    transition={{
-                      type: 'spring',
-                      damping: 30,
-                      stiffness: 300,
-                      mass: 0.8,
-                    }}
-                    className={cn(
-                      'fixed top-0 z-50 h-full w-[300px] max-w-[85vw]',
-                      'bg-bg-secondary/95 backdrop-blur-2xl',
-                      'border-border/20 shadow-2xl',
-                      isRTL
-                        ? 'left-0 border-r'
-                        : 'right-0 border-l'
-                    )}
-                  >
-                    {/* Drawer Header */}
-                    <div className="flex items-center justify-between p-5 border-b border-border/20">
-                      <Image
-                        src="/logo.png"
-                        alt="MAP KEY"
-                        width={110}
-                        height={32}
-                        className="h-8 w-auto object-contain"
-                      />
-
-                      <Dialog.Close asChild>
-                        <motion.button
-                          whileTap={{ scale: 0.85 }}
-                          whileHover={{ rotate: 90 }}
-                          transition={{ duration: 0.2 }}
-                          className="p-2 rounded-xl text-text-secondary hover:text-accent-gold hover:bg-accent-gold/10 transition-all"
-                          aria-label="Close menu"
-                        >
-                          <X className="w-5 h-5" />
-                        </motion.button>
-                      </Dialog.Close>
-                    </div>
-
-                    {/* Drawer Navigation */}
-                    <nav className="p-5 space-y-1.5">
-                      {navLinks.map((link, i) => (
-                        <Dialog.Close key={link.href} asChild>
-                          <div>
-                            <MobileNavLink
-                              href={link.href}
-                              label={link.label}
-                              isActive={pathname === link.href}
-                              index={i}
-                              isRTL={isRTL}
-                              onClose={() => {}}
-                            />
-                          </div>
-                        </Dialog.Close>
-                      ))}
-                    </nav>
-
-                    {/* Drawer Bottom Actions */}
-                    <motion.div
-                      initial={{ opacity: 0, y: 16 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.35, duration: 0.4 }}
-                      className="absolute bottom-0 left-0 right-0 p-5 border-t border-border/20 space-y-3 bg-bg-secondary/80 backdrop-blur-xl"
-                    >
-                      {/* Login */}
-                      <Dialog.Close asChild>
-                        <Link
-                          href="/auth/login"
-                          className="flex items-center justify-center gap-2 w-full px-5 py-3 text-sm font-bold text-white rounded-xl btn-gold gold-shimmer"
-                        >
-                          <LogIn className="w-4 h-4" />
-                          {t('login')}
-                        </Link>
-                      </Dialog.Close>
-
-                      {/* Language Toggle */}
-                      <Dialog.Close asChild>
-                        <button
-                          onClick={toggleLocale}
-                          className={cn(
-                            'flex items-center justify-center gap-2 w-full px-5 py-3',
-                            'text-sm font-semibold rounded-xl',
-                            'border border-border/40 text-text-secondary',
-                            'hover:border-accent-gold/40 hover:text-accent-gold hover:bg-accent-gold/5',
-                            'transition-all duration-300'
-                          )}
-                        >
-                          <Globe className="w-4 h-4" />
-                          {t('language')}
-                        </button>
-                      </Dialog.Close>
-                    </motion.div>
-                  </motion.aside>
-                </Dialog.Content>
-              </Dialog.Portal>
-            </Dialog.Root>
-          </div>
+        <div className="hidden shrink-0 items-center gap-5 lg:flex">
+          <LoginDialog
+            locale={locale}
+            trigger={
+              <button className="inline-flex h-14 items-center gap-2 rounded-full border border-neutral-200 bg-white px-7 text-lg font-medium text-neutral-950 transition hover:border-[#b99750]">
+                {t.login}
+              </button>
+            }
+          />
+          <span className="inline-flex h-11 items-center gap-3 text-lg font-medium text-neutral-950">
+            {locale === 'ar' ? 'السعودية' : 'Saudi'}
+            <span className="grid h-8 w-8 place-items-center rounded-sm bg-[#245d31] text-sm leading-none">🇸🇦</span>
+          </span>
+          <button onClick={switchLocale} className="inline-flex h-11 items-center gap-2 text-lg font-medium text-neutral-950">
+            <span>{t.arabic}</span>
+            <Globe2 className="h-5 w-5" />
+          </button>
+          <span className="text-lg font-medium text-neutral-950">{t.currency}</span>
+          <Headphones className="h-7 w-7 text-neutral-700" />
         </div>
+
+        <Dialog.Root>
+          <Dialog.Trigger asChild>
+            <button className="grid h-12 w-12 place-items-center rounded-full bg-neutral-950 text-white lg:hidden" aria-label="Open menu">
+              <Menu className="h-6 w-6" />
+            </button>
+          </Dialog.Trigger>
+          <Dialog.Portal>
+            <Dialog.Overlay className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm" />
+            <Dialog.Content asChild>
+              <motion.aside
+                initial={{ x: locale === 'ar' ? '-100%' : '100%' }}
+                animate={{ x: 0 }}
+                exit={{ x: locale === 'ar' ? '-100%' : '100%' }}
+                className={cn('fixed top-0 z-50 flex h-full w-[340px] max-w-[88vw] flex-col bg-white p-6 shadow-2xl', locale === 'ar' ? 'left-0' : 'right-0')}
+              >
+                <div className="mb-6 flex shrink-0 items-center justify-between">
+                  <Image src="/new_logo.svg" alt="Map Key" width={140} height={84} className="h-12 w-auto" />
+                  <Dialog.Close className="grid h-10 w-10 place-items-center rounded-full bg-neutral-100">
+                    <X className="h-5 w-5" />
+                  </Dialog.Close>
+                </div>
+                <nav className="min-h-0 flex-1 space-y-2 overflow-y-auto pb-4">
+                  {nav.map((item) => (
+                    <Dialog.Close asChild key={item.label}>
+                      <Link href={item.href} className="block rounded-2xl px-4 py-4 text-base font-bold text-neutral-800 hover:bg-[#f5f0e6]">
+                        {item.label}
+                      </Link>
+                    </Dialog.Close>
+                  ))}
+                </nav>
+                <div className="shrink-0 space-y-3 border-t border-neutral-100 pt-4">
+                  <a href="tel:+966550000000" className="flex items-center justify-center gap-2 rounded-2xl border border-neutral-200 px-5 py-4 font-bold">
+                    <Phone className="h-4 w-4 text-[#b99750]" />
+                    {t.phone}
+                  </a>
+                  <LoginDialog
+                    locale={locale}
+                    trigger={
+                      <button className="flex w-full items-center justify-center gap-2 rounded-2xl border border-neutral-200 px-5 py-4 font-bold">
+                        <LogIn className="h-4 w-4" />
+                        {t.login}
+                      </button>
+                    }
+                  />
+                  <button onClick={switchLocale} className="w-full rounded-2xl bg-neutral-950 px-5 py-4 font-bold text-white">
+                    🇸🇦 {t.lang} / {t.currency}
+                  </button>
+                </div>
+              </motion.aside>
+            </Dialog.Content>
+          </Dialog.Portal>
+        </Dialog.Root>
       </div>
     </motion.header>
   )

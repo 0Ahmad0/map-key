@@ -170,6 +170,10 @@
     "unauthorized": "Unauthorized",
     "forbidden": "Forbidden",
     "backHome": "Back to Home",
-    "retry": "Retry"
+    "retry": "Retry",
+    "invalidCredentials": "Invalid email or password",
+    "loginSuccess": "Login successful",
+    "networkError": "Network error, please try again",
+    "sessionExpired": "Session expired, please login again"
   }
 }

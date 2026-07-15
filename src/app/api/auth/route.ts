@@ -1,32 +1,52 @@
 import { NextRequest } from 'next/server'
-import { createApiResponse, createApiError, checkRateLimit, validateInput, getClientIp } from '@/lib/security'
+import { createApiResponse, createApiError, checkRateLimit, getClientIp } from '@/lib/security'
+
+interface LoginBody {
+  email: string
+  password: string
+  deviceId?: string
+}
+
+const MOCK_USER = {
+  id: 'usr_001',
+  name: 'أحمد محمد',
+  email: 'admin@map-key.com',
+  phone: '+966551234567',
+  role: 'admin' as const,
+  emailVerified: true,
+  createdAt: new Date().toISOString(),
+}
 
 export async function POST(request: NextRequest) {
   const ip = getClientIp()
   if (!checkRateLimit(`auth:${ip}`, 5, 60000)) {
-    return createApiError(429, 'Too many requests. Please try again later.')
+    return createApiError(429, 'طلبات كثيرة جداً. حاول مرة أخرى لاحقاً.')
   }
 
   try {
-    const body = await request.json()
+    const body: LoginBody = await request.json()
     const { email, password } = body
 
     if (!email || !password) {
-      return createApiError(400, 'Email and password are required')
+      return createApiError(400, 'البريد الإلكتروني وكلمة المرور مطلوبان')
     }
 
-    const emailValidation = validateInput(email, 'email')
-    if (!emailValidation.valid) {
-      return createApiError(400, emailValidation.error!)
+    if (email !== 'admin@map-key.com' || password !== 'Admin@123') {
+      return createApiError(401, 'البريد الإلكتروني أو كلمة المرور غير صحيحة')
     }
 
-    if (password.length < 8) {
-      return createApiError(400, 'Password must be at least 8 characters')
+    const tokens = {
+      accessToken: `mk_access_${Date.now()}_${Math.random().toString(36).slice(2)}`,
+      refreshToken: `mk_refresh_${Date.now()}_${Math.random().toString(36).slice(2)}`,
+      expiresAt: Date.now() + 7 * 24 * 60 * 60 * 1000,
     }
 
-    // TODO: Implement actual authentication
-    return createApiResponse({ message: 'Authentication endpoint ready' })
+    return createApiResponse({ user: MOCK_USER, tokens })
   } catch {
-    return createApiError(400, 'Invalid request body')
+    return createApiError(400, 'بيانات الطلب غير صالحة')
   }
+}
+
+export async function GET() {
+  return createApiResponse({ message: 'Auth API ready' })
 }

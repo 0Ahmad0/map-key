@@ -1,1293 +1,771 @@
 'use client'
 
-import { useState, useMemo, useRef, useEffect, useCallback } from 'react'
-import { motion, useScroll, useTransform, useInView, AnimatePresence } from 'framer-motion'
-import { useTranslations, useLocale } from 'next-intl'
-import { Link } from '@/i18n/navigation'
-import { cn, formatPrice, formatDate } from '@/lib/utils'
-import { demoProjects } from '@/lib/demo-projects'
-import { demoArticles, articleCategories } from '@/lib/demo-articles'
-import { demoProperties } from '@/lib/demo-properties'
-import type { Property } from '@/types'
+import { FormEvent, useMemo, useState } from 'react'
 import Image from 'next/image'
+import { motion } from 'framer-motion'
+import { useLocale } from 'next-intl'
+import { Link, useRouter } from '@/i18n/navigation'
+import { demoArticles } from '@/lib/demo-articles'
+import { demoProjects } from '@/lib/demo-projects'
+import { demoProperties } from '@/lib/demo-properties'
+import { cn, formatDate, formatPrice } from '@/lib/utils'
 import {
-  Search, MapPin, BedDouble, Bath, Maximize, ArrowRight, ArrowLeft,
-  ChevronRight, ChevronLeft, Building2, TrendingUp, Users, Globe2,
-  Shield, Sparkles, Clock, Star, Check,
-  Home as HomeIcon, Eye, Calendar, ArrowUpRight,
+  ArrowLeft,
+  ArrowRight,
+  Bath,
+  BedDouble,
+  Building2,
+  ChevronDown,
+  Expand,
+  Heart,
+  HelpCircle,
+  Mail,
+  MapPin,
+  Maximize2,
+  MessageCircle,
+  Search,
+  ShieldCheck,
+  Sparkles,
+  TrendingUp,
 } from 'lucide-react'
 
-// ─── Gradient palettes for property cards ───
-const cardGradients = [
-  'from-amber-900/40 via-stone-900/60 to-neutral-900/80',
-  'from-emerald-900/40 via-stone-900/60 to-neutral-900/80',
-  'from-blue-900/40 via-stone-900/60 to-neutral-900/80',
-  'from-rose-900/40 via-stone-900/60 to-neutral-900/80',
-  'from-violet-900/40 via-stone-900/60 to-neutral-900/80',
-  'from-cyan-900/40 via-stone-900/60 to-neutral-900/80',
-]
-
-const projectGradients = [
-  'from-amber-800/30 via-amber-900/50 to-neutral-950',
-  'from-sky-800/30 via-sky-900/50 to-neutral-950',
-  'from-emerald-800/30 via-emerald-900/50 to-neutral-950',
-  'from-rose-800/30 via-rose-900/50 to-neutral-950',
-  'from-violet-800/30 via-violet-900/50 to-neutral-950',
-  'from-teal-800/30 via-teal-900/50 to-neutral-950',
-]
-
-const articleGradients = [
-  'from-amber-900/50 to-stone-900/80',
-  'from-indigo-900/50 to-stone-900/80',
-  'from-emerald-900/50 to-stone-900/80',
-  'from-rose-900/50 to-stone-900/80',
-  'from-cyan-900/50 to-stone-900/80',
-]
-
-// ─── Feature icons ───
-const featureIcons = [TrendingUp, Sparkles, Shield, Globe2]
-
-// ─── Fixed sparkle positions (deterministic → no hydration mismatch) ───
-const sparkles = Array.from({ length: 10 }, (_, i) => ({
-  left: `${(i * 37 + 11) % 100}%`,
-  top: `${(i * 53 + 7) % 100}%`,
-  duration: 2 + (i % 3),
-  delay: (i * 0.7) % 5,
-}))
-
-// ─── Floating Particle ───
-function FloatingOrb({ delay, size, x, y, duration }: { delay: number; size: number; x: string; y: string; duration: number }) {
-  return (
-    <motion.div
-      className="absolute rounded-full pointer-events-none"
-      style={{
-        width: size,
-        height: size,
-        left: x,
-        top: y,
-        background: `radial-gradient(circle, rgba(201,168,76,0.15) 0%, rgba(201,168,76,0.05) 40%, transparent 70%)`,
-      }}
-      animate={{
-        y: [0, -30, 10, -20, 0],
-        x: [0, 15, -10, 20, 0],
-        scale: [1, 1.1, 0.95, 1.05, 1],
-        opacity: [0.3, 0.6, 0.4, 0.7, 0.3],
-      }}
-      transition={{
-        duration,
-        repeat: Infinity,
-        delay,
-        ease: 'easeInOut',
-      }}
-    />
-  )
+const copy = {
+  ar: {
+    badge: 'بوابة عقارية سعودية بخبرة سوق حقيقية',
+    heroTitle: 'نعرف السوق قبل أن يشرح نفسه',
+    heroText:
+      'نقرأ المدن والأحياء والمشاريع بعين خبيرة، ونحوّل البحث العقاري إلى قرار واضح ومطمئن.',
+    sale: 'للبيع',
+    rent: 'للإيجار',
+    projects: 'المشاريع',
+    commercial: 'تجاري',
+    city: 'المدينة أو المنطقة',
+    type: 'نوع العقار',
+    rooms: 'الغرف',
+    price: 'السعر',
+    min: 'الأقل:',
+    max: 'الأعلى:',
+    reset: 'إعادة تعيين',
+    bathrooms: 'دورات المياه',
+    area: 'المساحة',
+    sqm: 'sqm',
+    projectStatus: 'حالة المشروع',
+    offPlan: 'مشاريع على الخريطة',
+    readyProjects: 'مشاريع جاهزة',
+    search: 'بحث',
+    whyTitle: 'لماذا Map Key؟',
+    whyLead: 'لسنا وسيطاً عابراً. نحن شريك يقرأ القيمة، يختار بعناية، ويعرض الفرص التي تستحق الظهور.',
+    whyText:
+      'من السكن الراقي إلى التجاري النابض، نوصل العميل إلى فرصة تناسب احتياجه اليوم وتحافظ على قيمتها غداً.',
+    exclusive: 'مشاريع حصرية',
+    exclusiveText: 'لا نعرض كل ما هو موجود. نعرض فقط ما يستحق الظهور.',
+    all: 'الكل',
+    onMap: 'على الخريطة',
+    ready: 'جاهزة',
+    residential: 'سكني',
+    neighborhoods: 'اختر الحي الأنسب',
+    neighborhoodsText: 'نرشّح الأحياء وفق الموقع والخدمات ونمط الحياة والأسعار.',
+    priceMap: 'أسعار العقارات في المملكة العربية السعودية بالموقع',
+    sellBuy: 'هل تبيع أم تشتري؟',
+    sellBuyText: 'كل الاتجاهات تبدأ من Map Key. أضف عقارك أو أخبرنا بما تبحث عنه، وسنتولى الباقي.',
+    request: 'اطلب عقار',
+    add: 'أضف عقارك',
+    articles: 'لا نكتب محتوى، بل نشارك المعرفة.',
+    articlesText: 'مقالات توضّح وتحذّر وتقرأ السوق السعودي بعين خبيرة.',
+    popular: 'عمليات البحث الشائعة عن العقارات',
+    newsletter: 'ابقَ قريباً من الفرص الجديدة',
+    email: 'بريدك الإلكتروني',
+    subscribe: 'اشترك',
+    subscribed: 'تم تسجيل بريدك في نموذج الواجهة.',
+    viewAll: 'عرض الكل',
+    readMore: 'اقرأ المزيد',
+    start: 'السعر المبدئي',
+    delivery: 'موعد التسليم',
+    available: 'متاح',
+    ask: 'اسألنا',
+    whatsapp: 'واتساب',
+  },
+  en: {
+    badge: 'A Saudi real estate gateway with market judgment',
+    heroTitle: 'We read the market before it explains itself',
+    heroText:
+      'We understand cities, districts, and projects with a sharper eye, turning property search into a clear decision.',
+    sale: 'For sale',
+    rent: 'For rent',
+    projects: 'Projects',
+    commercial: 'Commercial',
+    city: 'City or district',
+    type: 'Property type',
+    rooms: 'Rooms',
+    price: 'Price',
+    min: 'Min:',
+    max: 'Max:',
+    reset: 'Reset',
+    bathrooms: 'Bathrooms',
+    area: 'Area',
+    sqm: 'sqm',
+    projectStatus: 'Project status',
+    offPlan: 'Off-plan projects',
+    readyProjects: 'Ready projects',
+    search: 'Search',
+    whyTitle: 'Why Map Key?',
+    whyLead: 'We are not a passing broker. We are a partner that reads value and presents opportunities worth seeing.',
+    whyText:
+      'From refined residences to active commercial assets, we match each client with a property that fits today and holds value tomorrow.',
+    exclusive: 'Exclusive Projects',
+    exclusiveText: 'We do not show everything on the market. We show what deserves attention.',
+    all: 'All',
+    onMap: 'On map',
+    ready: 'Ready',
+    residential: 'Residential',
+    neighborhoods: 'Choose the right district',
+    neighborhoodsText: 'Districts are curated by location, services, lifestyle, and price movement.',
+    priceMap: 'Property prices in Saudi Arabia by location',
+    sellBuy: 'Selling or buying?',
+    sellBuyText: 'Every direction starts with Map Key. Add your property or tell us what you need, and we handle the rest.',
+    request: 'Request property',
+    add: 'Add property',
+    articles: 'We do not publish filler. We share market knowledge.',
+    articlesText: 'Clear articles that explain, warn, and read the Saudi market with an expert eye.',
+    popular: 'Popular property searches',
+    newsletter: 'Stay close to new opportunities',
+    email: 'Your email address',
+    subscribe: 'Subscribe',
+    subscribed: 'Your email was captured in the UI demo.',
+    viewAll: 'View all',
+    readMore: 'Read more',
+    start: 'Starting price',
+    delivery: 'Delivery',
+    available: 'Available',
+    ask: 'Ask us',
+    whatsapp: 'WhatsApp',
+  },
 }
 
-// ─── Section Header ───
-function SectionHeader({ title, subtitle, className }: { title: string; subtitle: string; className?: string }) {
+const neighborhoods = [
+  { image: '/images/art-3.jpg', ar: 'الملز', en: 'Al Malaz', metaAr: 'قلب الرياض التاريخي بروح عصرية', metaEn: 'Historic Riyadh with a modern pulse' },
+  { image: '/images/proj-4.jpg', ar: 'الياسمين', en: 'Al Yasmin', metaAr: 'أبراج حديثة وخدمات مكتملة', metaEn: 'Modern towers and complete services' },
+  { image: '/images/prop-7.jpg', ar: 'العقيق', en: 'Al Aqiq', metaAr: 'قريب من المراكز المالية', metaEn: 'Close to major business districts' },
+]
+
+const popularLinks = {
+  ar: {
+    projects: ['مشاريع على الخريطة في الرياض', 'مشاريع جاهزة في الرياض', 'شقق للبيع في الرياض', 'مشاريع حصرية للبيع في الرياض', 'تجاري للإيجار في الرياض', 'تجاري للبيع في الرياض'],
+    properties: ['وحدات رخيصة للبيع', 'وحدات تجارية للإيجار في الرياض', 'مكاتب للإيجار في الرياض', 'محلات للإيجار في الرياض', 'فلل فاخرة للبيع', 'دوبلكس للبيع'],
+    other: ['مدونات الخبراء', 'الأسئلة الشائعة', 'مجتمعات الرياض', 'خبراء مبيعات العقارات في الرياض', 'رؤى السوق ذات الصلة', 'الجوائز والتكريم'],
+  },
+  en: {
+    projects: ['Off-plan projects in Riyadh', 'Ready projects in Riyadh', 'Apartments for sale in Riyadh', 'Exclusive projects in Riyadh', 'Commercial for rent in Riyadh', 'Commercial for sale in Riyadh'],
+    properties: ['Affordable units for sale', 'Commercial units for rent', 'Offices for rent in Riyadh', 'Retail shops for rent', 'Luxury villas for sale', 'Duplexes for sale'],
+    other: ['Expert blog', 'Frequently asked questions', 'Riyadh communities', 'Riyadh sales experts', 'Related market insights', 'Awards and recognition'],
+  },
+}
+
+const reveal = {
+  hidden: { opacity: 0, y: 26 },
+  show: { opacity: 1, y: 0 },
+}
+
+type SearchTab = 'sale' | 'projects' | 'commercial'
+type FilterKey = 'type' | 'rooms' | 'price' | 'status' | 'area'
+
+const propertyOptions = {
+  ar: ['شقة', 'تاون هاوس', 'دور', 'إستراحة', 'فيلا', 'شقة صغيرة (استوديو)', 'أرض', 'بنتهاوس'],
+  en: ['Apartment', 'Townhouse', 'Floor', 'Rest house', 'Villa', 'Studio apartment', 'Land', 'Penthouse'],
+}
+
+const commercialOptions = {
+  ar: ['مكتب', 'معرض', 'محل', 'مستودع', 'عمارة تجارية', 'أرض تجارية'],
+  en: ['Office', 'Showroom', 'Retail', 'Warehouse', 'Commercial building', 'Commercial land'],
+}
+
+const roomOptions = ['الكل', 'استوديو', '2', '3', '4', '5', '6', '+7']
+const roomOptionsEn = ['All', 'Studio', '2', '3', '4', '5', '6', '+7']
+const bathOptions = ['الكل', '1', '2', '3', '4', '5', '6', '+7']
+const bathOptionsEn = ['All', '1', '2', '3', '4', '5', '6', '+7']
+
+function SectionTitle({ title, text, align = 'center' }: { title: string; text?: string; align?: 'center' | 'start' }) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.6 }}
-      className={cn('text-center mb-16', className)}
+      variants={reveal}
+      initial="hidden"
+      whileInView="show"
+      viewport={{ once: true, margin: '-80px' }}
+      transition={{ duration: 0.55 }}
+      className={cn('mb-10', align === 'center' ? 'text-center' : 'text-start')}
     >
-      <motion.div
-        initial={{ width: 0 }}
-        whileInView={{ width: 48 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.5 }}
-        className="h-0.5 bg-gradient-to-r from-accent-gold to-amber-400 mx-auto mb-6"
-      />
-      <h2 className="text-h2 font-bold text-text-primary mb-4">
-        {title}
-      </h2>
-      <p className="text-body text-text-secondary max-w-xl mx-auto">
-        {subtitle}
-      </p>
+      <div className={cn('mb-5 h-1 w-16 rounded-full bg-[#b99750]', align === 'center' && 'mx-auto')} />
+      <h2 className="text-3xl font-black leading-tight text-neutral-950 md:text-5xl">{title}</h2>
+      {text && <p className="mx-auto mt-4 max-w-3xl text-base leading-8 text-neutral-500 md:text-lg">{text}</p>}
     </motion.div>
   )
 }
 
-// ─── Stat Counter with animated number ───
-function StatCounter({
-  stat,
-  index,
-  isRTL,
-}: {
-  stat: { value: string; suffix: string; label: string; labelAr: string }
-  index: number
-  isRTL: boolean
-}) {
-  const ref = useRef<HTMLDivElement>(null)
-  const isInView = useInView(ref, { once: true })
-  const [count, setCount] = useState(0)
-  const target = parseInt(stat.value)
+function GoldButton({ href, children, light = false }: { href: string; children: React.ReactNode; light?: boolean }) {
+  return (
+    <Link
+      href={href}
+      className={cn(
+        'inline-flex min-h-12 items-center justify-center gap-2 rounded-full px-7 text-sm font-bold transition hover:-translate-y-0.5',
+        light
+          ? 'border border-neutral-200 bg-white text-neutral-950 hover:border-[#b99750]'
+          : 'bg-[#b99750] text-white shadow-[0_18px_50px_rgba(185,151,80,.28)] hover:bg-[#a58742]'
+      )}
+    >
+      {children}
+    </Link>
+  )
+}
 
-  useEffect(() => {
-    if (!isInView) return
-    const duration = 2000
-    const steps = 60
-    const increment = target / steps
-    let current = 0
-    const timer = setInterval(() => {
-      current += increment
-      if (current >= target) {
-        setCount(target)
-        clearInterval(timer)
-      } else {
-        setCount(Math.floor(current))
-      }
-    }, duration / steps)
-    return () => clearInterval(timer)
-  }, [isInView, target])
-
-  const statIcons = [TrendingUp, Building2, Users, Globe2]
-  const Icon = statIcons[index] || TrendingUp
+function ProjectCard({ project, index, isRTL, locale }: { project: (typeof demoProjects)[number]; index: number; isRTL: boolean; locale: string }) {
+  const [liked, setLiked] = useState(false)
 
   return (
-    <motion.div
-      ref={ref}
-      initial={{ opacity: 0, y: 40 }}
-      whileInView={{ opacity: 1, y: 0 }}
+    <motion.article
+      variants={reveal}
+      initial="hidden"
+      whileInView="show"
       viewport={{ once: true }}
-      transition={{ delay: index * 0.15, duration: 0.5 }}
-      className="relative text-center group"
+      transition={{ delay: index * 0.08, duration: 0.5 }}
+      className="group overflow-hidden rounded-[28px] bg-neutral-950 text-white shadow-2xl shadow-black/10"
     >
-      <motion.div
-        className="absolute inset-0 rounded-2xl bg-accent-gold/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-        style={{ filter: 'blur(40px)' }}
-      />
-      <div className="relative p-8">
-        <motion.div
-          initial={{ scale: 0, rotate: -180 }}
-          whileInView={{ scale: 1, rotate: 0 }}
-          viewport={{ once: true }}
-          transition={{ type: 'spring', delay: index * 0.15 + 0.2, damping: 12 }}
-          className="w-16 h-16 mx-auto mb-5 rounded-2xl bg-accent-gold/10 border border-accent-gold/20 flex items-center justify-center"
+      <div className="relative h-[360px] md:h-[420px]">
+        <Image src={project.image} alt={isRTL ? project.titleAr : project.title} fill sizes="(max-width: 1024px) 90vw, 33vw" className="object-cover transition duration-700 group-hover:scale-105" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/35 via-black/15 to-black/80" />
+        <button
+          type="button"
+          onClick={() => setLiked((value) => !value)}
+          className="absolute end-5 top-5 grid h-11 w-11 place-items-center rounded-full bg-white/15 backdrop-blur-xl transition hover:bg-white/25"
+          aria-label="favorite"
         >
-          <Icon className="w-7 h-7 text-accent-gold" />
-        </motion.div>
-        <p className="text-5xl md:text-6xl font-black bg-gradient-to-r from-accent-gold via-amber-400 to-accent-gold bg-clip-text text-transparent mb-2">
-          {count}{stat.suffix}
-        </p>
-        <p className="text-sm text-text-secondary font-medium tracking-wide uppercase">
-          {isRTL ? stat.labelAr : stat.label}
-        </p>
+          <Heart className={cn('h-5 w-5', liked && 'fill-[#b99750] text-[#b99750]')} />
+        </button>
+        <div className="absolute start-5 top-5 flex flex-wrap gap-2">
+          <span className="rounded-full bg-black px-3 py-1 text-xs font-bold">{isRTL ? project.typeAr : project.type}</span>
+          <span className="rounded-full bg-white/90 px-3 py-1 text-xs font-bold text-[#8a6a2e]">{isRTL ? project.statusAr : project.status.replace('-', ' ')}</span>
+        </div>
+        <div className="absolute bottom-0 left-0 right-0 p-6">
+          <h3 className="text-2xl font-black md:text-3xl">{isRTL ? project.titleAr : project.title}</h3>
+          <p className="mt-2 flex items-center gap-2 text-white/80">
+            <MapPin className="h-4 w-4 text-[#d1ad63]" />
+            {isRTL ? project.locationAr : project.location}
+          </p>
+          <div className="mt-5 grid grid-cols-2 gap-3 border-t border-white/15 pt-5 text-sm">
+            <span className="text-white/65">{copy[locale as 'ar' | 'en'].delivery}</span>
+            <span className="font-bold">{isRTL ? project.deliveryDateAr : project.deliveryDate}</span>
+            <span className="text-white/65">{copy[locale as 'ar' | 'en'].start}</span>
+            <span className="font-bold text-[#d1ad63]">{formatPrice(project.startingPrice, 'SAR', locale)}</span>
+          </div>
+        </div>
       </div>
-    </motion.div>
+    </motion.article>
   )
 }
 
-// ─── Feature Card with 3D tilt ───
-function FeatureCard({
-  item,
-  index,
-}: {
-  item: { title: string; desc: string }
-  index: number
-}) {
-  const [tilt, setTilt] = useState({ rotateX: 0, rotateY: 0 })
-  const Icon = featureIcons[index] || TrendingUp
-
-  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect()
-    const x = (e.clientX - rect.left) / rect.width - 0.5
-    const y = (e.clientY - rect.top) / rect.height - 0.5
-    setTilt({ rotateX: -y * 12, rotateY: x * 12 })
-  }, [])
-
-  const handleMouseLeave = useCallback(() => {
-    setTilt({ rotateX: 0, rotateY: 0 })
-  }, [])
-
+function PropertyCard({ property, index, isRTL, locale }: { property: (typeof demoProperties)[number]; index: number; isRTL: boolean; locale: string }) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
+    <motion.article
+      variants={reveal}
+      initial="hidden"
+      whileInView="show"
       viewport={{ once: true }}
-      transition={{ delay: index * 0.12, duration: 0.5 }}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      style={{ perspective: '1000px' }}
-    >
-      <motion.div
-        animate={tilt}
-        transition={{ type: 'spring', damping: 20, stiffness: 300 }}
-        className="glass-card-hover relative overflow-hidden rounded-2xl p-8 h-full group cursor-default"
-        style={{ transformStyle: 'preserve-3d' }}
-      >
-        {/* Glow on hover */}
-        <div className="absolute inset-0 bg-gradient-to-br from-accent-gold/[0.04] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-        <div className="absolute top-0 right-0 w-32 h-32 bg-accent-gold/5 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-
-        <motion.div
-          whileHover={{ rotate: 360, scale: 1.1 }}
-          transition={{ duration: 0.6 }}
-          className="relative z-10 w-14 h-14 rounded-xl bg-accent-gold/10 border border-accent-gold/20 flex items-center justify-center mb-6"
-        >
-          <Icon className="w-7 h-7 text-accent-gold" />
-        </motion.div>
-
-        <h3 className="relative z-10 text-h3 font-bold text-text-primary mb-3">
-          {item.title}
-        </h3>
-        <p className="relative z-10 text-body-sm text-text-secondary leading-relaxed">
-          {item.desc}
-        </p>
-
-        {/* Corner accent */}
-        <div className="absolute bottom-0 right-0 w-16 h-16 bg-gradient-to-tl from-accent-gold/10 to-transparent rounded-tl-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-      </motion.div>
-    </motion.div>
-  )
-}
-
-// ─── Property Card (inline) ───
-function InlinePropertyCard({
-  property,
-  index,
-  locale,
-  isRTL,
-}: {
-  property: Property
-  index: number
-  locale: string
-  isRTL: boolean
-}) {
-  const [isHovered, setIsHovered] = useState(false)
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ delay: index * 0.1, duration: 0.5 }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      className="group"
+      transition={{ delay: index * 0.07, duration: 0.5 }}
+      className="group overflow-hidden rounded-[26px] border border-neutral-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-2xl hover:shadow-black/10"
     >
       <Link href={`/properties/${property.id}`}>
-        <div className="glass-card-hover rounded-2xl overflow-hidden h-full">
-          {/* Image area */}
-          <div className={cn('relative h-56 bg-gradient-to-br', cardGradients[index % cardGradients.length])}>
-            {property.images[0] && (
-              <Image
-                src={property.images[0]}
-                alt={isRTL && property.titleAr ? property.titleAr : property.title}
-                fill
-                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                className="object-cover transition-transform duration-700 group-hover:scale-105"
-              />
-            )}
-            {/* Readability overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/25" />
-
-            {/* Price badge */}
-            <div className="absolute top-4 left-4 z-10">
-              <span className="px-3 py-1.5 rounded-lg bg-black/60 backdrop-blur-md text-accent-gold text-sm font-bold border border-accent-gold/20">
-                {formatPrice(property.price, property.currency, locale)}
-              </span>
-            </div>
-
-            {/* Type badge */}
-            <div className="absolute top-4 right-4 z-10">
-              <span className={cn(
-                'px-3 py-1.5 rounded-lg text-xs font-semibold backdrop-blur-md border',
-                property.type === 'sale'
-                  ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30'
-                  : 'bg-blue-500/20 text-blue-400 border-blue-500/30'
-              )}>
-                {property.type === 'sale' ? (isRTL ? 'للبيع' : 'For Sale') : (isRTL ? 'للإيجار' : 'For Rent')}
-              </span>
-            </div>
-
-            {/* Hover overlay with eye icon */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: isHovered ? 1 : 0 }}
-              className="absolute inset-0 bg-black/30 backdrop-blur-[2px] flex items-center justify-center z-5"
-            >
-              <motion.div
-                initial={{ scale: 0.5 }}
-                animate={{ scale: isHovered ? 1 : 0.5 }}
-                className="w-14 h-14 rounded-full bg-accent-gold/20 backdrop-blur-md border border-accent-gold/40 flex items-center justify-center"
-              >
-                <Eye className="w-6 h-6 text-accent-gold" />
-              </motion.div>
-            </motion.div>
-          </div>
-
-          {/* Card content */}
-          <div className="p-5">
-            <h3 className="text-lg font-bold text-text-primary mb-2 line-clamp-1 group-hover:text-accent-gold transition-colors">
-              {isRTL && property.titleAr ? property.titleAr : property.title}
-            </h3>
-
-            <div className="flex items-center gap-1.5 text-text-secondary mb-4">
-              <MapPin className="w-3.5 h-3.5 text-accent-gold shrink-0" />
-              <span className="text-sm line-clamp-1">
-                {isRTL && property.locationAr ? property.locationAr : property.location}
-              </span>
-            </div>
-
-            {/* Specs row */}
-            <div className="flex items-center gap-4 pt-4 border-t border-white/5">
-              {property.bedrooms > 0 && (
-                <div className="flex items-center gap-1.5 text-text-secondary">
-                  <BedDouble className="w-4 h-4 text-accent-gold/60" />
-                  <span className="text-sm">{property.bedrooms}</span>
-                </div>
-              )}
-              <div className="flex items-center gap-1.5 text-text-secondary">
-                <Bath className="w-4 h-4 text-accent-gold/60" />
-                <span className="text-sm">{property.bathrooms}</span>
-              </div>
-              <div className="flex items-center gap-1.5 text-text-secondary">
-                <Maximize className="w-4 h-4 text-accent-gold/60" />
-                <span className="text-sm">{property.area} m²</span>
-              </div>
-            </div>
+        <div className="relative h-64 overflow-hidden">
+          <Image src={property.images[0]} alt={isRTL ? property.titleAr ?? property.title : property.title} fill sizes="(max-width: 1024px) 90vw, 33vw" className="object-cover transition duration-700 group-hover:scale-105" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/55 to-transparent" />
+          <span className="absolute start-4 top-4 rounded-full bg-white px-3 py-1 text-xs font-bold text-[#8a6a2e]">{copy[locale as 'ar' | 'en'].available}</span>
+          <strong className="absolute bottom-4 start-4 text-xl text-white">{formatPrice(property.price, property.currency, locale)}</strong>
+        </div>
+        <div className="p-5">
+          <h3 className="text-xl font-black text-neutral-950">{isRTL ? property.titleAr : property.title}</h3>
+          <p className="mt-2 flex items-center gap-2 text-sm text-neutral-500">
+            <MapPin className="h-4 w-4 text-[#b99750]" />
+            {isRTL ? property.locationAr : property.location}
+          </p>
+          <div className="mt-5 flex items-center justify-between border-t border-neutral-100 pt-4 text-sm text-neutral-500">
+            <span className="flex items-center gap-1"><BedDouble className="h-4 w-4" /> {property.bedrooms}</span>
+            <span className="flex items-center gap-1"><Bath className="h-4 w-4" /> {property.bathrooms}</span>
+            <span className="flex items-center gap-1"><Maximize2 className="h-4 w-4" /> {property.area}m²</span>
           </div>
         </div>
       </Link>
-    </motion.div>
+    </motion.article>
   )
 }
 
-// ─── Project Card (inline) ───
-function InlineProjectCard({
-  project,
-  index,
-  locale,
-  isRTL,
-}: {
-  project: typeof demoProjects[0]
-  index: number
-  locale: string
-  isRTL: boolean
-}) {
-  const statusStyles: Record<string, string> = {
-    'selling-fast': 'tag-rose',
-    'available': 'tag-emerald',
-    'coming-soon': 'tag-gold',
+export default function HomePage() {
+  const locale = useLocale() as 'ar' | 'en'
+  const isRTL = locale === 'ar'
+  const t = copy[locale]
+  const router = useRouter()
+  const [tab, setTab] = useState<SearchTab>('sale')
+  const [city, setCity] = useState('')
+  const [activeFilter, setActiveFilter] = useState<FilterKey | null>(null)
+  const [filters, setFilters] = useState<Record<FilterKey, string>>({
+    type: '',
+    rooms: '',
+    price: '',
+    status: '',
+    area: '',
+  })
+  const [subscribed, setSubscribed] = useState(false)
+  const [mapMode, setMapMode] = useState<'residential' | 'commercial'>('residential')
+  const [projectFilter, setProjectFilter] = useState('all')
+
+  const filteredProjects = useMemo(() => {
+    if (projectFilter === 'all') return demoProjects.slice(0, 3)
+    if (projectFilter === 'commercial') return demoProjects.filter((p) => p.type === 'commercial').slice(0, 3)
+    return demoProjects.slice(0, 3)
+  }, [projectFilter])
+
+  const submitSearch = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    const params = new URLSearchParams({ purpose: tab, city: city || 'all', ...filters })
+    router.push(`/properties?${params.toString()}`)
   }
 
-  return (
-    <motion.div
-      initial={{ opacity: 0, x: 40 }}
-      whileInView={{ opacity: 1, x: 0 }}
-      viewport={{ once: true }}
-      transition={{ delay: index * 0.1, duration: 0.5 }}
-      className="min-w-[320px] md:min-w-[380px] snap-start"
-    >
-      <div className="glass-card-hover rounded-2xl overflow-hidden h-full group">
-        {/* Image header */}
-        <div className={cn('relative h-44 bg-gradient-to-br', projectGradients[index % projectGradients.length])}>
-          <Image
-            src={project.image}
-            alt={isRTL ? project.titleAr : project.title}
-            fill
-            sizes="(max-width: 768px) 90vw, 380px"
-            className="object-cover transition-transform duration-700 group-hover:scale-105"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/30" />
-
-          {/* Status badge */}
-          <div className="absolute top-4 right-4 z-10">
-            <span className={cn('px-3 py-1.5 rounded-lg text-xs font-semibold', statusStyles[project.status] || 'tag-gold')}>
-              {isRTL ? project.statusAr : project.status.replace('-', ' ')}
-            </span>
-          </div>
-
-          {/* Type badge */}
-          <div className="absolute bottom-4 left-4 z-10">
-            <span className="px-3 py-1 rounded-md bg-black/40 backdrop-blur-sm text-white/80 text-xs font-medium border border-white/10">
-              {isRTL ? project.typeAr : project.type}
-            </span>
-          </div>
-        </div>
-
-        {/* Content */}
-        <div className="p-5">
-          <h3 className="text-lg font-bold text-text-primary mb-2 group-hover:text-accent-gold transition-colors">
-            {isRTL ? project.titleAr : project.title}
-          </h3>
-
-          <div className="flex items-center gap-1.5 text-text-secondary mb-4">
-            <MapPin className="w-3.5 h-3.5 text-accent-gold shrink-0" />
-            <span className="text-sm">{isRTL ? project.locationAr : project.location}</span>
-          </div>
-
-          {/* Info grid */}
-          <div className="space-y-2.5 mb-4">
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-text-secondary flex items-center gap-1.5">
-                <Calendar className="w-3.5 h-3.5 text-accent-gold/60" />
-                {isRTL ? 'التسليم' : 'Delivery'}
-              </span>
-              <span className="text-text-primary font-medium">
-                {isRTL ? project.deliveryDateAr : project.deliveryDate}
-              </span>
-            </div>
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-text-secondary flex items-center gap-1.5">
-                <Building2 className="w-3.5 h-3.5 text-accent-gold/60" />
-                {isRTL ? 'بواسطة' : 'by'}
-              </span>
-              <span className="text-text-primary font-medium">
-                {isRTL ? project.developerAr : project.developer}
-              </span>
-            </div>
-          </div>
-
-          <div className="pt-4 border-t border-white/5">
-            <p className="text-xs text-text-secondary mb-1">
-              {isRTL ? 'يبدأ من' : 'Starting from'}
-            </p>
-            <p className="text-lg font-bold text-accent-gold">
-              {formatPrice(project.startingPrice, 'SAR', locale)}
-            </p>
-          </div>
-        </div>
-      </div>
-    </motion.div>
-  )
-}
-
-// ─── Article Card (inline) ───
-function InlineArticleCard({
-  article,
-  featured,
-  index,
-  locale,
-  isRTL,
-}: {
-  article: typeof demoArticles[0]
-  featured?: boolean
-  index: number
-  locale: string
-  isRTL: boolean
-}) {
-  const categoryColors: Record<string, string> = {
-    market: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/20',
-    legal: 'bg-blue-500/15 text-blue-400 border-blue-500/20',
-    investment: 'bg-amber-500/15 text-amber-400 border-amber-500/20',
-    tech: 'bg-violet-500/15 text-violet-400 border-violet-500/20',
+  const fieldLabels: Record<FilterKey, string> = {
+    type: filters.type || t.type,
+    rooms: filters.rooms || (isRTL ? 'غرف وحمامات' : 'Beds & baths'),
+    price: filters.price || t.price,
+    status: filters.status || t.projectStatus,
+    area: filters.area || t.area,
   }
 
-  if (featured) {
+  const fieldsByTab: Record<SearchTab, FilterKey[]> = {
+    sale: ['type', 'rooms', 'price'],
+    projects: ['status', 'type', 'price'],
+    commercial: ['type', 'area', 'price'],
+  }
+
+  const setFilter = (key: FilterKey, value: string) => {
+    setFilters((current) => ({ ...current, [key]: value }))
+  }
+
+  const resetFilter = (key: FilterKey) => {
+    setFilters((current) => ({ ...current, [key]: '' }))
+  }
+
+  const renderFilterPanel = () => {
+    if (!activeFilter) return null
+
+    if (activeFilter === 'price' || activeFilter === 'area') {
+      const unit = activeFilter === 'price' ? '﷼' : t.sqm
+      return (
+        <div className="absolute inset-x-2 top-[calc(100%-4px)] z-30 rounded-b-3xl bg-white p-5 text-neutral-950 shadow-2xl md:inset-x-auto md:end-24 md:top-auto md:bottom-20 md:w-[530px] md:rounded-2xl">
+          <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-4">
+            <label className="flex h-16 items-center justify-between rounded-md border border-neutral-200 px-5 text-neutral-400">
+              <span>{t.max}</span>
+              <span className="text-neutral-500">{unit}</span>
+            </label>
+            <span className="h-px w-5 bg-neutral-200" />
+            <label className="flex h-16 items-center justify-between rounded-md border border-neutral-200 px-5 text-neutral-400">
+              <span>{t.min}</span>
+              <span className="text-neutral-500">{unit}</span>
+            </label>
+          </div>
+          <div className="mt-5 flex justify-end border-t border-neutral-200 pt-4">
+            <button type="button" onClick={() => resetFilter(activeFilter)} className="rounded-full border border-neutral-200 px-7 py-3 font-bold">
+              {t.reset}
+            </button>
+          </div>
+        </div>
+      )
+    }
+
+    if (activeFilter === 'rooms') {
+      const rooms = isRTL ? roomOptions : roomOptionsEn
+      const baths = isRTL ? bathOptions : bathOptionsEn
+      return (
+        <div className="absolute inset-x-2 top-[calc(100%-4px)] z-30 rounded-b-3xl bg-white p-5 text-neutral-950 shadow-2xl md:inset-x-0 md:top-auto md:bottom-20 md:rounded-2xl">
+          <div className="text-start">
+            <h3 className="mb-4 text-lg font-black">{isRTL ? 'الغرف' : 'Bedrooms'}</h3>
+            <div className="flex flex-wrap gap-3">
+              {rooms.map((item) => (
+                <button key={item} type="button" onClick={() => setFilter('rooms', item)} className={cn('h-14 min-w-14 rounded-full border px-5 font-bold', filters.rooms === item || (!filters.rooms && item === rooms[0]) ? 'border-[#8fc64a] text-neutral-950' : 'border-neutral-200')}>
+                  {item}
+                </button>
+              ))}
+            </div>
+            <h3 className="mb-4 mt-8 text-lg font-black">{t.bathrooms}</h3>
+            <div className="flex flex-wrap gap-3">
+              {baths.map((item) => (
+                <button key={item} type="button" onClick={() => setFilter('rooms', `${filters.rooms || rooms[0]} / ${item}`)} className="h-14 min-w-14 rounded-full border border-neutral-200 px-5 font-bold">
+                  {item}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )
+    }
+
+    const options =
+      activeFilter === 'status'
+        ? [t.all, t.offPlan, t.readyProjects]
+        : tab === 'commercial'
+          ? commercialOptions[locale]
+          : propertyOptions[locale]
+
     return (
-      <motion.div
-        layout
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -20 }}
-        transition={{ duration: 0.4 }}
-        className="lg:col-span-2 lg:row-span-2 group cursor-pointer"
-      >
-        <div className="glass-card-hover rounded-2xl overflow-hidden h-full">
-          <div className={cn('relative h-64 lg:h-80 bg-gradient-to-br', articleGradients[0])}>
-            <Image
-              src={article.image}
-              alt={isRTL ? article.titleAr : article.title}
-              fill
-              sizes="(max-width: 1024px) 100vw, 66vw"
-              className="object-cover transition-transform duration-700 group-hover:scale-105"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20" />
-            <div className="absolute top-4 left-4 z-10">
-              <span className={cn('px-3 py-1.5 rounded-lg text-xs font-semibold border', categoryColors[article.category])}>
-                {isRTL ? article.categoryAr : article.category}
-              </span>
-            </div>
-            <div className="absolute bottom-4 left-4 z-10 flex items-center gap-2">
-              <Star className="w-4 h-4 text-accent-gold" />
-              <span className="text-xs text-accent-gold font-semibold">Featured</span>
-            </div>
-          </div>
-          <div className="p-6 lg:p-8">
-            <h3 className="text-xl lg:text-2xl font-bold text-text-primary mb-3 group-hover:text-accent-gold transition-colors line-clamp-2">
-              {isRTL ? article.titleAr : article.title}
-            </h3>
-            <p className="text-body-sm text-text-secondary mb-5 line-clamp-3 leading-relaxed">
-              {isRTL ? article.excerptAr : article.excerpt}
-            </p>
-            <div className="flex items-center justify-between pt-4 border-t border-white/5">
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-full bg-accent-gold/15 border border-accent-gold/20 flex items-center justify-center text-accent-gold text-xs font-bold">
-                  {article.authorAvatar}
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-text-primary">
-                    {isRTL ? article.authorAr : article.author}
-                  </p>
-                  <p className="text-xs text-text-secondary">
-                    {formatDate(article.date, locale)}
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center gap-1.5 text-text-secondary">
-                <Clock className="w-3.5 h-3.5" />
-                <span className="text-xs">{article.readTime} min</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </motion.div>
+      <div className="absolute inset-x-2 top-[calc(100%-4px)] z-30 max-h-72 overflow-y-auto rounded-b-3xl bg-white py-3 text-neutral-950 shadow-2xl md:inset-x-auto md:end-40 md:top-auto md:bottom-20 md:w-[270px] md:rounded-2xl">
+        {options.map((item) => (
+          <button key={item} type="button" onClick={() => setFilter(activeFilter, item)} className="block w-full px-7 py-3 text-start text-base transition hover:bg-[#f5f0e6]">
+            {item}
+          </button>
+        ))}
+      </div>
     )
   }
 
   return (
-    <motion.div
-      layout
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      transition={{ duration: 0.4, delay: index * 0.05 }}
-      className="group cursor-pointer"
-    >
-      <div className="glass-card-hover rounded-2xl overflow-hidden h-full">
-        <div className={cn('relative h-40 bg-gradient-to-br', articleGradients[index % articleGradients.length])}>
-          <Image
-            src={article.image}
-            alt={isRTL ? article.titleAr : article.title}
-            fill
-            sizes="(max-width: 1024px) 100vw, 33vw"
-            className="object-cover transition-transform duration-700 group-hover:scale-105"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-black/20" />
-          <div className="absolute top-3 left-3 z-10">
-            <span className={cn('px-2.5 py-1 rounded-md text-[11px] font-semibold border', categoryColors[article.category])}>
-              {isRTL ? article.categoryAr : article.category}
-            </span>
-          </div>
-        </div>
-        <div className="p-5">
-          <h3 className="text-base font-bold text-text-primary mb-2 group-hover:text-accent-gold transition-colors line-clamp-2">
-            {isRTL ? article.titleAr : article.title}
-          </h3>
-          <p className="text-sm text-text-secondary mb-4 line-clamp-2">
-            {isRTL ? article.excerptAr : article.excerpt}
-          </p>
-          <div className="flex items-center justify-between pt-3 border-t border-white/5">
-            <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-full bg-accent-gold/15 border border-accent-gold/20 flex items-center justify-center text-accent-gold text-[10px] font-bold">
-                {article.authorAvatar}
-              </div>
-              <span className="text-xs text-text-secondary">
-                {isRTL ? article.authorAr : article.author}
-              </span>
-            </div>
-            <div className="flex items-center gap-1 text-text-secondary">
-              <Clock className="w-3 h-3" />
-              <span className="text-[11px]">{article.readTime} min</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </motion.div>
-  )
-}
-
-// ─── Action Card ───
-function ActionCard({
-  icon,
-  title,
-  desc,
-  cta,
-  href,
-  gradient,
-  isRTL,
-}: {
-  icon: React.ReactNode
-  title: string
-  desc: string
-  cta: string
-  href: string
-  gradient: string
-  isRTL: boolean
-}) {
-  const [tilt, setTilt] = useState({ rotateX: 0, rotateY: 0 })
-
-  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect()
-    const x = (e.clientX - rect.left) / rect.width - 0.5
-    const y = (e.clientY - rect.top) / rect.height - 0.5
-    setTilt({ rotateX: -y * 10, rotateY: x * 10 })
-  }, [])
-
-  const handleMouseLeave = useCallback(() => {
-    setTilt({ rotateX: 0, rotateY: 0 })
-  }, [])
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 40 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5 }}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      style={{ perspective: '1000px' }}
-    >
-      <motion.div
-        animate={tilt}
-        transition={{ type: 'spring', damping: 15 }}
-        className="relative overflow-hidden rounded-2xl border border-white/5 p-8 h-full group"
-        style={{
-          background: `linear-gradient(135deg, ${gradient})`,
-          transformStyle: 'preserve-3d',
-        }}
-      >
-        {/* Animated shine */}
+    <div className="min-h-screen bg-[#f8f7f4] text-neutral-950">
+      <section className="relative min-h-[720px] overflow-hidden bg-neutral-950 pt-24 text-white md:min-h-[820px]">
+        <Image src="/images/proj-5.jpg" alt="" fill priority sizes="100vw" className="object-cover opacity-55" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_25%,rgba(185,151,80,.22),transparent_32%),linear-gradient(180deg,rgba(0,0,0,.35),rgba(0,0,0,.82))]" />
         <motion.div
-          animate={{ x: ['-100%', '200%'] }}
-          transition={{ duration: 5, repeat: Infinity, ease: 'linear' }}
-          className="absolute inset-y-0 w-32 bg-gradient-to-r from-transparent via-white/[0.03] to-transparent skew-x-12"
-        />
-
-        <div className="relative z-10">
-          <motion.div
-            whileHover={{ rotate: 360, scale: 1.1 }}
-            transition={{ duration: 0.6 }}
-            className="w-14 h-14 rounded-xl bg-accent-gold/10 border border-accent-gold/20 flex items-center justify-center mb-6 text-accent-gold"
-          >
-            {icon}
-          </motion.div>
-
-          <h3 className="text-h3 font-bold text-text-primary mb-3">{title}</h3>
-          <p className="text-body text-text-secondary mb-6">{desc}</p>
-
-          <Link
-            href={href}
-            className="inline-flex items-center gap-2 px-6 py-3 text-sm font-semibold text-white bg-accent-gold hover:bg-accent-gold-hover rounded-xl transition-all shadow-lg shadow-accent-gold/20 hover:shadow-accent-gold/30 hover:-translate-y-0.5"
-          >
-            {cta}
-            {isRTL ? <ArrowLeft className="w-4 h-4" /> : <ArrowRight className="w-4 h-4" />}
-          </Link>
-        </div>
-      </motion.div>
-    </motion.div>
-  )
-}
-
-
-// ═══════════════════════════════════════════
-// ║         MAIN HOMEPAGE COMPONENT        ║
-// ═══════════════════════════════════════════
-
-export default function HomePage() {
-  const t = useTranslations()
-  const locale = useLocale() as 'ar' | 'en'
-  const isRTL = locale === 'ar'
-  const { scrollY } = useScroll()
-  const heroOpacity = useTransform(scrollY, [0, 400], [1, 0])
-  const heroScale = useTransform(scrollY, [0, 400], [1, 0.95])
-  const heroY = useTransform(scrollY, [0, 400], [0, 100])
-
-  const titleWords = t('hero.title').split(' ')
-  const emphasisIndex = isRTL ? 1 : 2
-
-  const [articleCategory, setArticleCategory] = useState('all')
-  const filteredArticles = useMemo(() => {
-    if (articleCategory === 'all') return demoArticles
-    return demoArticles.filter((a) => a.category === articleCategory)
-  }, [articleCategory])
-
-  // Projects horizontal scroll
-  const scrollContainerRef = useRef<HTMLDivElement>(null)
-  const scrollProjects = useCallback((direction: 'left' | 'right') => {
-    if (!scrollContainerRef.current) return
-    const scrollAmount = 400
-    scrollContainerRef.current.scrollBy({
-      left: direction === 'right' ? scrollAmount : -scrollAmount,
-      behavior: 'smooth',
-    })
-  }, [])
-
-  // Properties to display (first 6 from demoProperties)
-  const displayProperties = useMemo(() => demoProperties.slice(0, 6), [])
-
-  return (
-    <div className="overflow-x-hidden">
-      {/* ═══════════════════════════════════════ */}
-      {/* ║     SECTION 1: HERO                 ║ */}
-      {/* ═══════════════════════════════════════ */}
-      <section className="relative h-screen overflow-hidden">
-        {/* Background layers */}
-        <div className="absolute inset-0 bg-gradient-to-br from-bg-primary via-bg-primary/95 to-bg-primary" />
-        <div className="absolute inset-0 bg-gradient-to-t from-accent-gold/[0.08] via-transparent to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-b from-bg-primary/60 via-transparent to-bg-primary" />
-
-        {/* Gold radial glow */}
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/4 w-[600px] h-[600px] rounded-full bg-accent-gold/[0.03] blur-[120px]" />
-
-        {/* Floating particles/orbs — ponytail: fewer, deterministic positions (Math.random() in render caused hydration mismatch + jank) */}
-        <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          <FloatingOrb delay={0} size={120} x="10%" y="15%" duration={8} />
-          <FloatingOrb delay={1.5} size={80} x="75%" y="20%" duration={10} />
-          <FloatingOrb delay={2.2} size={100} x="20%" y="70%" duration={9} />
-          <FloatingOrb delay={1} size={50} x="60%" y="80%" duration={11} />
-
-          {/* Tiny sparkle particles */}
-          {sparkles.map((s, i) => (
-            <motion.div
-              key={`sparkle-${i}`}
-              className="absolute w-1 h-1 rounded-full bg-accent-gold/30"
-              style={{ left: s.left, top: s.top }}
-              animate={{
-                opacity: [0, 1, 0],
-                scale: [0, 1, 0],
-              }}
-              transition={{
-                duration: s.duration,
-                repeat: Infinity,
-                delay: s.delay,
-                ease: 'easeInOut',
-              }}
-            />
-          ))}
-        </div>
-
-        {/* Hero content */}
-        <motion.div
-          style={{ opacity: heroOpacity, scale: heroScale, y: heroY }}
-          className="relative z-20 flex flex-col items-center justify-center h-full px-4"
+          className="container relative z-10 mx-auto flex min-h-[620px] flex-col items-center justify-center px-4 py-12 text-center md:min-h-[720px] md:py-0"
+          initial="hidden"
+          animate="show"
+          variants={{ hidden: {}, show: { transition: { staggerChildren: 0.12 } } }}
         >
-          <div className="max-w-5xl mx-auto text-center">
-            {/* Title with animated words */}
-            <h1 className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 mb-6">
-              {titleWords.map((word, i) => (
-                <motion.span
-                  key={i}
-                  initial={{ opacity: 0, y: 50, filter: 'blur(10px)' }}
-                  animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                  transition={{
-                    type: 'spring',
-                    damping: 12,
-                    stiffness: 100,
-                    delay: i * 0.12,
-                  }}
-                  className={cn(
-                    'inline-block text-display font-black',
-                    i === emphasisIndex
-                      ? 'text-gold-gradient'
-                      : 'text-text-primary'
-                  )}
-                >
-                  {word}
-                  {i === emphasisIndex && (
-                    <motion.span
-                      initial={{ width: 0 }}
-                      animate={{ width: '100%' }}
-                      transition={{ duration: 0.8, ease: 'easeOut', delay: 0.6 }}
-                      className="block h-1 bg-gold-gradient rounded-full mt-1"
-                    />
-                  )}
-                </motion.span>
-              ))}
-            </h1>
-
-            {/* Subtitle */}
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.8, duration: 0.6 }}
-              className="text-lg md:text-xl text-text-secondary max-w-2xl mx-auto mb-10"
-            >
-              {t('hero.subtitle')}
-            </motion.p>
-
-            {/* Premium Search Bar (visual/decorative) */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1, duration: 0.6 }}
-              className="max-w-3xl mx-auto mb-10"
-            >
-              <div className="glass-card rounded-2xl p-2 flex flex-col sm:flex-row items-stretch gap-2 border border-white/10">
-                {/* City */}
-                <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-white/5 flex-1">
-                  <MapPin className="w-4 h-4 text-accent-gold shrink-0" />
-                  <span className="text-sm text-text-secondary">{isRTL ? 'الرياض' : 'Riyadh'}</span>
-                </div>
-                {/* Type */}
-                <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-white/5 flex-1">
-                  <HomeIcon className="w-4 h-4 text-accent-gold shrink-0" />
-                  <span className="text-sm text-text-secondary">{isRTL ? 'فيلا' : 'Villa'}</span>
-                </div>
-                {/* Price */}
-                <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-white/5 flex-1">
-                  <TrendingUp className="w-4 h-4 text-accent-gold shrink-0" />
-                  <span className="text-sm text-text-secondary">{isRTL ? 'أي سعر' : 'Any Price'}</span>
-                </div>
-                {/* Search button */}
-                <Link
-                  href="/properties"
-                  className="btn-gold flex items-center justify-center gap-2 px-8 py-3 rounded-xl font-semibold text-sm shrink-0"
-                >
-                  <Search className="w-4 h-4" />
-                  <span className="hidden sm:inline">{isRTL ? 'بحث' : 'Search'}</span>
-                </Link>
-              </div>
-            </motion.div>
-
-            {/* CTA Buttons */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1.3, duration: 0.5 }}
-              className="flex flex-col sm:flex-row items-center justify-center gap-4"
-            >
-              <Link
-                href="/properties"
-                className="btn-gold px-8 py-4 text-base font-semibold rounded-xl shadow-gold-lg"
-              >
-                {t('hero.cta')}
-              </Link>
-              <Link
-                href="/properties?search=true"
-                className="btn-outline-gold px-8 py-4 text-base font-semibold rounded-xl"
-              >
-                {t('hero.ctaSecondary')}
-              </Link>
-            </motion.div>
-          </div>
-
-          {/* Scroll indicator */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 2 }}
-            className="absolute bottom-8 left-1/2 -translate-x-1/2"
-          >
-            <motion.div
-              animate={{ y: [0, 10, 0] }}
-              transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-              className="flex flex-col items-center gap-2 text-text-secondary"
-            >
-              <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-accent-gold/60">
-                {isRTL ? 'اكتشف' : 'Discover'}
-              </span>
-              <div className="w-5 h-8 rounded-full border border-accent-gold/30 flex items-start justify-center p-1">
-                <motion.div
-                  animate={{ y: [0, 10, 0] }}
-                  transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
-                  className="w-1.5 h-1.5 rounded-full bg-accent-gold/60"
-                />
-              </div>
-            </motion.div>
+          <motion.div variants={reveal} className="mb-6 inline-flex max-w-full items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs backdrop-blur-xl sm:text-sm md:mb-8">
+            <Sparkles className="h-4 w-4 text-[#d1ad63]" />
+            {t.badge}
           </motion.div>
+          <motion.h1 variants={reveal} className="max-w-5xl text-4xl font-black leading-[1.12] sm:text-5xl md:text-7xl">
+            {t.heroTitle}
+          </motion.h1>
+          <motion.p variants={reveal} className="mt-5 max-w-3xl text-base leading-8 text-white/75 sm:text-lg md:mt-7 md:text-2xl">
+            {t.heroText}
+          </motion.p>
+
+          <motion.form
+            variants={reveal}
+            onSubmit={submitSearch}
+            className="relative mt-10 w-full max-w-6xl rounded-[24px] bg-black/45 p-2 shadow-2xl shadow-black/30 backdrop-blur-2xl sm:p-3 md:mt-14 md:rounded-[32px]"
+          >
+            <div className="grid grid-cols-3 overflow-hidden rounded-[18px] bg-white text-neutral-950 md:rounded-[24px]">
+              {[
+                ['sale', t.sale],
+                ['projects', t.projects],
+                ['commercial', t.commercial],
+              ].map(([value, label]) => (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => {
+                    setTab(value as SearchTab)
+                    setActiveFilter(null)
+                  }}
+                  className={cn('h-12 text-xs font-bold transition sm:h-14 sm:text-sm', tab === value ? 'bg-[#b99750] text-white' : 'hover:bg-neutral-100')}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+
+            <div className="mt-2 grid gap-px overflow-hidden rounded-[18px] bg-neutral-200 md:mt-3 md:grid-cols-[1.4fr_1fr_1fr_1fr_auto] md:rounded-[24px]">
+              <label className="flex h-14 items-center gap-3 bg-white px-4 text-neutral-400 md:h-16 md:px-5">
+                <Search className="h-5 w-5 text-neutral-950" />
+                <input
+                  value={city}
+                  onChange={(event) => setCity(event.target.value)}
+                  placeholder={t.city}
+                  className="w-full bg-transparent text-neutral-950 outline-none placeholder:text-neutral-400"
+                />
+              </label>
+              {fieldsByTab[tab].map((field) => (
+                <button
+                  key={field}
+                  type="button"
+                  onClick={() => setActiveFilter((current) => (current === field ? null : field))}
+                  className="flex h-14 items-center justify-between bg-white px-4 text-sm text-neutral-400 md:h-16 md:px-5 md:text-base"
+                >
+                  <span>{fieldLabels[field]}</span>
+                  <ChevronDown className={cn('h-4 w-4 transition', activeFilter === field && 'rotate-180')} />
+                </button>
+              ))}
+              <button type="submit" className="h-14 bg-[#b99750] px-8 font-bold text-white transition hover:bg-[#a58742] md:h-16 md:px-10">
+                {t.search}
+              </button>
+            </div>
+            {renderFilterPanel()}
+          </motion.form>
         </motion.div>
       </section>
 
-      {/* ═══════════════════════════════════════ */}
-      {/* ║     SECTION 2: FEATURES / WHY US    ║ */}
-      {/* ═══════════════════════════════════════ */}
-      <section className="relative py-24 lg:py-32 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-bg-primary via-accent-gold/[0.02] to-bg-primary pointer-events-none" />
-        <div className="container mx-auto px-4 relative z-10">
-          <SectionHeader
-            title={t('features.title')}
-            subtitle={t('features.subtitle')}
-          />
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {(t.raw('features.items') as { title: string; desc: string }[]).map((item, i) => (
-              <FeatureCard key={item.title} item={item} index={i} />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════ */}
-      {/* ║  SECTION 3: FEATURED PROPERTIES     ║ */}
-      {/* ═══════════════════════════════════════ */}
-      <section className="relative py-24 lg:py-32 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-bg-primary via-accent-gold/[0.01] to-bg-primary pointer-events-none" />
-        <div className="container mx-auto px-4 relative z-10">
-          <SectionHeader
-            title={t('properties.title')}
-            subtitle={t('properties.subtitle')}
-          />
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {displayProperties.map((property, index) => (
-              <InlinePropertyCard
-                key={property.id}
-                property={property}
-                index={index}
-                locale={locale}
-                isRTL={isRTL}
-              />
-            ))}
-          </div>
-
-          {/* View All link */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mt-12"
-          >
-            <Link
-              href="/properties"
-              className="inline-flex items-center gap-2 text-accent-gold hover:text-accent-gold-hover font-semibold transition-colors group"
-            >
-              {isRTL ? 'عرض الكل' : 'View All Properties'}
-              <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-            </Link>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════ */}
-      {/* ║  SECTION 4: PROJECTS SHOWCASE       ║ */}
-      {/* ═══════════════════════════════════════ */}
-      <section className="relative py-24 lg:py-32 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-bg-primary via-accent-gold/[0.02] to-bg-primary pointer-events-none" />
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="flex items-end justify-between mb-12">
-            <div>
-              <motion.div
-                initial={{ width: 0 }}
-                whileInView={{ width: 48 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5 }}
-                className="h-0.5 bg-gradient-to-r from-accent-gold to-amber-400 mb-6"
-              />
-              <motion.h2
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                className="text-h2 font-bold text-text-primary mb-3"
-              >
-                {t('projects.title')}
-              </motion.h2>
-              <motion.p
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.1 }}
-                className="text-body text-text-secondary"
-              >
-                {t('projects.subtitle')}
-              </motion.p>
-            </div>
-
-            {/* Scroll controls */}
-            <div className="hidden md:flex items-center gap-2">
-              <button
-                onClick={() => scrollProjects(isRTL ? 'right' : 'left')}
-                className="w-10 h-10 rounded-xl border border-white/10 flex items-center justify-center text-text-secondary hover:text-accent-gold hover:border-accent-gold/30 transition-all"
-              >
-                <ChevronLeft className="w-5 h-5" />
-              </button>
-              <button
-                onClick={() => scrollProjects(isRTL ? 'left' : 'right')}
-                className="w-10 h-10 rounded-xl border border-white/10 flex items-center justify-center text-text-secondary hover:text-accent-gold hover:border-accent-gold/30 transition-all"
-              >
-                <ChevronRight className="w-5 h-5" />
-              </button>
-            </div>
-          </div>
-
-          {/* Horizontal scroll container */}
-          <div
-            ref={scrollContainerRef}
-            className="flex gap-6 overflow-x-auto pb-4 scrollbar-thin snap-x snap-mandatory -mx-4 px-4"
-            style={{ scrollbarWidth: 'thin' }}
-          >
-            {demoProjects.map((project, i) => (
-              <InlineProjectCard
-                key={project.id}
-                project={project}
-                index={i}
-                locale={locale}
-                isRTL={isRTL}
-              />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════ */}
-      {/* ║  SECTION 5: STATS COUNTER           ║ */}
-      {/* ═══════════════════════════════════════ */}
-      <section className="relative py-24 lg:py-32 overflow-hidden">
-        {/* Dark gradient background with gold overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b from-bg-primary via-accent-gold/[0.03] to-bg-primary" />
-        <div className="absolute inset-0">
-          <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-accent-gold/20 to-transparent" />
-          <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-accent-gold/20 to-transparent" />
-        </div>
-
-        <div className="container mx-auto px-4 relative z-10">
-          <SectionHeader
-            title={t('stats.title')}
-            subtitle={t('stats.subtitle')}
-          />
-
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 max-w-4xl mx-auto">
-            {(t.raw('stats.items') as { value: string; suffix: string; label: string; labelAr: string }[]).map((stat, i) => (
-              <StatCounter key={i} stat={stat} index={i} isRTL={isRTL} />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════ */}
-      {/* ║  SECTION 6: ARTICLES / INSIGHTS     ║ */}
-      {/* ═══════════════════════════════════════ */}
-      <section className="relative py-24 lg:py-32 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-bg-primary via-accent-gold/[0.015] to-bg-primary pointer-events-none" />
-        <div className="container mx-auto px-4 relative z-10">
-          <SectionHeader
-            title={t('articles.title')}
-            subtitle={t('articles.subtitle')}
-          />
-
-          {/* Category filter tabs */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="flex items-center gap-2 mb-10 overflow-x-auto pb-2 scrollbar-thin justify-center flex-wrap"
-          >
-            {articleCategories.map((cat) => (
-              <button
-                key={cat.value}
-                onClick={() => setArticleCategory(cat.value)}
-                className={cn(
-                  'shrink-0 px-5 py-2.5 rounded-xl text-sm font-medium transition-all duration-300',
-                  articleCategory === cat.value
-                    ? 'bg-accent-gold text-white shadow-lg shadow-accent-gold/20'
-                    : 'border border-white/10 text-text-secondary hover:bg-accent-gold/10 hover:text-accent-gold hover:border-accent-gold/30'
-                )}
-              >
-                {isRTL ? cat.labelAr : cat.label}
-              </button>
-            ))}
-          </motion.div>
-
-          {/* Articles grid */}
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={articleCategory}
-              layout
-              className="grid grid-cols-1 lg:grid-cols-3 auto-rows-auto gap-6"
-            >
-              {filteredArticles.map((article, i) => (
-                <InlineArticleCard
-                  key={article.id}
-                  article={article}
-                  featured={article.featured && i === 0}
-                  index={i}
-                  locale={locale}
-                  isRTL={isRTL}
-                />
-              ))}
-            </motion.div>
-          </AnimatePresence>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════ */}
-      {/* ║  SECTION 7: ACTION CARDS            ║ */}
-      {/* ═══════════════════════════════════════ */}
-      <section className="relative py-24 lg:py-32">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-            <ActionCard
-              icon={<HomeIcon className="w-7 h-7" />}
-              title={isRTL ? t('actions.ownPropertyAr') : t('actions.ownProperty')}
-              desc={isRTL ? t('actions.ownPropertyDescAr') : t('actions.ownPropertyDesc')}
-              cta={isRTL ? t('actions.addPropertyAr') : t('actions.addProperty')}
-              href="/properties/add"
-              gradient="rgba(201,168,76,0.08), rgba(201,168,76,0.02), transparent"
-              isRTL={isRTL}
-            />
-            <ActionCard
-              icon={<Search className="w-7 h-7" />}
-              title={isRTL ? t('actions.lookingAr') : t('actions.looking')}
-              desc={isRTL ? t('actions.lookingDescAr') : t('actions.lookingDesc')}
-              cta={isRTL ? t('actions.requestPropertyAr') : t('actions.requestProperty')}
-              href="/properties/request"
-              gradient="rgba(59,130,246,0.08), rgba(59,130,246,0.02), transparent"
-              isRTL={isRTL}
-            />
-          </div>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════ */}
-      {/* ║  SECTION 8: APP DOWNLOAD            ║ */}
-      {/* ═══════════════════════════════════════ */}
-      <section className="relative py-24 lg:py-32 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-bg-primary via-accent-gold/[0.015] to-bg-primary" />
-
-        {/* Decorative blurs */}
-        <div className="absolute top-1/3 left-0 w-64 h-64 bg-accent-gold/5 rounded-full blur-[100px]" />
-        <div className="absolute bottom-1/4 right-0 w-48 h-48 bg-accent-gold/5 rounded-full blur-[80px]" />
-
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-            {/* Text Content */}
-            <motion.div
-              initial={{ opacity: 0, x: isRTL ? 40 : -40 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-              className={isRTL ? 'lg:order-2' : ''}
-            >
-              <motion.div
-                initial={{ width: 0 }}
-                whileInView={{ width: 48 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5 }}
-                className="h-0.5 bg-gradient-to-r from-accent-gold to-amber-400 mb-6"
-              />
-              <h2 className="text-h2 font-bold text-text-primary mb-4">
-                {t('app.title')}
-              </h2>
-              <p className="text-body text-text-secondary mb-8 max-w-md">
-                {t('app.subtitle')}
-              </p>
-
-              {/* Feature list */}
-              <ul className="space-y-4 mb-10">
-                {(isRTL ? (t.raw('app.featuresAr') as string[]) : (t.raw('app.features') as string[])).map((feature: string, i: number) => (
-                  <motion.li
-                    key={feature}
-                    initial={{ opacity: 0, x: isRTL ? 20 : -20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: i * 0.1 }}
-                    className="flex items-center gap-3 text-text-primary"
-                  >
-                    <span className="w-6 h-6 rounded-full bg-accent-gold/15 border border-accent-gold/20 flex items-center justify-center shrink-0">
-                      <Check className="w-3.5 h-3.5 text-accent-gold" />
-                    </span>
-                    <span className="text-sm">{feature}</span>
-                  </motion.li>
-                ))}
-              </ul>
-
-              {/* Store buttons */}
-              <div className="flex flex-wrap items-center gap-4">
-                <motion.a
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  whileHover={{ scale: 1.03, y: -2 }}
-                  href="#"
-                  className="inline-flex items-center gap-3 px-6 py-3.5 rounded-xl glass-card border border-white/10 hover:border-accent-gold/30 transition-all group"
-                >
-                  <svg className="w-6 h-6 text-text-primary group-hover:text-accent-gold transition-colors" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 01-.61-.92V2.734a1 1 0 01.609-.92zm10.89 10.893l2.302 2.302-10.937 6.333 8.635-8.635zm3.199-3.199l2.807 1.626a1 1 0 010 1.732l-2.807 1.626L15.206 12l2.492-2.492zM5.864 2.658L16.8 8.99l-2.302 2.302-8.634-8.634z"/>
-                  </svg>
-                  <div>
-                    <p className="text-[10px] text-text-secondary uppercase tracking-wider">Google Play</p>
-                    <p className="text-sm font-semibold text-text-primary">{t('app.playStore')}</p>
-                  </div>
-                </motion.a>
-
-                <motion.a
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.1 }}
-                  whileHover={{ scale: 1.03, y: -2 }}
-                  href="#"
-                  className="inline-flex items-center gap-3 px-6 py-3.5 rounded-xl glass-card border border-white/10 hover:border-accent-gold/30 transition-all group"
-                >
-                  <svg className="w-6 h-6 text-text-primary group-hover:text-accent-gold transition-colors" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.67-.81 1.1-1.92.94-3.04-.9.04-1.98.57-2.62 1.36-.6.74-.99 1.87-.83 2.97.96.06 1.93-.52 2.51-1.29z"/>
-                  </svg>
-                  <div>
-                    <p className="text-[10px] text-text-secondary uppercase tracking-wider">App Store</p>
-                    <p className="text-sm font-semibold text-text-primary">{t('app.appStore')}</p>
-                  </div>
-                </motion.a>
-              </div>
-            </motion.div>
-
-            {/* Phone Mockup */}
-            <motion.div
-              initial={{ opacity: 0, x: isRTL ? -40 : 40 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-              className={cn('flex justify-center', isRTL ? 'lg:order-1' : '')}
-            >
-              <motion.div
-                animate={{ y: [0, -15, 0] }}
-                transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
-                className="relative"
-              >
-                {/* Phone glow */}
-                <div className="absolute inset-0 bg-accent-gold/5 rounded-[3rem] blur-3xl scale-110" />
-
-                {/* Phone frame */}
-                <div className="relative w-64 h-[520px] rounded-[2.5rem] border-2 border-white/10 bg-bg-primary shadow-2xl shadow-accent-gold/5 overflow-hidden">
-                  {/* Notch */}
-                  <div className="absolute top-0 left-1/2 -translate-x-1/2 w-28 h-7 bg-bg-primary rounded-b-2xl z-10 border-b border-x border-white/10" />
-
-                  {/* Screen content */}
-                  <div className="relative h-full pt-8 overflow-hidden">
-                    {/* Status bar mockup */}
-                    <div className="px-6 pb-3 flex items-center justify-between">
-                      <span className="text-[10px] text-text-secondary font-medium">9:41</span>
-                      <div className="flex items-center gap-1">
-                        <div className="w-4 h-2 rounded-sm border border-text-secondary/40" />
-                      </div>
-                    </div>
-
-                    {/* App header */}
-                    <div className="px-4 pb-3 border-b border-white/5">
-                      <p className="text-xs font-bold text-accent-gold">MAP KEY</p>
-                    </div>
-
-                    {/* Scrolling property cards */}
-                    <motion.div
-                      animate={{ y: [0, -250, -500, -250, 0] }}
-                      transition={{ duration: 15, repeat: Infinity, ease: 'linear' }}
-                      className="space-y-3 p-3"
-                    >
-                      {demoProperties.slice(0, 5).map((p, i) => (
-                        <div key={p.id} className="rounded-xl bg-white/[0.03] border border-white/5 p-3 space-y-2">
-                          <div className={cn('relative h-20 rounded-lg overflow-hidden bg-gradient-to-br', cardGradients[i % cardGradients.length])}>
-                            {p.images[0] && (
-                              <Image src={p.images[0]} alt="" fill sizes="240px" className="object-cover" />
-                            )}
-                          </div>
-                          <p className="text-xs font-semibold text-text-primary truncate">
-                            {isRTL && p.titleAr ? p.titleAr : p.title}
-                          </p>
-                          <div className="flex items-center justify-between">
-                            <p className="text-[10px] text-accent-gold font-bold">
-                              {formatPrice(p.price, p.currency, locale)}
-                            </p>
-                            <div className="flex items-center gap-1 text-text-secondary">
-                              <MapPin className="w-2.5 h-2.5" />
-                              <span className="text-[9px] truncate max-w-[60px]">
-                                {isRTL && p.locationAr ? p.locationAr.split('،')[0] : p.location.split(',')[0]}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </motion.div>
-                  </div>
-
-                  {/* Home indicator */}
-                  <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-32 h-1 bg-white/20 rounded-full" />
+      <section className="container mx-auto px-4 py-16 md:py-32">
+        <SectionTitle title={t.whyTitle} text={t.whyLead} />
+        <div className="grid items-center gap-8 lg:grid-cols-[1.1fr_.9fr]">
+          <motion.div variants={reveal} initial="hidden" whileInView="show" viewport={{ once: true }} className="rounded-[36px] bg-white p-8 shadow-xl shadow-black/5 md:p-12">
+            <p className="text-xl leading-10 text-neutral-600">{t.whyText}</p>
+            <div className="mt-10 grid gap-4 sm:grid-cols-3">
+              {[
+                [TrendingUp, isRTL ? 'قراءة سوق دقيقة' : 'Market insight'],
+                [ShieldCheck, isRTL ? 'اختيار موثوق' : 'Trusted selection'],
+                [Building2, isRTL ? 'مشاريع منتقاة' : 'Curated projects'],
+              ].map(([Icon, label]) => (
+                <div key={label as string} className="rounded-2xl border border-neutral-100 bg-[#fbfaf7] p-5">
+                  <Icon className="mb-4 h-7 w-7 text-[#b99750]" />
+                  <strong>{label as string}</strong>
                 </div>
-              </motion.div>
-            </motion.div>
+              ))}
+            </div>
+          </motion.div>
+          <motion.div variants={reveal} initial="hidden" whileInView="show" viewport={{ once: true }} className="relative h-[320px] overflow-hidden rounded-[28px] md:h-[430px] md:rounded-[36px]">
+            <Image src="/images/proj-1.jpg" alt="" fill sizes="(max-width: 1024px) 90vw, 45vw" className="object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+            <div className="absolute bottom-8 start-8 text-white">
+              <p className="text-5xl font-black text-[#d1ad63]">+12K</p>
+              <p className="mt-2 text-white/80">{isRTL ? 'فرصة عقارية محللة' : 'analyzed property opportunities'}</p>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      <section className="bg-white py-16 md:py-32">
+        <div className="container mx-auto px-4">
+          <div className="mb-10 flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
+            <SectionTitle title={t.exclusive} text={t.exclusiveText} align="start" />
+            <div className="flex flex-wrap gap-2">
+              {[
+                ['all', t.all],
+                ['map', t.onMap],
+                ['ready', t.ready],
+                ['residential', t.residential],
+                ['commercial', t.commercial],
+              ].map(([value, label]) => (
+                <button
+                  key={value}
+                  onClick={() => setProjectFilter(value)}
+                  className={cn('rounded-full border px-5 py-3 text-sm font-bold transition', projectFilter === value ? 'border-[#b99750] bg-[#b99750] text-white' : 'border-neutral-200 hover:border-[#b99750]')}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="grid gap-7 lg:grid-cols-3">
+            {filteredProjects.map((project, index) => (
+              <ProjectCard key={project.id} project={project} index={index} isRTL={isRTL} locale={locale} />
+            ))}
+          </div>
+          <div className="mt-10 text-center">
+            <GoldButton href="/properties" light>
+              {t.viewAll}
+              {isRTL ? <ArrowLeft className="h-4 w-4" /> : <ArrowRight className="h-4 w-4" />}
+            </GoldButton>
           </div>
         </div>
       </section>
+
+      <section className="container mx-auto px-4 py-16 md:py-32">
+        <SectionTitle title={isRTL ? 'عقارات مختارة' : 'Selected Properties'} text={isRTL ? 'واجهات بطاقات فاخرة، واضحة، ومهيأة للبحث والتصفية.' : 'Premium property cards ready for search and filtering.'} />
+        <div className="grid gap-7 md:grid-cols-2 lg:grid-cols-3">
+          {demoProperties.slice(0, 6).map((property, index) => (
+            <PropertyCard key={property.id} property={property} index={index} isRTL={isRTL} locale={locale} />
+          ))}
+        </div>
+      </section>
+
+      <section className="bg-neutral-950 py-16 text-white md:py-32">
+        <div className="container mx-auto px-4">
+          <SectionTitle title={t.neighborhoods} text={t.neighborhoodsText} />
+          <div className="grid gap-7 lg:grid-cols-3">
+            {neighborhoods.map((item, index) => (
+              <motion.article key={item.en} variants={reveal} initial="hidden" whileInView="show" viewport={{ once: true }} transition={{ delay: index * 0.08 }} className="group relative h-[360px] overflow-hidden rounded-[30px]">
+                <Image src={item.image} alt={isRTL ? item.ar : item.en} fill sizes="(max-width: 1024px) 90vw, 33vw" className="object-cover opacity-80 transition duration-700 group-hover:scale-105" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                <div className="absolute bottom-0 p-7">
+                  <h3 className="text-2xl font-black md:text-3xl">{isRTL ? item.ar : item.en}</h3>
+                  <p className="mt-2 text-white/75">{isRTL ? item.metaAr : item.metaEn}</p>
+                </div>
+              </motion.article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="container mx-auto px-4 py-16 md:py-32">
+        <div className="mb-10 flex flex-col items-center justify-between gap-6 lg:flex-row">
+          <SectionTitle title={t.priceMap} align="start" />
+          <div className="rounded-full border border-neutral-200 bg-white p-1 shadow-sm">
+            {[
+              ['residential', t.residential],
+              ['commercial', t.commercial],
+            ].map(([value, label]) => (
+              <button
+                key={value}
+                onClick={() => setMapMode(value as typeof mapMode)}
+                className={cn('rounded-full px-6 py-3 text-sm font-bold transition', mapMode === value ? 'bg-[#b99750] text-white' : 'text-neutral-600')}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className="relative min-h-[560px] overflow-hidden rounded-[34px] bg-[#e8e1d2] shadow-2xl shadow-black/5">
+          <div className="absolute inset-0 opacity-90 [background-image:linear-gradient(28deg,transparent_0_46%,#f3a247_47%_49%,transparent_50%),linear-gradient(115deg,transparent_0_48%,#e4c356_49%_50%,transparent_51%),linear-gradient(#d9d4c9_1px,transparent_1px),linear-gradient(90deg,#d9d4c9_1px,transparent_1px)] [background-size:420px_240px,360px_300px,46px_46px,46px_46px]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_55%,rgba(142,198,74,.28),transparent_15%),radial-gradient(circle_at_34%_42%,rgba(142,198,74,.18),transparent_13%)]" />
+          <div className="absolute bottom-10 left-1/2 text-4xl font-black text-neutral-950/80">الرياض</div>
+          <div className="absolute left-[48%] top-[22%] h-28 w-20 -translate-x-1/2 rotate-[-18deg] rounded-[55%_55%_45%_45%] border-4 border-neutral-950 bg-[#8fc64a]/70 shadow-xl" />
+          <button className="absolute start-6 top-6 inline-flex items-center gap-3 rounded-full border border-[#8fc64a] bg-white px-6 py-4 text-lg font-bold shadow-sm">
+            {isRTL ? 'الخريطة الكاملة' : 'Full map'}
+            <Expand className="h-5 w-5" />
+          </button>
+          <div className="absolute bottom-8 start-6 overflow-hidden rounded-lg bg-white shadow-md">
+            {['+', '−', '▲'].map((item) => (
+              <button key={item} className="grid h-10 w-10 place-items-center border-b border-neutral-200 text-xl font-bold last:border-b-0">
+                {item}
+              </button>
+            ))}
+          </div>
+
+          <aside className="absolute inset-x-5 bottom-5 rounded-[28px] bg-white p-6 shadow-2xl lg:inset-x-auto lg:bottom-8 lg:end-8 lg:top-8 lg:w-[360px]">
+            <button className="mb-6 flex items-center gap-2 text-sm text-neutral-500">
+              {isRTL ? 'عودة' : 'Back'}
+              {isRTL ? <ArrowLeft className="h-4 w-4" /> : <ArrowRight className="h-4 w-4" />}
+            </button>
+            <div className="border-t border-neutral-200 pt-6">
+              <h3 className="text-2xl font-black">{isRTL ? 'حي الصحافة' : 'Al Sahafa District'}</h3>
+              <p className="mt-1 text-neutral-400">{mapMode === 'residential' ? t.residential : t.commercial}</p>
+            </div>
+            <div className="mt-6 overflow-hidden rounded-xl">
+              {[
+                [isRTL ? 'الأعلى' : 'High', '2,305,000+'],
+                [isRTL ? 'المتوسط' : 'Average', '1,691,859'],
+                [isRTL ? 'الأدنى' : 'Low', '995,000'],
+              ].map(([label, value], index) => (
+                <div key={label} className={cn('flex items-center justify-between p-4 text-white', index === 0 ? 'bg-[#8fc64a]' : index === 1 ? 'bg-[#b6da89]' : 'bg-[#d5eabd]')}>
+                  <span className="font-bold">{label}</span>
+                  <strong>{value}</strong>
+                  <span>﷼</span>
+                </div>
+              ))}
+            </div>
+            <p className="mt-4 text-sm leading-7 text-neutral-400">
+              {isRTL ? 'يتم حساب البيانات باستخدام القوائم المنشورة خلال آخر 90 يوماً.' : 'Data is calculated from listings published during the last 90 days.'}
+            </p>
+            <div className="mt-5 space-y-3">
+              <button className="h-12 w-full rounded-full border border-neutral-200 font-bold">
+                {isRTL ? 'عرض المجتمع' : 'View community'}
+              </button>
+              <button className="h-12 w-full rounded-full bg-[#8fc64a] font-bold text-white">
+                {isRTL ? 'تصفح 17 عقارات' : 'Browse 17 properties'}
+              </button>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section className="container mx-auto px-4 pb-24 md:pb-32">
+        <div className="grid items-center gap-8 rounded-[34px] bg-white p-8 shadow-xl shadow-black/5 md:grid-cols-2 md:p-14">
+          <div className="relative h-80 overflow-hidden rounded-[28px]">
+            <Image src="/images/prop-1.jpg" alt="" fill sizes="(max-width: 768px) 90vw, 45vw" className="object-cover" />
+          </div>
+          <div>
+            <h2 className="text-4xl font-black">{t.sellBuy}</h2>
+            <p className="mt-5 max-w-xl text-lg leading-9 text-neutral-500">{t.sellBuyText}</p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <GoldButton href="/properties/request">{t.request}</GoldButton>
+              <GoldButton href="/properties/add" light>{t.add}</GoldButton>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-white py-16 md:py-32">
+        <div className="container mx-auto px-4">
+          <div className="mb-10 flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
+            <SectionTitle title={t.articles} text={t.articlesText} align="start" />
+            <GoldButton href="/faq" light>
+              {t.readMore}
+              {isRTL ? <ArrowLeft className="h-4 w-4" /> : <ArrowRight className="h-4 w-4" />}
+            </GoldButton>
+          </div>
+          <div className="grid gap-7 lg:grid-cols-3">
+            {demoArticles.slice(0, 3).map((article, index) => (
+              <motion.article key={article.id} variants={reveal} initial="hidden" whileInView="show" viewport={{ once: true }} transition={{ delay: index * 0.08 }} className="rounded-[28px] border border-neutral-200 bg-white p-4">
+                <div className="relative h-56 overflow-hidden rounded-[22px]">
+                  <Image src={article.image} alt={isRTL ? article.titleAr : article.title} fill sizes="(max-width: 1024px) 90vw, 33vw" className="object-cover" />
+                  <span className="absolute end-4 top-4 rounded-full bg-white px-3 py-1 text-xs font-bold">{formatDate(article.date, locale)}</span>
+                </div>
+                <div className="p-4">
+                  <h3 className="text-xl font-black leading-8">{isRTL ? article.titleAr : article.title}</h3>
+                  <p className="mt-3 line-clamp-3 text-sm leading-7 text-neutral-500">{isRTL ? article.excerptAr : article.excerpt}</p>
+                  <button className="mt-6 inline-flex items-center gap-2 rounded-full bg-[#f5f0e6] px-5 py-3 text-sm font-bold">
+                    {t.readMore}
+                    {isRTL ? <ArrowLeft className="h-4 w-4" /> : <ArrowRight className="h-4 w-4" />}
+                  </button>
+                </div>
+              </motion.article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="container mx-auto px-4 py-16 md:py-32">
+        <div className="overflow-hidden rounded-[34px] bg-neutral-950 text-white shadow-2xl shadow-black/10 lg:grid lg:grid-cols-[1.6fr_1fr]">
+          <div className="relative min-h-[260px] md:min-h-[360px]">
+            <Image src="/images/art-5.jpg" alt="" fill sizes="(max-width: 1024px) 90vw, 60vw" className="object-cover opacity-80" />
+          </div>
+          <div className="flex flex-col items-center justify-center p-10 text-center">
+            <Image src="/new_logo.svg" alt="Map Key" width={210} height={124} className="h-auto w-52" />
+            <p className="mt-8 text-lg leading-8 text-white/70">{isRTL ? 'تجربة عقارية مصممة لتختصر الطريق إلى القرار.' : 'A real estate experience designed to shorten the path to a decision.'}</p>
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-white py-16 md:py-32">
+        <div className="container mx-auto px-4">
+          <SectionTitle title={t.popular} text={isRTL ? 'استكشف أكثر الروابط رواجاً وابدأ الآن.' : 'Explore the most visited searches and start now.'} />
+          <div className="grid gap-10 text-center md:grid-cols-3">
+            {[
+              [t.projects, popularLinks[locale].projects],
+              [isRTL ? 'عقارات' : 'Properties', popularLinks[locale].properties],
+              [isRTL ? 'روابط أخرى' : 'Other links', popularLinks[locale].other],
+            ].map(([title, links]) => (
+              <div key={title as string}>
+                <h3 className="mb-6 text-2xl font-black">{title as string}</h3>
+                <ul className="space-y-4 text-neutral-600">
+                  {(links as string[]).map((link) => (
+                    <li key={link}>
+                      <Link href="/properties" className="transition hover:text-[#b99750]">{link}</Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+          <form
+            onSubmit={(event) => {
+              event.preventDefault()
+              setSubscribed(true)
+            }}
+            className="mx-auto mt-16 flex max-w-xl flex-col gap-3 rounded-[28px] border border-neutral-200 bg-[#fbfaf7] p-3 sm:flex-row"
+          >
+            <label className="flex min-h-14 flex-1 items-center gap-3 rounded-2xl bg-white px-4">
+              <Mail className="h-5 w-5 text-[#b99750]" />
+              <input type="email" required placeholder={t.email} className="w-full bg-transparent outline-none" />
+            </label>
+            <button className="rounded-2xl bg-[#b99750] px-7 font-bold text-white">{t.subscribe}</button>
+          </form>
+          {subscribed && <p className="mt-4 text-center text-sm font-bold text-[#8a6a2e]">{t.subscribed}</p>}
+        </div>
+      </section>
+
+      <div className="fixed bottom-6 end-5 z-40 flex flex-col gap-3">
+        <a href="tel:+966550000000" className="grid h-14 w-14 place-items-center rounded-full bg-neutral-950 text-white shadow-2xl md:h-16 md:w-16" aria-label={t.ask}>
+          <HelpCircle className="h-6 w-6 md:h-7 md:w-7" />
+        </a>
+        <a href="https://wa.me/966550000000" className="grid h-14 w-14 place-items-center rounded-full bg-[#21c769] text-white shadow-2xl md:h-16 md:w-16" aria-label={t.whatsapp}>
+          <MessageCircle className="h-6 w-6 md:h-7 md:w-7" />
+        </a>
+      </div>
     </div>
   )
 }

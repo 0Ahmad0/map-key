@@ -5,14 +5,18 @@ import { motion } from 'framer-motion'
 import { useTranslations } from 'next-intl'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Link } from '@/i18n/navigation'
+import { Link, useRouter } from '@/i18n/navigation'
 import { Input } from '@/components/ui/input'
 import { RippleButton } from '@/components/ui/ripple-button'
 import { loginSchema, type LoginFormData } from '@/lib/schemas'
+import { useAuthStore } from '@/lib/auth-store'
+import { toast } from '@/components/ui/toast-provider'
 
 export default function LoginPage() {
   const t = useTranslations('auth')
+  const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
+  const { setAuth, deviceId } = useAuthStore()
 
   const {
     register,
@@ -22,10 +26,30 @@ export default function LoginPage() {
     resolver: zodResolver(loginSchema),
   })
 
-  const onSubmit = async (_data: LoginFormData) => {
+  const onSubmit = async (data: LoginFormData) => {
     setIsLoading(true)
-    await new Promise((r) => setTimeout(r, 1000))
-    setIsLoading(false)
+    try {
+      const res = await fetch('/api/auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Device-Id': deviceId },
+        body: JSON.stringify({ email: data.email, password: data.password, deviceId }),
+      })
+
+      const json = await res.json()
+
+      if (!res.ok) {
+        toast.error(json.message || 'حدث خطأ في تسجيل الدخول')
+        return
+      }
+
+      setAuth(json.data.user, json.data.tokens)
+      toast.success('تم تسجيل الدخول بنجاح')
+      router.push('/dashboard')
+    } catch {
+      toast.error('حدث خطأ في الاتصال بالخادم')
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (

@@ -2,11 +2,16 @@
 
 import { motion } from 'framer-motion'
 import { useTranslations } from 'next-intl'
+import { AuthGuard } from '@/components/ui/auth-guard'
+import { QRDisplay } from '@/components/ui/qr-display'
+import { useAuthStore } from '@/lib/auth-store'
 
 export default function DashboardPage() {
   const t = useTranslations('nav')
+  const { user } = useAuthStore()
 
   return (
+    <AuthGuard>
     <div className="container mx-auto px-4 py-12">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -34,10 +39,21 @@ export default function DashboardPage() {
           ))}
         </div>
 
-        <div className="bg-bg-card/85 rounded-2xl border border-border/10 p-8 text-center text-text-secondary">
-          Dashboard features coming soon.
+        <div className="bg-bg-card/85 rounded-2xl border border-border/10 p-8 pt-12 text-center">
+          <h2 className="text-2xl font-bold text-text-primary mb-2">رمز الدعوة</h2>
+          <p className="text-text-secondary text-sm mb-8 max-w-md mx-auto">
+            امسح الرمز للوصول السريع إلى حسابك
+          </p>
+          <div className="flex justify-center">
+            <QRDisplay
+              value={JSON.stringify({ userId: user?.id, timestamp: Date.now() })}
+              className="flex justify-center"
+            />
+          </div>
+          <p className="mt-6 text-xs text-text-muted">رمز مميز للدخول السريع</p>
         </div>
       </motion.div>
     </div>
+    </AuthGuard>
   )
 }

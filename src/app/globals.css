@@ -121,6 +121,14 @@
     letter-spacing: 0;
   }
 
+  button,
+  input,
+  select,
+  textarea {
+    font: inherit;
+    letter-spacing: 0;
+  }
+
   /* El Messiri for Arabic headings — elegant display look */
   [dir='rtl'] h1,
   [dir='rtl'] h2,
