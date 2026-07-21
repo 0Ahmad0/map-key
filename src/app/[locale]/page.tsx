@@ -1,21 +1,19 @@
 'use client'
 
-import { FormEvent, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { useLocale } from 'next-intl'
-import { Link, useRouter } from '@/i18n/navigation'
-import { demoArticles } from '@/lib/demo-articles'
+import { Link } from '@/i18n/navigation'
 import { demoProjects } from '@/lib/demo-projects'
 import { demoProperties } from '@/lib/demo-properties'
-import { cn, formatDate, formatPrice } from '@/lib/utils'
+import { cn, formatPrice } from '@/lib/utils'
 import {
   ArrowLeft,
   ArrowRight,
   Bath,
   BedDouble,
   Building2,
-  ChevronDown,
   Expand,
   Heart,
   HelpCircle,
@@ -23,7 +21,6 @@ import {
   MapPin,
   Maximize2,
   MessageCircle,
-  Search,
   ShieldCheck,
   Sparkles,
   TrendingUp,
@@ -31,10 +28,8 @@ import {
 
 const copy = {
   ar: {
-    badge: 'بوابة عقارية سعودية بخبرة سوق حقيقية',
-    heroTitle: 'نعرف السوق قبل أن يشرح نفسه',
-    heroText:
-      'نقرأ المدن والأحياء والمشاريع بعين خبيرة، ونحوّل البحث العقاري إلى قرار واضح ومطمئن.',
+    badge: 'بوابتك للخدمات العقارية',
+    heroTitle: 'منظومة متكاملة في القطاع العقاري',
     sale: 'للبيع',
     rent: 'للإيجار',
     projects: 'المشاريع',
@@ -70,8 +65,6 @@ const copy = {
     sellBuyText: 'كل الاتجاهات تبدأ من Map Key. أضف عقارك أو أخبرنا بما تبحث عنه، وسنتولى الباقي.',
     request: 'اطلب عقار',
     add: 'أضف عقارك',
-    articles: 'لا نكتب محتوى، بل نشارك المعرفة.',
-    articlesText: 'مقالات توضّح وتحذّر وتقرأ السوق السعودي بعين خبيرة.',
     popular: 'عمليات البحث الشائعة عن العقارات',
     newsletter: 'ابقَ قريباً من الفرص الجديدة',
     email: 'بريدك الإلكتروني',
@@ -86,10 +79,8 @@ const copy = {
     whatsapp: 'واتساب',
   },
   en: {
-    badge: 'A Saudi real estate gateway with market judgment',
-    heroTitle: 'We read the market before it explains itself',
-    heroText:
-      'We understand cities, districts, and projects with a sharper eye, turning property search into a clear decision.',
+    badge: 'Your gateway to real estate services',
+    heroTitle: 'An integrated system in the real estate sector',
     sale: 'For sale',
     rent: 'For rent',
     projects: 'Projects',
@@ -125,8 +116,6 @@ const copy = {
     sellBuyText: 'Every direction starts with Map Key. Add your property or tell us what you need, and we handle the rest.',
     request: 'Request property',
     add: 'Add property',
-    articles: 'We do not publish filler. We share market knowledge.',
-    articlesText: 'Clear articles that explain, warn, and read the Saudi market with an expert eye.',
     popular: 'Popular property searches',
     newsletter: 'Stay close to new opportunities',
     email: 'Your email address',
@@ -165,24 +154,6 @@ const reveal = {
   hidden: { opacity: 0, y: 26 },
   show: { opacity: 1, y: 0 },
 }
-
-type SearchTab = 'sale' | 'projects' | 'commercial'
-type FilterKey = 'type' | 'rooms' | 'price' | 'status' | 'area'
-
-const propertyOptions = {
-  ar: ['شقة', 'تاون هاوس', 'دور', 'إستراحة', 'فيلا', 'شقة صغيرة (استوديو)', 'أرض', 'بنتهاوس'],
-  en: ['Apartment', 'Townhouse', 'Floor', 'Rest house', 'Villa', 'Studio apartment', 'Land', 'Penthouse'],
-}
-
-const commercialOptions = {
-  ar: ['مكتب', 'معرض', 'محل', 'مستودع', 'عمارة تجارية', 'أرض تجارية'],
-  en: ['Office', 'Showroom', 'Retail', 'Warehouse', 'Commercial building', 'Commercial land'],
-}
-
-const roomOptions = ['الكل', 'استوديو', '2', '3', '4', '5', '6', '+7']
-const roomOptionsEn = ['All', 'Studio', '2', '3', '4', '5', '6', '+7']
-const bathOptions = ['الكل', '1', '2', '3', '4', '5', '6', '+7']
-const bathOptionsEn = ['All', '1', '2', '3', '4', '5', '6', '+7']
 
 function SectionTitle({ title, text, align = 'center' }: { title: string; text?: string; align?: 'center' | 'start' }) {
   return (
@@ -300,17 +271,6 @@ export default function HomePage() {
   const locale = useLocale() as 'ar' | 'en'
   const isRTL = locale === 'ar'
   const t = copy[locale]
-  const router = useRouter()
-  const [tab, setTab] = useState<SearchTab>('sale')
-  const [city, setCity] = useState('')
-  const [activeFilter, setActiveFilter] = useState<FilterKey | null>(null)
-  const [filters, setFilters] = useState<Record<FilterKey, string>>({
-    type: '',
-    rooms: '',
-    price: '',
-    status: '',
-    area: '',
-  })
   const [subscribed, setSubscribed] = useState(false)
   const [mapMode, setMapMode] = useState<'residential' | 'commercial'>('residential')
   const [projectFilter, setProjectFilter] = useState('all')
@@ -321,110 +281,12 @@ export default function HomePage() {
     return demoProjects.slice(0, 3)
   }, [projectFilter])
 
-  const submitSearch = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    const params = new URLSearchParams({ purpose: tab, city: city || 'all', ...filters })
-    router.push(`/properties?${params.toString()}`)
-  }
-
-  const fieldLabels: Record<FilterKey, string> = {
-    type: filters.type || t.type,
-    rooms: filters.rooms || (isRTL ? 'غرف وحمامات' : 'Beds & baths'),
-    price: filters.price || t.price,
-    status: filters.status || t.projectStatus,
-    area: filters.area || t.area,
-  }
-
-  const fieldsByTab: Record<SearchTab, FilterKey[]> = {
-    sale: ['type', 'rooms', 'price'],
-    projects: ['status', 'type', 'price'],
-    commercial: ['type', 'area', 'price'],
-  }
-
-  const setFilter = (key: FilterKey, value: string) => {
-    setFilters((current) => ({ ...current, [key]: value }))
-  }
-
-  const resetFilter = (key: FilterKey) => {
-    setFilters((current) => ({ ...current, [key]: '' }))
-  }
-
-  const renderFilterPanel = () => {
-    if (!activeFilter) return null
-
-    if (activeFilter === 'price' || activeFilter === 'area') {
-      const unit = activeFilter === 'price' ? '﷼' : t.sqm
-      return (
-        <div className="absolute inset-x-2 top-[calc(100%-4px)] z-30 rounded-b-3xl bg-white p-5 text-neutral-950 shadow-2xl md:inset-x-auto md:end-24 md:top-auto md:bottom-20 md:w-[530px] md:rounded-2xl">
-          <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-4">
-            <label className="flex h-16 items-center justify-between rounded-md border border-neutral-200 px-5 text-neutral-400">
-              <span>{t.max}</span>
-              <span className="text-neutral-500">{unit}</span>
-            </label>
-            <span className="h-px w-5 bg-neutral-200" />
-            <label className="flex h-16 items-center justify-between rounded-md border border-neutral-200 px-5 text-neutral-400">
-              <span>{t.min}</span>
-              <span className="text-neutral-500">{unit}</span>
-            </label>
-          </div>
-          <div className="mt-5 flex justify-end border-t border-neutral-200 pt-4">
-            <button type="button" onClick={() => resetFilter(activeFilter)} className="rounded-full border border-neutral-200 px-7 py-3 font-bold">
-              {t.reset}
-            </button>
-          </div>
-        </div>
-      )
-    }
-
-    if (activeFilter === 'rooms') {
-      const rooms = isRTL ? roomOptions : roomOptionsEn
-      const baths = isRTL ? bathOptions : bathOptionsEn
-      return (
-        <div className="absolute inset-x-2 top-[calc(100%-4px)] z-30 rounded-b-3xl bg-white p-5 text-neutral-950 shadow-2xl md:inset-x-0 md:top-auto md:bottom-20 md:rounded-2xl">
-          <div className="text-start">
-            <h3 className="mb-4 text-lg font-black">{isRTL ? 'الغرف' : 'Bedrooms'}</h3>
-            <div className="flex flex-wrap gap-3">
-              {rooms.map((item) => (
-                <button key={item} type="button" onClick={() => setFilter('rooms', item)} className={cn('h-14 min-w-14 rounded-full border px-5 font-bold', filters.rooms === item || (!filters.rooms && item === rooms[0]) ? 'border-[#8fc64a] text-neutral-950' : 'border-neutral-200')}>
-                  {item}
-                </button>
-              ))}
-            </div>
-            <h3 className="mb-4 mt-8 text-lg font-black">{t.bathrooms}</h3>
-            <div className="flex flex-wrap gap-3">
-              {baths.map((item) => (
-                <button key={item} type="button" onClick={() => setFilter('rooms', `${filters.rooms || rooms[0]} / ${item}`)} className="h-14 min-w-14 rounded-full border border-neutral-200 px-5 font-bold">
-                  {item}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      )
-    }
-
-    const options =
-      activeFilter === 'status'
-        ? [t.all, t.offPlan, t.readyProjects]
-        : tab === 'commercial'
-          ? commercialOptions[locale]
-          : propertyOptions[locale]
-
-    return (
-      <div className="absolute inset-x-2 top-[calc(100%-4px)] z-30 max-h-72 overflow-y-auto rounded-b-3xl bg-white py-3 text-neutral-950 shadow-2xl md:inset-x-auto md:end-40 md:top-auto md:bottom-20 md:w-[270px] md:rounded-2xl">
-        {options.map((item) => (
-          <button key={item} type="button" onClick={() => setFilter(activeFilter, item)} className="block w-full px-7 py-3 text-start text-base transition hover:bg-[#f5f0e6]">
-            {item}
-          </button>
-        ))}
-      </div>
-    )
-  }
-
   return (
     <div className="min-h-screen bg-[#f8f7f4] text-neutral-950">
       <section className="relative min-h-[720px] overflow-hidden bg-neutral-950 pt-24 text-white md:min-h-[820px]">
-        <Image src="/images/proj-5.jpg" alt="" fill priority sizes="100vw" className="object-cover opacity-55" />
+        <video autoPlay loop muted playsInline className="absolute inset-0 h-full w-full object-cover opacity-55">
+          <source src="/hero_video.mp4" type="video/mp4" />
+        </video>
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_25%,rgba(185,151,80,.22),transparent_32%),linear-gradient(180deg,rgba(0,0,0,.35),rgba(0,0,0,.82))]" />
         <motion.div
           className="container relative z-10 mx-auto flex min-h-[620px] flex-col items-center justify-center px-4 py-12 text-center md:min-h-[720px] md:py-0"
@@ -439,62 +301,6 @@ export default function HomePage() {
           <motion.h1 variants={reveal} className="max-w-5xl text-4xl font-black leading-[1.12] sm:text-5xl md:text-7xl">
             {t.heroTitle}
           </motion.h1>
-          <motion.p variants={reveal} className="mt-5 max-w-3xl text-base leading-8 text-white/75 sm:text-lg md:mt-7 md:text-2xl">
-            {t.heroText}
-          </motion.p>
-
-          <motion.form
-            variants={reveal}
-            onSubmit={submitSearch}
-            className="relative mt-10 w-full max-w-6xl rounded-[24px] bg-black/45 p-2 shadow-2xl shadow-black/30 backdrop-blur-2xl sm:p-3 md:mt-14 md:rounded-[32px]"
-          >
-            <div className="grid grid-cols-3 overflow-hidden rounded-[18px] bg-white text-neutral-950 md:rounded-[24px]">
-              {[
-                ['sale', t.sale],
-                ['projects', t.projects],
-                ['commercial', t.commercial],
-              ].map(([value, label]) => (
-                <button
-                  key={value}
-                  type="button"
-                  onClick={() => {
-                    setTab(value as SearchTab)
-                    setActiveFilter(null)
-                  }}
-                  className={cn('h-12 text-xs font-bold transition sm:h-14 sm:text-sm', tab === value ? 'bg-[#b99750] text-white' : 'hover:bg-neutral-100')}
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
-
-            <div className="mt-2 grid gap-px overflow-hidden rounded-[18px] bg-neutral-200 md:mt-3 md:grid-cols-[1.4fr_1fr_1fr_1fr_auto] md:rounded-[24px]">
-              <label className="flex h-14 items-center gap-3 bg-white px-4 text-neutral-400 md:h-16 md:px-5">
-                <Search className="h-5 w-5 text-neutral-950" />
-                <input
-                  value={city}
-                  onChange={(event) => setCity(event.target.value)}
-                  placeholder={t.city}
-                  className="w-full bg-transparent text-neutral-950 outline-none placeholder:text-neutral-400"
-                />
-              </label>
-              {fieldsByTab[tab].map((field) => (
-                <button
-                  key={field}
-                  type="button"
-                  onClick={() => setActiveFilter((current) => (current === field ? null : field))}
-                  className="flex h-14 items-center justify-between bg-white px-4 text-sm text-neutral-400 md:h-16 md:px-5 md:text-base"
-                >
-                  <span>{fieldLabels[field]}</span>
-                  <ChevronDown className={cn('h-4 w-4 transition', activeFilter === field && 'rotate-180')} />
-                </button>
-              ))}
-              <button type="submit" className="h-14 bg-[#b99750] px-8 font-bold text-white transition hover:bg-[#a58742] md:h-16 md:px-10">
-                {t.search}
-              </button>
-            </div>
-            {renderFilterPanel()}
-          </motion.form>
         </motion.div>
       </section>
 
@@ -678,35 +484,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="bg-white py-16 md:py-32">
-        <div className="container mx-auto px-4">
-          <div className="mb-10 flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
-            <SectionTitle title={t.articles} text={t.articlesText} align="start" />
-            <GoldButton href="/faq" light>
-              {t.readMore}
-              {isRTL ? <ArrowLeft className="h-4 w-4" /> : <ArrowRight className="h-4 w-4" />}
-            </GoldButton>
-          </div>
-          <div className="grid gap-7 lg:grid-cols-3">
-            {demoArticles.slice(0, 3).map((article, index) => (
-              <motion.article key={article.id} variants={reveal} initial="hidden" whileInView="show" viewport={{ once: true }} transition={{ delay: index * 0.08 }} className="rounded-[28px] border border-neutral-200 bg-white p-4">
-                <div className="relative h-56 overflow-hidden rounded-[22px]">
-                  <Image src={article.image} alt={isRTL ? article.titleAr : article.title} fill sizes="(max-width: 1024px) 90vw, 33vw" className="object-cover" />
-                  <span className="absolute end-4 top-4 rounded-full bg-white px-3 py-1 text-xs font-bold">{formatDate(article.date, locale)}</span>
-                </div>
-                <div className="p-4">
-                  <h3 className="text-xl font-black leading-8">{isRTL ? article.titleAr : article.title}</h3>
-                  <p className="mt-3 line-clamp-3 text-sm leading-7 text-neutral-500">{isRTL ? article.excerptAr : article.excerpt}</p>
-                  <button className="mt-6 inline-flex items-center gap-2 rounded-full bg-[#f5f0e6] px-5 py-3 text-sm font-bold">
-                    {t.readMore}
-                    {isRTL ? <ArrowLeft className="h-4 w-4" /> : <ArrowRight className="h-4 w-4" />}
-                  </button>
-                </div>
-              </motion.article>
-            ))}
-          </div>
-        </div>
-      </section>
+
 
       <section className="container mx-auto px-4 py-16 md:py-32">
         <div className="overflow-hidden rounded-[34px] bg-neutral-950 text-white shadow-2xl shadow-black/10 lg:grid lg:grid-cols-[1.6fr_1fr]">

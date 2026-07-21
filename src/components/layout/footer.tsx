@@ -73,9 +73,7 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="grid gap-10 sm:grid-cols-3">
-          <Column title={t.projects} items={t.projectLinks} />
-          <Column title={t.properties} items={t.propertyLinks} />
+        <div className="grid gap-10 sm:grid-cols-1">
           <Column title={t.quick} items={t.links} />
         </div>
 
