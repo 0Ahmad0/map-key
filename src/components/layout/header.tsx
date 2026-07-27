@@ -7,7 +7,7 @@ import { motion } from 'framer-motion'
 import { useLocale } from 'next-intl'
 import { Link, usePathname } from '@/i18n/navigation'
 import { cn } from '@/lib/utils'
-import { ChevronDown, Globe2, Headphones, Menu, Phone, X } from 'lucide-react'
+import { Globe2, Headphones, Menu, Phone, X } from 'lucide-react'
 
 const labels = {
   ar: {
@@ -16,7 +16,6 @@ const labels = {
     about: 'من نحن',
     offPlan: 'البيع على الخارطة',
     rent: 'للتأجير',
-    more: 'المزيد',
     lang: 'EN',
     arabic: 'ع',
     currency: 'SAR',
@@ -28,7 +27,6 @@ const labels = {
     about: 'About Us',
     offPlan: 'Off-plan Sales',
     rent: 'For Rent',
-    more: 'More',
     lang: 'AR',
     arabic: 'EN',
     currency: 'SAR',
@@ -89,10 +87,6 @@ export function Header() {
               {item.label}
             </Link>
           ))}
-          <button className="inline-flex items-center gap-2 text-lg font-medium text-neutral-950 transition hover:text-[#b99750]">
-            <ChevronDown className="h-4 w-4 text-neutral-500" />
-            {t.more}
-          </button>
         </nav>
 
         <div className="hidden shrink-0 items-center gap-5 lg:flex">
@@ -141,7 +135,7 @@ export function Header() {
                 <div className="shrink-0 space-y-3 border-t border-neutral-100 pt-4">
                   <a href="tel:+966541646755" className="flex items-center justify-center gap-2 rounded-2xl border border-neutral-200 px-5 py-4 font-bold">
                     <Phone className="h-4 w-4 text-[#b99750]" />
-                    {t.phone}
+                    <span dir="ltr" className="[unicode-bidi:isolate]">{t.phone}</span>
                   </a>
                   <button onClick={switchLocale} className="w-full rounded-2xl bg-neutral-950 px-5 py-4 font-bold text-white">
                     🇸🇦 {t.lang} / {t.currency}

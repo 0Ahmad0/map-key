@@ -66,11 +66,11 @@ export function Footer() {
           <div className="mt-8 space-y-4 text-neutral-700">
             <a href={phoneHref} className="flex items-center gap-3">
               <Phone className="h-5 w-5 text-[#b99750]" />
-              {phone}
+              <span dir="ltr" className="[unicode-bidi:isolate]">{phone}</span>
             </a>
             <a href={extraPhoneHref} className="flex items-center gap-3">
               <Phone className="h-5 w-5 text-[#b99750]" />
-              {extraPhone}
+              <span dir="ltr" className="[unicode-bidi:isolate]">{extraPhone}</span>
             </a>
             <a href={`mailto:${email}`} className="flex items-center gap-3">
               <Mail className="h-5 w-5 text-[#b99750]" />
@@ -107,15 +107,11 @@ export function Footer() {
             {t.rights} © {new Date().getFullYear()} Map Key
           </p>
           <div className="flex gap-3">
-            {[
-              ['X', 'https://x.com/MapkeySa'],
-              ['TT', 'https://www.tiktok.com/@mapkeysa'],
-              ['@', `mailto:${email}`],
-            ].map(([label, href]) => (
-              <a key={label} href={href} className="grid h-11 w-11 place-items-center rounded-full border border-white/20 text-sm font-bold transition hover:border-[#b99750] hover:text-[#d1ad63]">
-                {label}
-              </a>
-            ))}
+            <a href="https://x.com/MapkeySa" className="grid h-11 w-11 place-items-center rounded-full border border-white/20 text-sm font-bold transition hover:border-[#b99750] hover:text-[#d1ad63]" aria-label="X">X</a>
+            <a href="https://www.tiktok.com/@mapkeysa" className="grid h-11 w-11 place-items-center rounded-full border border-white/20 transition hover:border-[#b99750] hover:text-[#d1ad63]" aria-label="TikTok">
+              <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden="true"><path fill="currentColor" d="M16.6 5.82a6.7 6.7 0 0 0 3.9 1.25v3.08a9.7 9.7 0 0 1-3.9-.83v5.8a5.88 5.88 0 1 1-5.88-5.88c.36 0 .71.03 1.05.1v3.22a2.75 2.75 0 1 0 1.9 2.62V2h2.93c.13 1.47.88 2.78 2 3.82Z" /></svg>
+            </a>
+            <a href={`mailto:${email}`} className="grid h-11 w-11 place-items-center rounded-full border border-white/20 text-sm font-bold transition hover:border-[#b99750] hover:text-[#d1ad63]" aria-label="Email">@</a>
           </div>
         </div>
       </div>

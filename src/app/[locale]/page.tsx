@@ -56,7 +56,7 @@ const copy = {
     whyLead: 'شركة متخصصة في التسويق العقاري، نقدم حلولًا تسويقية احترافية تساعد المشاريع العقارية على تحقيق مبيعات حقيقية عبر استراتيجيات مدروسة وإعلانات فعّالة',
     whyText:
       'شركة متخصصة في التسويق العقاري، نقدم حلولًا تسويقية احترافية تساعد المشاريع العقارية على تحقيق مبيعات حقيقية عبر استراتيجيات مدروسة وإعلانات فعّالة',
-    exclusive: 'مشاريع حصرية',
+    exclusive: 'مشاريعنا',
     exclusiveText: 'لا نعرض كل ما هو موجود. نعرض فقط ما يستحق الظهور.',
     all: 'الكل',
     readyOffPlan: 'جاهز على الخارطة',
@@ -107,7 +107,7 @@ const copy = {
     whyLead: 'A real estate marketing company delivering professional solutions that help projects achieve real sales through deliberate strategies and effective campaigns.',
     whyText:
       'A real estate marketing company delivering professional solutions that help projects achieve real sales through deliberate strategies and effective campaigns.',
-    exclusive: 'Exclusive Projects',
+    exclusive: 'Our Projects',
     exclusiveText: 'We do not show everything on the market. We show what deserves attention.',
     all: 'All',
     readyOffPlan: 'Ready off-plan',
@@ -304,49 +304,35 @@ export default function HomePage() {
 
       <section className="container mx-auto px-4 py-16 md:py-32">
         <SectionTitle title={t.whyTitle} text={t.whyLead} />
-        <div className="grid items-center gap-8 lg:grid-cols-[1.1fr_.9fr]">
+        <div className="grid items-stretch gap-8 lg:grid-cols-[1.1fr_.9fr]">
           <motion.div variants={reveal} initial="hidden" whileInView="show" viewport={{ once: true }} className="rounded-[36px] bg-white p-8 shadow-xl shadow-black/5 md:p-12">
             <p className="text-xl leading-10 text-neutral-600">{t.whyText}</p>
-            <div className="mt-10 grid gap-4 sm:grid-cols-3">
+            <div className="mt-10 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
               {[
                 [TrendingUp, isRTL ? 'قراءة سوق دقيقة' : 'Market insight'],
                 [ShieldCheck, isRTL ? 'اختيار موثوق' : 'Trusted selection'],
                 [Building2, isRTL ? 'مشاريع منتقاة' : 'Curated projects'],
-              ].map(([Icon, label]) => (
-                <div key={label as string} className="rounded-2xl border border-neutral-100 bg-[#fbfaf7] p-5">
+                [Building2, isRTL ? 'التسويق العقاري المتكامل' : 'Integrated real estate marketing'],
+                [Clapperboard, isRTL ? 'إنتاج المحتوى العقاري' : 'Real estate content production'],
+                [Target, isRTL ? 'استشارات تسويقية عقارية' : 'Real estate marketing consulting'],
+                [InfinityIcon, isRTL ? 'إدارة حسابات السوشيال ميديا' : 'Social media account management'],
+                [Megaphone, isRTL ? 'إدارة الحملات الإعلانية' : 'Ad campaign management'],
+              ].map(([Icon, label], index) => (
+                <motion.div
+                  key={label as string}
+                  initial={{ opacity: 0, y: 10 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.04, duration: 0.35 }}
+                  className="rounded-2xl border border-neutral-100 bg-[#fbfaf7] p-5"
+                >
                   <Icon className="mb-4 h-7 w-7 text-[#b99750]" />
-                  <strong>{label as string}</strong>
-                </div>
+                  <strong className="leading-7">{label as string}</strong>
+                </motion.div>
               ))}
             </div>
-            <div className="mt-8 rounded-[28px] border border-neutral-100 bg-neutral-950 p-6 text-white">
-              <p className="mb-5 text-sm font-bold uppercase tracking-[.2em] text-[#d1ad63]">{isRTL ? 'خدماتنا التسويقية' : 'Marketing services'}</p>
-              <div className="grid gap-4 sm:grid-cols-2">
-                {[
-                  [Building2, isRTL ? 'التسويق العقاري المتكامل' : 'Integrated real estate marketing'],
-                  [Clapperboard, isRTL ? 'إنتاج المحتوى العقاري' : 'Real estate content production'],
-                  [Target, isRTL ? 'استشارات تسويقية عقارية' : 'Real estate marketing consulting'],
-                  [InfinityIcon, isRTL ? 'إدارة حسابات السوشيال ميديا' : 'Social media account management'],
-                  [Megaphone, isRTL ? 'إدارة الحملات الإعلانية' : 'Ad campaign management'],
-                ].map(([Icon, label], index) => (
-                  <motion.div
-                    key={label as string}
-                    initial={{ opacity: 0, y: 10 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: index * 0.06, duration: 0.35 }}
-                    className="flex items-center gap-3 rounded-2xl bg-white/6 p-4 ring-1 ring-white/10"
-                  >
-                    <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-[#d1ad63]/60 text-[#d1ad63]">
-                      <Icon className="h-5 w-5" />
-                    </span>
-                    <strong className="text-sm leading-6 text-white/90">{label as string}</strong>
-                  </motion.div>
-                ))}
-              </div>
-            </div>
           </motion.div>
-          <motion.div variants={reveal} initial="hidden" whileInView="show" viewport={{ once: true }} className="relative h-[320px] overflow-hidden rounded-[28px] md:h-[430px] md:rounded-[36px]">
+          <motion.div variants={reveal} initial="hidden" whileInView="show" viewport={{ once: true }} className="relative min-h-[320px] overflow-hidden rounded-[28px] md:min-h-[430px] lg:h-full md:rounded-[36px]">
             <Image src="/images/proj-1.jpg" alt="" fill sizes="(max-width: 1024px) 90vw, 45vw" className="object-cover" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
             <div className="absolute bottom-8 start-8 text-white">
