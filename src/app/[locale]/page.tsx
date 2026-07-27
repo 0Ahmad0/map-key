@@ -307,7 +307,7 @@ export default function HomePage() {
         <div className="grid items-stretch gap-8 lg:grid-cols-[1.1fr_.9fr]">
           <motion.div variants={reveal} initial="hidden" whileInView="show" viewport={{ once: true }} className="rounded-[36px] bg-white p-8 shadow-xl shadow-black/5 md:p-12">
             <p className="text-xl leading-10 text-neutral-600">{t.whyText}</p>
-            <div className="mt-10 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            <div className="mt-10 grid gap-4 sm:grid-cols-2 2xl:grid-cols-3">
               {[
                 [TrendingUp, isRTL ? 'قراءة سوق دقيقة' : 'Market insight'],
                 [ShieldCheck, isRTL ? 'اختيار موثوق' : 'Trusted selection'],
@@ -324,10 +324,12 @@ export default function HomePage() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.04, duration: 0.35 }}
-                  className="rounded-2xl border border-neutral-100 bg-[#fbfaf7] p-5"
+                  className="flex min-h-24 items-center gap-4 rounded-2xl border border-neutral-100 bg-[#fbfaf7] p-5 text-start transition hover:-translate-y-0.5 hover:border-[#d1ad63]/50"
                 >
-                  <Icon className="mb-4 h-7 w-7 text-[#b99750]" />
-                  <strong className="leading-7">{label as string}</strong>
+                  <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-white text-[#b99750] shadow-sm">
+                    <Icon className="h-6 w-6" />
+                  </span>
+                  <strong className="text-base leading-7 text-neutral-950">{label as string}</strong>
                 </motion.div>
               ))}
             </div>
