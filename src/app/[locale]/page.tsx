@@ -301,9 +301,9 @@ export default function HomePage() {
       </section>
 
       <section className="container mx-auto px-4 py-16 md:py-32">
-        <SectionTitle title={t.whyTitle} />
         <div className="grid items-stretch gap-8 lg:grid-cols-[1.1fr_.9fr]">
           <motion.div variants={reveal} initial="hidden" whileInView="show" viewport={{ once: true }} className="rounded-[36px] bg-white p-8 shadow-xl shadow-black/5 md:p-12">
+            <h2 className="mb-8 text-3xl font-black leading-tight text-neutral-950 md:text-5xl">{t.whyTitle}</h2>
             <div className="grid gap-4 sm:grid-cols-2 2xl:grid-cols-3">
               {[
                 [Building2, isRTL ? 'التسويق العقاري المتكامل' : 'Integrated real estate marketing'],

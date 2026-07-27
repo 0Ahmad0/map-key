@@ -48,15 +48,10 @@ export default function AboutPage() {
           <h1 className="text-h1 font-bold text-text-primary mb-6">
             {isRTL ? 'من نحن' : 'About Us'}
           </h1>
-          <p className="text-body text-text-secondary leading-relaxed mb-4">
-            {isRTL
-              ? 'ماب كي هي البوابة العقارية الآمنة — منصة رقمية تجمع بين أفضل العقارات في المملكة وتقنيات الأمان على مستوى المؤسسات. نؤمن أن شراء أو استئجار عقار يجب أن يكون تجربة شفافة وسلسة وموثوقة من البداية إلى النهاية.'
-              : 'Map-Key is the secure real estate gateway — a digital platform combining the best properties in the Kingdom with enterprise-grade security. We believe buying or renting a property should be a transparent, smooth, and trusted experience from start to finish.'}
-          </p>
           <p className="text-body text-text-secondary leading-relaxed mb-12">
             {isRTL
-              ? 'انطلاقاً من رؤية 2030، نعمل على رقمنة السوق العقاري بالكامل: من البحث والمقارنة، إلى التوثيق والتعاقد الرقمي.'
-              : 'Aligned with Vision 2030, we are digitizing the entire real estate market: from search and comparison to verification and digital contracting.'}
+              ? 'شركة متخصصة في التسويق العقاري، نقدم حلولًا تسويقية احترافية تساعد المشاريع العقارية على تحقيق مبيعات حقيقية عبر استراتيجيات مدروسة وإعلانات فعّالة.'
+              : 'A company specialized in real estate marketing, providing professional marketing solutions that help real estate projects achieve real sales through well-studied strategies and effective advertising.'}
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-12">
