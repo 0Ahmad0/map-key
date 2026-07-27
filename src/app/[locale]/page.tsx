@@ -21,13 +21,11 @@ import {
   MapPin,
   Maximize2,
   MessageCircle,
-  ShieldCheck,
   Sparkles,
   Clapperboard,
   Megaphone,
   Target,
   Infinity as InfinityIcon,
-  TrendingUp,
 } from 'lucide-react'
 
 const copy = {
@@ -52,10 +50,10 @@ const copy = {
     offPlan: 'مشاريع على الخريطة',
     readyProjects: 'مشاريع جاهزة',
     search: 'بحث',
-    whyTitle: 'من نحن',
-    whyLead: 'شركة متخصصة في التسويق العقاري، نقدم حلولًا تسويقية احترافية تساعد المشاريع العقارية على تحقيق مبيعات حقيقية عبر استراتيجيات مدروسة وإعلانات فعّالة',
+    whyTitle: 'خدماتنا التسويقية',
+    whyLead: '',
     whyText:
-      'شركة متخصصة في التسويق العقاري، نقدم حلولًا تسويقية احترافية تساعد المشاريع العقارية على تحقيق مبيعات حقيقية عبر استراتيجيات مدروسة وإعلانات فعّالة',
+      '',
     exclusive: 'مشاريعنا',
     exclusiveText: 'لا نعرض كل ما هو موجود. نعرض فقط ما يستحق الظهور.',
     all: 'الكل',
@@ -103,10 +101,10 @@ const copy = {
     offPlan: 'Off-plan projects',
     readyProjects: 'Ready projects',
     search: 'Search',
-    whyTitle: 'About Us',
-    whyLead: 'A real estate marketing company delivering professional solutions that help projects achieve real sales through deliberate strategies and effective campaigns.',
+    whyTitle: 'Marketing Services',
+    whyLead: '',
     whyText:
-      'A real estate marketing company delivering professional solutions that help projects achieve real sales through deliberate strategies and effective campaigns.',
+      '',
     exclusive: 'Our Projects',
     exclusiveText: 'We do not show everything on the market. We show what deserves attention.',
     all: 'All',
@@ -303,15 +301,11 @@ export default function HomePage() {
       </section>
 
       <section className="container mx-auto px-4 py-16 md:py-32">
-        <SectionTitle title={t.whyTitle} text={t.whyLead} />
+        <SectionTitle title={t.whyTitle} />
         <div className="grid items-stretch gap-8 lg:grid-cols-[1.1fr_.9fr]">
           <motion.div variants={reveal} initial="hidden" whileInView="show" viewport={{ once: true }} className="rounded-[36px] bg-white p-8 shadow-xl shadow-black/5 md:p-12">
-            <p className="text-xl leading-10 text-neutral-600">{t.whyText}</p>
-            <div className="mt-10 grid gap-4 sm:grid-cols-2 2xl:grid-cols-3">
+            <div className="grid gap-4 sm:grid-cols-2 2xl:grid-cols-3">
               {[
-                [TrendingUp, isRTL ? 'قراءة سوق دقيقة' : 'Market insight'],
-                [ShieldCheck, isRTL ? 'اختيار موثوق' : 'Trusted selection'],
-                [Building2, isRTL ? 'مشاريع منتقاة' : 'Curated projects'],
                 [Building2, isRTL ? 'التسويق العقاري المتكامل' : 'Integrated real estate marketing'],
                 [Clapperboard, isRTL ? 'إنتاج المحتوى العقاري' : 'Real estate content production'],
                 [Target, isRTL ? 'استشارات تسويقية عقارية' : 'Real estate marketing consulting'],
@@ -335,7 +329,7 @@ export default function HomePage() {
             </div>
           </motion.div>
           <motion.div variants={reveal} initial="hidden" whileInView="show" viewport={{ once: true }} className="relative min-h-[320px] overflow-hidden rounded-[28px] md:min-h-[430px] lg:h-full md:rounded-[36px]">
-            <Image src="/images/proj-1.jpg" alt="" fill sizes="(max-width: 1024px) 90vw, 45vw" className="object-cover" />
+            <Image src="/images/map-key-office.png" alt="Map Key office" fill sizes="(max-width: 1024px) 90vw, 45vw" className="object-cover" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
             <div className="absolute bottom-8 start-8 text-white">
               <p className="text-5xl font-black text-[#d1ad63]">+12K</p>
@@ -353,7 +347,6 @@ export default function HomePage() {
               {[
                 ['all', t.all],
                 ['ready-off-plan', t.readyOffPlan],
-                ['rental-units', t.rentalUnits],
               ].map(([value, label]) => (
                 <button
                   key={value}
@@ -382,7 +375,7 @@ export default function HomePage() {
       <section className="container mx-auto px-4 py-16 md:py-32">
         <SectionTitle title={isRTL ? 'عقارات مختارة' : 'Selected Properties'} text={isRTL ? 'واجهات بطاقات فاخرة، واضحة، ومهيأة للبحث والتصفية.' : 'Premium property cards ready for search and filtering.'} />
         <div className="grid gap-7 md:grid-cols-2 lg:grid-cols-3">
-          {demoProperties.slice(0, 6).map((property, index) => (
+          {demoProperties.slice(0, 3).map((property, index) => (
             <PropertyCard key={property.id} property={property} index={index} isRTL={isRTL} locale={locale} />
           ))}
         </div>
@@ -474,8 +467,12 @@ export default function HomePage() {
             <h2 className="text-4xl font-black">{t.sellBuy}</h2>
             <p className="mt-5 max-w-xl text-lg leading-9 text-neutral-500">{t.sellBuyText}</p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <GoldButton href="/properties/request">{t.request}</GoldButton>
-              <GoldButton href="/properties/add" light>{t.add}</GoldButton>
+              <a href={`https://wa.me/966541646755?text=${encodeURIComponent(isRTL ? 'مرحباً ماب كي، أرغب بطلب عقار مناسب لاحتياجي. أرجو التواصل معي.' : 'Hello Map Key, I would like to request a property that fits my needs. Please contact me.')}`} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#b99750] px-7 text-sm font-bold text-white shadow-[0_18px_50px_rgba(185,151,80,.28)] transition hover:-translate-y-0.5 hover:bg-[#a58742]">
+                {t.request}
+              </a>
+              <a href={`https://wa.me/966541646755?text=${encodeURIComponent(isRTL ? 'مرحباً ماب كي، لدي عقار وأرغب بعرضه أو تسويقه عبركم. أرجو التواصل معي.' : 'Hello Map Key, I have a property and would like to list or market it with you. Please contact me.')}`} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-neutral-200 bg-white px-7 text-sm font-bold text-neutral-950 transition hover:-translate-y-0.5 hover:border-[#b99750]">
+                {t.add}
+              </a>
             </div>
           </div>
         </div>
@@ -486,10 +483,10 @@ export default function HomePage() {
       <section className="container mx-auto px-4 py-16 md:py-32">
         <div className="overflow-hidden rounded-[34px] bg-neutral-950 text-white shadow-2xl shadow-black/10 lg:grid lg:grid-cols-[1.6fr_1fr]">
           <div className="relative min-h-[260px] md:min-h-[360px]">
-            <Image src="/images/art-5.jpg" alt="" fill sizes="(max-width: 1024px) 90vw, 60vw" className="object-cover opacity-80" />
+            <Image src="/images/map-key-showroom.png" alt="" fill sizes="(max-width: 1024px) 90vw, 60vw" className="object-cover opacity-80" />
           </div>
           <div className="flex flex-col items-center justify-center p-10 text-center">
-            <Image src="/new_logo.svg" alt="Map Key" width={210} height={124} className="h-auto w-52" />
+            <Image src="/new_logo_dark.svg" alt="Map Key" width={210} height={124} className="h-auto w-52" />
             <p className="mt-8 text-lg leading-8 text-white/70">{isRTL ? 'تجربة عقارية مصممة لتختصر الطريق إلى القرار.' : 'A real estate experience designed to shorten the path to a decision.'}</p>
           </div>
         </div>
