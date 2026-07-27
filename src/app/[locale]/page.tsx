@@ -373,7 +373,7 @@ export default function HomePage() {
       </section>
 
       <section className="container mx-auto px-4 py-16 md:py-32">
-        <SectionTitle title={isRTL ? 'عقارات مختارة' : 'Selected Properties'} text={isRTL ? 'واجهات بطاقات فاخرة، واضحة، ومهيأة للبحث والتصفية.' : 'Premium property cards ready for search and filtering.'} />
+        <SectionTitle title={isRTL ? 'عقارات للتأجير' : 'Properties for rent'} text={isRTL ? 'واجهات بطاقات فاخرة، واضحة، ومهيأة للبحث والتصفية.' : 'Premium property cards ready for search and filtering.'} />
         <div className="grid gap-7 md:grid-cols-2 lg:grid-cols-3">
           {demoProperties.slice(0, 3).map((property, index) => (
             <PropertyCard key={property.id} property={property} index={index} isRTL={isRTL} locale={locale} />
@@ -392,12 +392,12 @@ export default function HomePage() {
       <section className="container mx-auto px-4 py-16 md:py-32">
         <div className="mb-10 flex flex-col items-center justify-between gap-6 lg:flex-row">
           <SectionTitle title={t.priceMap} align="start" />
-          <div className="rounded-full border border-neutral-200 bg-white p-1 shadow-sm">
+          <div className="flex max-w-full flex-wrap justify-center gap-2 rounded-2xl border border-neutral-200 bg-white p-2 shadow-sm lg:max-w-[680px] lg:justify-end">
             {propertyTypes.filter((type) => type.value !== 'all').map((type) => (
               <button
                 key={type.value}
                 onClick={() => setMapMode(type.value)}
-                className={cn('rounded-full px-5 py-3 text-sm font-bold transition', mapMode === type.value ? 'bg-[#b99750] text-white' : 'text-neutral-600')}
+                className={cn('min-h-11 rounded-full px-4 py-2 text-sm font-bold transition whitespace-nowrap', mapMode === type.value ? 'bg-[#b99750] text-white' : 'text-neutral-600 hover:bg-neutral-100')}
               >
                 {isRTL ? type.labelAr : type.label}
               </button>
