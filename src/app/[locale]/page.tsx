@@ -6,7 +6,7 @@ import { motion } from 'framer-motion'
 import { useLocale } from 'next-intl'
 import { Link } from '@/i18n/navigation'
 import { demoProjects } from '@/lib/demo-projects'
-import { demoProperties } from '@/lib/demo-properties'
+import { demoProperties, propertyTypes } from '@/lib/demo-properties'
 import { cn, formatPrice } from '@/lib/utils'
 import {
   ArrowLeft,
@@ -21,9 +21,11 @@ import {
   MapPin,
   Maximize2,
   MessageCircle,
-  ShieldCheck,
   Sparkles,
-  TrendingUp,
+  Clapperboard,
+  Megaphone,
+  Target,
+  Infinity as InfinityIcon,
 } from 'lucide-react'
 
 const copy = {
@@ -48,18 +50,18 @@ const copy = {
     offPlan: 'مشاريع على الخريطة',
     readyProjects: 'مشاريع جاهزة',
     search: 'بحث',
-    whyTitle: 'لماذا Map Key؟',
-    whyLead: 'لسنا وسيطاً عابراً. نحن شريك يقرأ القيمة، يختار بعناية، ويعرض الفرص التي تستحق الظهور.',
+    whyTitle: 'من نحن',
+    whyLead: 'شركة متخصصة في التسويق العقاري، نقدم حلولًا تسويقية احترافية تساعد المشاريع العقارية على تحقيق مبيعات حقيقية عبر استراتيجيات مدروسة وإعلانات فعّالة',
     whyText:
-      'من السكن الراقي إلى التجاري النابض، نوصل العميل إلى فرصة تناسب احتياجه اليوم وتحافظ على قيمتها غداً.',
+      'شركة متخصصة في التسويق العقاري، نقدم حلولًا تسويقية احترافية تساعد المشاريع العقارية على تحقيق مبيعات حقيقية عبر استراتيجيات مدروسة وإعلانات فعّالة',
     exclusive: 'مشاريع حصرية',
     exclusiveText: 'لا نعرض كل ما هو موجود. نعرض فقط ما يستحق الظهور.',
     all: 'الكل',
-    onMap: 'على الخريطة',
-    ready: 'جاهزة',
+    readyOffPlan: 'جاهز على الخارطة',
+    rentalUnits: 'وحدات تأجير',
     residential: 'سكني',
-    neighborhoods: 'اختر الحي الأنسب',
-    neighborhoodsText: 'نرشّح الأحياء وفق الموقع والخدمات ونمط الحياة والأسعار.',
+    neighborhoods: 'ليه تختار ماب كي Map Key?',
+    neighborhoodsText: 'نحدد لك الخيار المثالي بعد اخذ احتياجاتك ونجيب لك العروض',
     priceMap: 'أسعار العقارات في المملكة العربية السعودية بالموقع',
     sellBuy: 'هل تبيع أم تشتري؟',
     sellBuyText: 'كل الاتجاهات تبدأ من Map Key. أضف عقارك أو أخبرنا بما تبحث عنه، وسنتولى الباقي.',
@@ -99,18 +101,18 @@ const copy = {
     offPlan: 'Off-plan projects',
     readyProjects: 'Ready projects',
     search: 'Search',
-    whyTitle: 'Why Map Key?',
-    whyLead: 'We are not a passing broker. We are a partner that reads value and presents opportunities worth seeing.',
+    whyTitle: 'About Us',
+    whyLead: 'A real estate marketing company delivering professional solutions that help projects achieve real sales through deliberate strategies and effective campaigns.',
     whyText:
-      'From refined residences to active commercial assets, we match each client with a property that fits today and holds value tomorrow.',
+      'A real estate marketing company delivering professional solutions that help projects achieve real sales through deliberate strategies and effective campaigns.',
     exclusive: 'Exclusive Projects',
     exclusiveText: 'We do not show everything on the market. We show what deserves attention.',
     all: 'All',
-    onMap: 'On map',
-    ready: 'Ready',
+    readyOffPlan: 'Ready off-plan',
+    rentalUnits: 'Rental units',
     residential: 'Residential',
-    neighborhoods: 'Choose the right district',
-    neighborhoodsText: 'Districts are curated by location, services, lifestyle, and price movement.',
+    neighborhoods: 'Why choose Map Key?',
+    neighborhoodsText: 'We define the ideal option after understanding your needs, then bring you the offers.',
     priceMap: 'Property prices in Saudi Arabia by location',
     sellBuy: 'Selling or buying?',
     sellBuyText: 'Every direction starts with Map Key. Add your property or tell us what you need, and we handle the rest.',
@@ -130,12 +132,6 @@ const copy = {
     whatsapp: 'WhatsApp',
   },
 }
-
-const neighborhoods = [
-  { image: '/images/art-3.jpg', ar: 'الملز', en: 'Al Malaz', metaAr: 'قلب الرياض التاريخي بروح عصرية', metaEn: 'Historic Riyadh with a modern pulse' },
-  { image: '/images/proj-4.jpg', ar: 'الياسمين', en: 'Al Yasmin', metaAr: 'أبراج حديثة وخدمات مكتملة', metaEn: 'Modern towers and complete services' },
-  { image: '/images/prop-7.jpg', ar: 'العقيق', en: 'Al Aqiq', metaAr: 'قريب من المراكز المالية', metaEn: 'Close to major business districts' },
-]
 
 const popularLinks = {
   ar: {
@@ -272,7 +268,7 @@ export default function HomePage() {
   const isRTL = locale === 'ar'
   const t = copy[locale]
   const [subscribed, setSubscribed] = useState(false)
-  const [mapMode, setMapMode] = useState<'residential' | 'commercial'>('residential')
+  const [mapMode, setMapMode] = useState('villa')
   const [projectFilter, setProjectFilter] = useState('all')
 
   const filteredProjects = useMemo(() => {
@@ -304,30 +300,62 @@ export default function HomePage() {
         </motion.div>
       </section>
 
-      <section className="container mx-auto px-4 py-16 md:py-32">
-        <SectionTitle title={t.whyTitle} text={t.whyLead} />
-        <div className="grid items-center gap-8 lg:grid-cols-[1.1fr_.9fr]">
-          <motion.div variants={reveal} initial="hidden" whileInView="show" viewport={{ once: true }} className="rounded-[36px] bg-white p-8 shadow-xl shadow-black/5 md:p-12">
-            <p className="text-xl leading-10 text-neutral-600">{t.whyText}</p>
-            <div className="mt-10 grid gap-4 sm:grid-cols-3">
+      <section className="bg-[#12171a] py-16 text-white md:py-28">
+        <div className="container mx-auto px-4">
+          <motion.div
+            variants={reveal}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, margin: '-80px' }}
+            className="relative min-h-[620px] overflow-hidden rounded-[30px] border border-white/10 bg-[#151a1d] px-5 py-10 shadow-2xl shadow-black/30 md:px-12 lg:grid lg:grid-cols-[1.2fr_.8fr] lg:items-center"
+          >
+            <div className="pointer-events-none absolute inset-0 opacity-70 [background-image:radial-gradient(circle_at_18%_8%,rgba(185,151,80,.18),transparent_28%),linear-gradient(115deg,transparent_0_35%,rgba(255,255,255,.09)_36%,transparent_37%),linear-gradient(24deg,transparent_0_58%,rgba(255,255,255,.08)_59%,transparent_60%)]" />
+            <div className="pointer-events-none absolute -left-20 top-10 h-[520px] w-[720px] rounded-[50%] border border-white/10" />
+            <div className="pointer-events-none absolute -bottom-28 left-1/4 h-[340px] w-[720px] rounded-[50%] border border-white/10" />
+            <div className="pointer-events-none absolute -right-24 top-6 h-[560px] w-[260px] rounded-[50%] border border-white/10" />
+
+            <div className="relative min-h-[430px] lg:min-h-[540px]">
               {[
-                [TrendingUp, isRTL ? 'قراءة سوق دقيقة' : 'Market insight'],
-                [ShieldCheck, isRTL ? 'اختيار موثوق' : 'Trusted selection'],
-                [Building2, isRTL ? 'مشاريع منتقاة' : 'Curated projects'],
-              ].map(([Icon, label]) => (
-                <div key={label as string} className="rounded-2xl border border-neutral-100 bg-[#fbfaf7] p-5">
-                  <Icon className="mb-4 h-7 w-7 text-[#b99750]" />
-                  <strong>{label as string}</strong>
-                </div>
+                [Building2, isRTL ? 'التسويق العقاري المتكامل' : 'Integrated real estate marketing', 'left-[45%] top-[2%]'],
+                [Clapperboard, isRTL ? 'إنتاج المحتوى العقاري' : 'Real estate content production', 'left-[63%] top-[26%]'],
+                [Target, isRTL ? 'استشارات تسويقية عقارية' : 'Real estate marketing consulting', 'left-[58%] top-[68%]'],
+                [InfinityIcon, isRTL ? 'إدارة حسابات السوشيال ميديا' : 'Social media account management', 'left-[28%] top-[76%]'],
+                [Megaphone, isRTL ? 'إدارة الحملات الإعلانية' : 'Ad campaign management', 'left-[12%] top-[38%]'],
+              ].map(([Icon, label, position], index) => (
+                <motion.div
+                  key={label as string}
+                  initial={{ opacity: 0, y: 18, scale: 0.94 }}
+                  whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1, duration: 0.55 }}
+                  className={cn('absolute w-44 -translate-x-1/2 text-center', position as string)}
+                >
+                  <div className="mx-auto grid h-20 w-20 place-items-center rounded-full bg-white/8 shadow-[0_18px_55px_rgba(0,0,0,.28)] ring-1 ring-white/10 backdrop-blur">
+                    <div className="grid h-14 w-14 place-items-center rounded-full border-2 border-[#c6a24f] text-[#c6a24f]">
+                      <Icon className="h-8 w-8" />
+                    </div>
+                  </div>
+                  <p className="mx-auto mt-4 max-w-40 text-sm font-black leading-6 text-white/90">{label as string}</p>
+                </motion.div>
               ))}
+              <motion.span
+                aria-hidden
+                animate={{ rotate: 360 }}
+                transition={{ duration: 24, repeat: Number.POSITIVE_INFINITY, ease: 'linear' }}
+                className="absolute left-[36%] top-[26%] h-72 w-72 rounded-full border border-[#c6a24f]/30 border-r-transparent border-t-transparent"
+              />
+              <motion.span
+                aria-hidden
+                animate={{ rotate: -360 }}
+                transition={{ duration: 30, repeat: Number.POSITIVE_INFINITY, ease: 'linear' }}
+                className="absolute left-[24%] top-[16%] h-96 w-96 rounded-full border border-white/10 border-b-transparent border-l-transparent"
+              />
             </div>
-          </motion.div>
-          <motion.div variants={reveal} initial="hidden" whileInView="show" viewport={{ once: true }} className="relative h-[320px] overflow-hidden rounded-[28px] md:h-[430px] md:rounded-[36px]">
-            <Image src="/images/proj-1.jpg" alt="" fill sizes="(max-width: 1024px) 90vw, 45vw" className="object-cover" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
-            <div className="absolute bottom-8 start-8 text-white">
-              <p className="text-5xl font-black text-[#d1ad63]">+12K</p>
-              <p className="mt-2 text-white/80">{isRTL ? 'فرصة عقارية محللة' : 'analyzed property opportunities'}</p>
+
+            <div className="relative z-10 mt-12 text-center lg:mt-0 lg:text-start">
+              <p className="text-sm font-bold uppercase tracking-[.24em] text-[#c6a24f]">{isRTL ? 'SERVICES MARKETING' : 'Marketing Services'}</p>
+              <h2 className="mt-4 text-4xl font-black leading-tight md:text-6xl">{isRTL ? 'خدماتنا التسويقية' : 'Marketing Services'}</h2>
+              <p className="mt-6 max-w-xl text-lg leading-9 text-white/65">{t.whyText}</p>
             </div>
           </motion.div>
         </div>
@@ -340,10 +368,8 @@ export default function HomePage() {
             <div className="flex flex-wrap gap-2">
               {[
                 ['all', t.all],
-                ['map', t.onMap],
-                ['ready', t.ready],
-                ['residential', t.residential],
-                ['commercial', t.commercial],
+                ['ready-off-plan', t.readyOffPlan],
+                ['rental-units', t.rentalUnits],
               ].map(([value, label]) => (
                 <button
                   key={value}
@@ -379,20 +405,10 @@ export default function HomePage() {
       </section>
 
       <section className="bg-neutral-950 py-16 text-white md:py-32">
-        <div className="container mx-auto px-4">
-          <SectionTitle title={t.neighborhoods} text={t.neighborhoodsText} />
-          <div className="grid gap-7 lg:grid-cols-3">
-            {neighborhoods.map((item, index) => (
-              <motion.article key={item.en} variants={reveal} initial="hidden" whileInView="show" viewport={{ once: true }} transition={{ delay: index * 0.08 }} className="group relative h-[360px] overflow-hidden rounded-[30px]">
-                <Image src={item.image} alt={isRTL ? item.ar : item.en} fill sizes="(max-width: 1024px) 90vw, 33vw" className="object-cover opacity-80 transition duration-700 group-hover:scale-105" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                <div className="absolute bottom-0 p-7">
-                  <h3 className="text-2xl font-black md:text-3xl">{isRTL ? item.ar : item.en}</h3>
-                  <p className="mt-2 text-white/75">{isRTL ? item.metaAr : item.metaEn}</p>
-                </div>
-              </motion.article>
-            ))}
-          </div>
+        <div className="container mx-auto px-4 text-center">
+          <div className="mx-auto mb-5 h-1 w-16 rounded-full bg-[#b99750]" />
+          <h2 className="text-3xl font-black leading-tight md:text-5xl">{t.neighborhoods}</h2>
+          <p className="mx-auto mt-5 max-w-3xl text-lg leading-9 text-white/70">{t.neighborhoodsText}</p>
         </div>
       </section>
 
@@ -400,16 +416,13 @@ export default function HomePage() {
         <div className="mb-10 flex flex-col items-center justify-between gap-6 lg:flex-row">
           <SectionTitle title={t.priceMap} align="start" />
           <div className="rounded-full border border-neutral-200 bg-white p-1 shadow-sm">
-            {[
-              ['residential', t.residential],
-              ['commercial', t.commercial],
-            ].map(([value, label]) => (
+            {propertyTypes.filter((type) => type.value !== 'all').map((type) => (
               <button
-                key={value}
-                onClick={() => setMapMode(value as typeof mapMode)}
-                className={cn('rounded-full px-6 py-3 text-sm font-bold transition', mapMode === value ? 'bg-[#b99750] text-white' : 'text-neutral-600')}
+                key={type.value}
+                onClick={() => setMapMode(type.value)}
+                className={cn('rounded-full px-5 py-3 text-sm font-bold transition', mapMode === type.value ? 'bg-[#b99750] text-white' : 'text-neutral-600')}
               >
-                {label}
+                {isRTL ? type.labelAr : type.label}
               </button>
             ))}
           </div>
@@ -438,7 +451,7 @@ export default function HomePage() {
             </button>
             <div className="border-t border-neutral-200 pt-6">
               <h3 className="text-2xl font-black">{isRTL ? 'حي الصحافة' : 'Al Sahafa District'}</h3>
-              <p className="mt-1 text-neutral-400">{mapMode === 'residential' ? t.residential : t.commercial}</p>
+              <p className="mt-1 text-neutral-400">{(isRTL ? propertyTypes.find((type) => type.value === mapMode)?.labelAr : propertyTypes.find((type) => type.value === mapMode)?.label) ?? ''}</p>
             </div>
             <div className="mt-6 overflow-hidden rounded-xl">
               {[
@@ -537,10 +550,10 @@ export default function HomePage() {
       </section>
 
       <div className="fixed bottom-6 end-5 z-40 flex flex-col gap-3">
-        <a href="tel:+966550000000" className="grid h-14 w-14 place-items-center rounded-full bg-neutral-950 text-white shadow-2xl md:h-16 md:w-16" aria-label={t.ask}>
+        <a href="tel:+966541646755" className="grid h-14 w-14 place-items-center rounded-full bg-neutral-950 text-white shadow-2xl md:h-16 md:w-16" aria-label={t.ask}>
           <HelpCircle className="h-6 w-6 md:h-7 md:w-7" />
         </a>
-        <a href="https://wa.me/966550000000" className="grid h-14 w-14 place-items-center rounded-full bg-[#21c769] text-white shadow-2xl md:h-16 md:w-16" aria-label={t.whatsapp}>
+        <a href="https://wa.me/966541646755" className="grid h-14 w-14 place-items-center rounded-full bg-[#21c769] text-white shadow-2xl md:h-16 md:w-16" aria-label={t.whatsapp}>
           <MessageCircle className="h-6 w-6 md:h-7 md:w-7" />
         </a>
       </div>

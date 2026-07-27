@@ -41,8 +41,11 @@ export default function PropertiesPage() {
         const typeMap: Record<string, string[]> = {
           villa: ['Villa', 'villa'],
           apartment: ['Apartment', 'apartment'],
-          commercial: ['Commercial', 'Office', 'Retail'],
+          townhouse: ['Townhouse'],
           penthouse: ['Penthouse'],
+          'ground-house': ['Ground House'],
+          office: ['Office', 'Commercial', 'Retail'],
+          land: ['Land'],
         }
         const match = typeMap[filters.type]?.some((t) => p.title.includes(t))
         if (!match) return false

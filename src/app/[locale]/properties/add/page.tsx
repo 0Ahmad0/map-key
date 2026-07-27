@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { useLocale } from 'next-intl'
 import { Link } from '@/i18n/navigation'
+import { propertyTypes } from '@/lib/demo-properties'
 import { Home, CheckCircle2 } from 'lucide-react'
 
 const inputCls =
@@ -55,9 +56,9 @@ export default function AddPropertyPage() {
             <div className="grid grid-cols-2 gap-4">
               <select required className={inputCls} defaultValue="">
                 <option value="" disabled>{isRTL ? 'نوع العقار' : 'Property type'}</option>
-                <option value="villa">{isRTL ? 'فيلا' : 'Villa'}</option>
-                <option value="apartment">{isRTL ? 'شقة' : 'Apartment'}</option>
-                <option value="commercial">{isRTL ? 'تجاري' : 'Commercial'}</option>
+                {propertyTypes.filter((type) => type.value !== 'all').map((type) => (
+                  <option key={type.value} value={type.value}>{isRTL ? type.labelAr : type.label}</option>
+                ))}
               </select>
               <select required className={inputCls} defaultValue="">
                 <option value="" disabled>{isRTL ? 'المدينة' : 'City'}</option>

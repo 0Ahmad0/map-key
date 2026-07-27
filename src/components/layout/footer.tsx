@@ -5,6 +5,12 @@ import { useLocale } from 'next-intl'
 import { Link } from '@/i18n/navigation'
 import { Mail, MapPin, Phone, Send } from 'lucide-react'
 
+const phone = '+966 54 164 6755'
+const phoneHref = 'tel:+966541646755'
+const extraPhone = '+966 50 181 0061'
+const extraPhoneHref = 'tel:+966501810061'
+const email = 'mapkey.sa@outlook.com'
+
 const content = {
   ar: {
     summary: 'منصة عقارية سعودية تقرأ السوق بعين خبيرة، وتعرض فرصاً مختارة للسكن والاستثمار.',
@@ -58,13 +64,17 @@ export function Footer() {
           <Image src="/new_logo.svg" alt="Map Key" width={220} height={130} className="h-auto w-52" />
           <p className="mt-6 max-w-sm text-lg leading-8 text-neutral-600">{t.summary}</p>
           <div className="mt-8 space-y-4 text-neutral-700">
-            <a href="tel:+966550000000" className="flex items-center gap-3">
+            <a href={phoneHref} className="flex items-center gap-3">
               <Phone className="h-5 w-5 text-[#b99750]" />
-              +966 55 000 0000
+              {phone}
             </a>
-            <a href="mailto:info@map-key.com" className="flex items-center gap-3">
+            <a href={extraPhoneHref} className="flex items-center gap-3">
+              <Phone className="h-5 w-5 text-[#b99750]" />
+              {extraPhone}
+            </a>
+            <a href={`mailto:${email}`} className="flex items-center gap-3">
               <Mail className="h-5 w-5 text-[#b99750]" />
-              info@map-key.com
+              {email}
             </a>
             <p className="flex items-start gap-3">
               <MapPin className="mt-1 h-5 w-5 shrink-0 text-[#b99750]" />
@@ -97,8 +107,12 @@ export function Footer() {
             {t.rights} © {new Date().getFullYear()} Map Key
           </p>
           <div className="flex gap-3">
-            {['X', 'in', 'IG'].map((label) => (
-              <a key={label} href="#" className="grid h-11 w-11 place-items-center rounded-full border border-white/20 text-sm font-bold transition hover:border-[#b99750] hover:text-[#d1ad63]">
+            {[
+              ['X', 'https://x.com/MapkeySa'],
+              ['TT', 'https://www.tiktok.com/@mapkeysa'],
+              ['@', `mailto:${email}`],
+            ].map(([label, href]) => (
+              <a key={label} href={href} className="grid h-11 w-11 place-items-center rounded-full border border-white/20 text-sm font-bold transition hover:border-[#b99750] hover:text-[#d1ad63]">
                 {label}
               </a>
             ))}

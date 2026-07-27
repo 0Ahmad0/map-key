@@ -143,11 +143,11 @@ export default function PropertyDetailPage() {
               </p>
 
               <div className="space-y-3">
-                <a href="tel:+966550000000" className="btn-gold w-full flex items-center justify-center gap-2 rounded-xl">
+                <a href="tel:+966541646755" className="btn-gold w-full flex items-center justify-center gap-2 rounded-xl">
                   <Phone className="w-4 h-4" />
                   {t('contact')}
                 </a>
-                <a href="mailto:info@map-key.com" className="btn-outline-gold w-full flex items-center justify-center gap-2 rounded-xl">
+                <a href="mailto:mapkey.sa@outlook.com" className="btn-outline-gold w-full flex items-center justify-center gap-2 rounded-xl">
                   <Mail className="w-4 h-4" />
                   {isRTL ? 'راسلنا' : 'Email us'}
                 </a>

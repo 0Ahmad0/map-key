@@ -12,27 +12,27 @@ import { ChevronDown, Globe2, Headphones, Menu, Phone, X } from 'lucide-react'
 const labels = {
   ar: {
     home: 'الرئيسية',
-    sale: 'للبيع',
-    commercial: 'تجاري',
-    projects: 'المشاريع',
-    signature: 'سيجنتشر',
+    projects: 'مشاريعنا',
+    about: 'من نحن',
+    offPlan: 'البيع على الخارطة',
+    rent: 'للتأجير',
     more: 'المزيد',
     lang: 'EN',
     arabic: 'ع',
     currency: 'SAR',
-    phone: '+966 55 000 0000',
+    phone: '+966 54 164 6755',
   },
   en: {
     home: 'Home',
-    sale: 'For Sale',
-    commercial: 'Commercial',
-    projects: 'Projects',
-    signature: 'Signature',
+    projects: 'Our Projects',
+    about: 'About Us',
+    offPlan: 'Off-plan Sales',
+    rent: 'For Rent',
     more: 'More',
     lang: 'AR',
     arabic: 'EN',
     currency: 'SAR',
-    phone: '+966 55 000 0000',
+    phone: '+966 54 164 6755',
   },
 }
 
@@ -51,10 +51,10 @@ export function Header() {
 
   const nav = [
     { href: '/', label: t.home },
-    { href: '/properties?purpose=sale', label: t.sale },
-    { href: '/properties?purpose=commercial', label: t.commercial },
     { href: '/properties?type=projects', label: t.projects },
-    { href: '/properties?signature=1', label: t.signature, accent: true },
+    { href: '/about', label: t.about },
+    { href: '/properties?status=off-plan', label: t.offPlan },
+    { href: '/properties?purpose=rent', label: t.rent },
   ]
 
   const switchLocale = () => {
@@ -83,7 +83,6 @@ export function Header() {
               href={item.href}
               className={cn(
                 'text-lg font-medium text-neutral-950 transition hover:text-[#b99750]',
-                item.accent && 'text-[#d1ad63]',
                 pathname === item.href && 'text-[#b99750]'
               )}
             >
@@ -140,7 +139,7 @@ export function Header() {
                   ))}
                 </nav>
                 <div className="shrink-0 space-y-3 border-t border-neutral-100 pt-4">
-                  <a href="tel:+966550000000" className="flex items-center justify-center gap-2 rounded-2xl border border-neutral-200 px-5 py-4 font-bold">
+                  <a href="tel:+966541646755" className="flex items-center justify-center gap-2 rounded-2xl border border-neutral-200 px-5 py-4 font-bold">
                     <Phone className="h-4 w-4 text-[#b99750]" />
                     {t.phone}
                   </a>
