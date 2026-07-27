@@ -298,13 +298,14 @@ export default function HomePage() {
         </motion.div>
       </section>
 
-      <section className="container mx-auto px-4 py-12 md:py-20">
+      <section className="container mx-auto px-4 py-10 md:py-14">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.55 }} className="mx-auto max-w-4xl text-center">
+          <h2 className="mb-4 text-3xl font-black text-neutral-950 md:text-5xl">{isRTL ? 'من نحن' : 'About Us'}</h2>
           <p className="text-lg leading-9 text-neutral-600 md:text-xl md:leading-10">{t.whyLead}</p>
         </motion.div>
       </section>
 
-      <section className="container mx-auto px-4 py-16 md:py-32">
+      <section className="container mx-auto px-4 pb-16 md:pb-32 pt-0">
         <div className="grid items-stretch gap-8 lg:grid-cols-[1.1fr_.9fr]">
           <motion.div variants={reveal} initial="hidden" whileInView="show" viewport={{ once: true }} className="rounded-[36px] bg-white p-8 shadow-xl shadow-black/5 md:p-12">
             <h2 className="mb-8 text-3xl font-black leading-tight text-neutral-950 md:text-5xl">{t.whyTitle}</h2>
