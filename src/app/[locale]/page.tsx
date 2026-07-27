@@ -21,11 +21,13 @@ import {
   MapPin,
   Maximize2,
   MessageCircle,
+  ShieldCheck,
   Sparkles,
   Clapperboard,
   Megaphone,
   Target,
   Infinity as InfinityIcon,
+  TrendingUp,
 } from 'lucide-react'
 
 const copy = {
@@ -300,62 +302,56 @@ export default function HomePage() {
         </motion.div>
       </section>
 
-      <section className="bg-[#12171a] py-16 text-white md:py-28">
-        <div className="container mx-auto px-4">
-          <motion.div
-            variants={reveal}
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true, margin: '-80px' }}
-            className="relative min-h-[620px] overflow-hidden rounded-[30px] border border-white/10 bg-[#151a1d] px-5 py-10 shadow-2xl shadow-black/30 md:px-12 lg:grid lg:grid-cols-[1.2fr_.8fr] lg:items-center"
-          >
-            <div className="pointer-events-none absolute inset-0 opacity-70 [background-image:radial-gradient(circle_at_18%_8%,rgba(185,151,80,.18),transparent_28%),linear-gradient(115deg,transparent_0_35%,rgba(255,255,255,.09)_36%,transparent_37%),linear-gradient(24deg,transparent_0_58%,rgba(255,255,255,.08)_59%,transparent_60%)]" />
-            <div className="pointer-events-none absolute -left-20 top-10 h-[520px] w-[720px] rounded-[50%] border border-white/10" />
-            <div className="pointer-events-none absolute -bottom-28 left-1/4 h-[340px] w-[720px] rounded-[50%] border border-white/10" />
-            <div className="pointer-events-none absolute -right-24 top-6 h-[560px] w-[260px] rounded-[50%] border border-white/10" />
-
-            <div className="relative min-h-[430px] lg:min-h-[540px]">
+      <section className="container mx-auto px-4 py-16 md:py-32">
+        <SectionTitle title={t.whyTitle} text={t.whyLead} />
+        <div className="grid items-center gap-8 lg:grid-cols-[1.1fr_.9fr]">
+          <motion.div variants={reveal} initial="hidden" whileInView="show" viewport={{ once: true }} className="rounded-[36px] bg-white p-8 shadow-xl shadow-black/5 md:p-12">
+            <p className="text-xl leading-10 text-neutral-600">{t.whyText}</p>
+            <div className="mt-10 grid gap-4 sm:grid-cols-3">
               {[
-                [Building2, isRTL ? 'التسويق العقاري المتكامل' : 'Integrated real estate marketing', 'left-[45%] top-[2%]'],
-                [Clapperboard, isRTL ? 'إنتاج المحتوى العقاري' : 'Real estate content production', 'left-[63%] top-[26%]'],
-                [Target, isRTL ? 'استشارات تسويقية عقارية' : 'Real estate marketing consulting', 'left-[58%] top-[68%]'],
-                [InfinityIcon, isRTL ? 'إدارة حسابات السوشيال ميديا' : 'Social media account management', 'left-[28%] top-[76%]'],
-                [Megaphone, isRTL ? 'إدارة الحملات الإعلانية' : 'Ad campaign management', 'left-[12%] top-[38%]'],
-              ].map(([Icon, label, position], index) => (
-                <motion.div
-                  key={label as string}
-                  initial={{ opacity: 0, y: 18, scale: 0.94 }}
-                  whileInView={{ opacity: 1, y: 0, scale: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.1, duration: 0.55 }}
-                  className={cn('absolute w-44 -translate-x-1/2 text-center', position as string)}
-                >
-                  <div className="mx-auto grid h-20 w-20 place-items-center rounded-full bg-white/8 shadow-[0_18px_55px_rgba(0,0,0,.28)] ring-1 ring-white/10 backdrop-blur">
-                    <div className="grid h-14 w-14 place-items-center rounded-full border-2 border-[#c6a24f] text-[#c6a24f]">
-                      <Icon className="h-8 w-8" />
-                    </div>
-                  </div>
-                  <p className="mx-auto mt-4 max-w-40 text-sm font-black leading-6 text-white/90">{label as string}</p>
-                </motion.div>
+                [TrendingUp, isRTL ? 'قراءة سوق دقيقة' : 'Market insight'],
+                [ShieldCheck, isRTL ? 'اختيار موثوق' : 'Trusted selection'],
+                [Building2, isRTL ? 'مشاريع منتقاة' : 'Curated projects'],
+              ].map(([Icon, label]) => (
+                <div key={label as string} className="rounded-2xl border border-neutral-100 bg-[#fbfaf7] p-5">
+                  <Icon className="mb-4 h-7 w-7 text-[#b99750]" />
+                  <strong>{label as string}</strong>
+                </div>
               ))}
-              <motion.span
-                aria-hidden
-                animate={{ rotate: 360 }}
-                transition={{ duration: 24, repeat: Number.POSITIVE_INFINITY, ease: 'linear' }}
-                className="absolute left-[36%] top-[26%] h-72 w-72 rounded-full border border-[#c6a24f]/30 border-r-transparent border-t-transparent"
-              />
-              <motion.span
-                aria-hidden
-                animate={{ rotate: -360 }}
-                transition={{ duration: 30, repeat: Number.POSITIVE_INFINITY, ease: 'linear' }}
-                className="absolute left-[24%] top-[16%] h-96 w-96 rounded-full border border-white/10 border-b-transparent border-l-transparent"
-              />
             </div>
-
-            <div className="relative z-10 mt-12 text-center lg:mt-0 lg:text-start">
-              <p className="text-sm font-bold uppercase tracking-[.24em] text-[#c6a24f]">{isRTL ? 'SERVICES MARKETING' : 'Marketing Services'}</p>
-              <h2 className="mt-4 text-4xl font-black leading-tight md:text-6xl">{isRTL ? 'خدماتنا التسويقية' : 'Marketing Services'}</h2>
-              <p className="mt-6 max-w-xl text-lg leading-9 text-white/65">{t.whyText}</p>
+            <div className="mt-8 rounded-[28px] border border-neutral-100 bg-neutral-950 p-6 text-white">
+              <p className="mb-5 text-sm font-bold uppercase tracking-[.2em] text-[#d1ad63]">{isRTL ? 'خدماتنا التسويقية' : 'Marketing services'}</p>
+              <div className="grid gap-4 sm:grid-cols-2">
+                {[
+                  [Building2, isRTL ? 'التسويق العقاري المتكامل' : 'Integrated real estate marketing'],
+                  [Clapperboard, isRTL ? 'إنتاج المحتوى العقاري' : 'Real estate content production'],
+                  [Target, isRTL ? 'استشارات تسويقية عقارية' : 'Real estate marketing consulting'],
+                  [InfinityIcon, isRTL ? 'إدارة حسابات السوشيال ميديا' : 'Social media account management'],
+                  [Megaphone, isRTL ? 'إدارة الحملات الإعلانية' : 'Ad campaign management'],
+                ].map(([Icon, label], index) => (
+                  <motion.div
+                    key={label as string}
+                    initial={{ opacity: 0, y: 10 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: index * 0.06, duration: 0.35 }}
+                    className="flex items-center gap-3 rounded-2xl bg-white/6 p-4 ring-1 ring-white/10"
+                  >
+                    <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-[#d1ad63]/60 text-[#d1ad63]">
+                      <Icon className="h-5 w-5" />
+                    </span>
+                    <strong className="text-sm leading-6 text-white/90">{label as string}</strong>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          </motion.div>
+          <motion.div variants={reveal} initial="hidden" whileInView="show" viewport={{ once: true }} className="relative h-[320px] overflow-hidden rounded-[28px] md:h-[430px] md:rounded-[36px]">
+            <Image src="/images/proj-1.jpg" alt="" fill sizes="(max-width: 1024px) 90vw, 45vw" className="object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+            <div className="absolute bottom-8 start-8 text-white">
+              <p className="text-5xl font-black text-[#d1ad63]">+12K</p>
+              <p className="mt-2 text-white/80">{isRTL ? 'فرصة عقارية محللة' : 'analyzed property opportunities'}</p>
             </div>
           </motion.div>
         </div>
