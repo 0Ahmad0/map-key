@@ -45,10 +45,10 @@ export default function AboutPage() {
       <div className="container mx-auto px-4 max-w-4xl">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
           <div className="h-0.5 w-12 bg-gradient-to-r from-accent-gold to-amber-400 mb-6" />
-          <h1 className="text-h1 font-bold text-text-primary mb-6">
+          <h1 className="text-h1 font-black text-text-primary mb-4">
             {isRTL ? 'من نحن' : 'About Us'}
           </h1>
-          <p className="text-body text-text-secondary leading-relaxed mb-12">
+          <p className="text-body text-text-secondary leading-relaxed mb-8">
             {isRTL
               ? 'شركة متخصصة في التسويق العقاري، نقدم حلولًا تسويقية احترافية تساعد المشاريع العقارية على تحقيق مبيعات حقيقية عبر استراتيجيات مدروسة وإعلانات فعّالة.'
               : 'A company specialized in real estate marketing, providing professional marketing solutions that help real estate projects achieve real sales through well-studied strategies and effective advertising.'}
