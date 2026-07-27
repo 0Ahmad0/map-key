@@ -51,9 +51,8 @@ const copy = {
     readyProjects: 'مشاريع جاهزة',
     search: 'بحث',
     whyTitle: 'خدماتنا التسويقية',
-    whyLead: '',
-    whyText:
-      '',
+    whyLead: 'شركة متخصصة في التسويق العقاري، نقدم حلولًا تسويقية احترافية تساعد المشاريع العقارية على تحقيق مبيعات حقيقية عبر استراتيجيات مدروسة وإعلانات فعّالة.',
+    whyText: '',
     exclusive: 'مشاريعنا',
     exclusiveText: 'لا نعرض كل ما هو موجود. نعرض فقط ما يستحق الظهور.',
     all: 'الكل',
@@ -102,9 +101,8 @@ const copy = {
     readyProjects: 'Ready projects',
     search: 'Search',
     whyTitle: 'Marketing Services',
-    whyLead: '',
-    whyText:
-      '',
+    whyLead: 'A company specialized in real estate marketing, providing professional marketing solutions that help real estate projects achieve real sales through well-studied strategies and effective advertising.',
+    whyText: '',
     exclusive: 'Our Projects',
     exclusiveText: 'We do not show everything on the market. We show what deserves attention.',
     all: 'All',
@@ -297,6 +295,12 @@ export default function HomePage() {
           <motion.h1 variants={reveal} className="max-w-5xl text-4xl font-black leading-[1.12] sm:text-5xl md:text-7xl">
             {t.heroTitle}
           </motion.h1>
+        </motion.div>
+      </section>
+
+      <section className="container mx-auto px-4 py-12 md:py-20">
+        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.55 }} className="mx-auto max-w-4xl text-center">
+          <p className="text-lg leading-9 text-neutral-600 md:text-xl md:leading-10">{t.whyLead}</p>
         </motion.div>
       </section>
 
