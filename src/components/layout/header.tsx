@@ -49,7 +49,7 @@ export function Header() {
 
   const nav = [
     { href: '/', label: t.home },
-    { href: '/properties?type=projects', label: t.projects },
+    { href: '/projects', label: t.projects },
     { href: '/about', label: t.about },
     { href: '/properties?status=off-plan', label: t.offPlan },
     { href: '/properties?purpose=rent', label: t.rent },

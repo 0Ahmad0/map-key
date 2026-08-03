@@ -1,122 +1,181 @@
+export interface Unit {
+  code: string
+  floorAr: string
+  floor: string
+  /** م² */
+  area: number
+  /** المساحة الخاصة م² */
+  privateArea: number
+  rooms: number
+  price: number
+  /** السعر "يبدأ من" بدل سعر ثابت */
+  priceFrom?: boolean
+  status: 'available' | 'reserved' | 'sold'
+}
+
 export interface Project {
   id: string
   image: string
+  gallery: string[]
+  /** مخططات المشروع - ضع ملفات الصور في public/images ثم أضف مساراتها هنا */
+  plans: string[]
   title: string
   titleAr: string
   location: string
   locationAr: string
-  type: 'residential' | 'commercial' | 'mixed'
+  type: string
   typeAr: string
   deliveryDate: string
   deliveryDateAr: string
   startingPrice: number
-  developer: string
-  developerAr: string
-  status: 'available' | 'selling-fast' | 'coming-soon'
-  statusAr: string
+  descriptionAr?: string
+  description?: string
+  units: Unit[]
 }
+
+// ponytail: الوحدات المتكررة تعيد استخدام نفس المواصفات بدل تكرار الكتابة
+const spec = (
+  floorAr: string,
+  floor: string,
+  area: number,
+  rooms: number,
+  price: number
+) => ({ floorAr, floor, area, privateArea: 0, rooms, price, status: 'available' as const })
+
+const A_GROUND = spec('أرضي + قبو', 'Ground + Basement', 301.43, 4, 1_099_000)
+const A_GROUND_2 = spec('أرضي + قبو', 'Ground + Basement', 301.43, 4, 1_149_000)
+const B_FIRST = spec('دور أول', 'First floor', 169.27, 4, 849_000)
+const B_FIRST_2 = spec('دور أول', 'First floor', 169.27, 4, 889_000)
+const C_ROOF = spec('ملحق علوي', 'Rooftop annex', 161.33, 1, 689_000)
+const C_ROOF_2 = spec('ملحق علوي', 'Rooftop annex', 161.33, 1, 889_000)
+
+const doraSafaUnits: Unit[] = [
+  { code: '1B', ...spec('دور أول (زاوية)', 'First floor (corner)', 171.69, 4, 989_000) },
+  { code: '1C', ...spec('ملحق علوي (زاوية)', 'Rooftop annex (corner)', 161.45, 1, 790_000) },
+  { code: '2A', ...A_GROUND },
+  { code: '2C', ...C_ROOF },
+  { code: '3A', ...A_GROUND },
+  { code: '3B', ...B_FIRST },
+  { code: '3C', ...B_FIRST },
+  { code: '4A', ...A_GROUND_2 },
+  { code: '4B', ...B_FIRST_2 },
+  { code: '4C', ...C_ROOF_2 },
+  { code: '5A', ...A_GROUND_2 },
+  { code: '5B', ...B_FIRST_2 },
+  { code: '6B', ...B_FIRST },
+  { code: '7A', ...A_GROUND },
+  { code: '8A', ...A_GROUND },
+  { code: '8B', ...B_FIRST },
+]
+
+// سكون 10، 11 - حي العارض: كل الشقق غرفتين والسعر يبدأ من 999,000
+const sukoonUnit = (code: string, floorAr: string, floor: string, area: number): Unit => ({
+  code,
+  floorAr,
+  floor,
+  area,
+  privateArea: 0,
+  rooms: 2,
+  price: 999_000,
+  priceFrom: true,
+  status: 'available',
+})
+
+const sukoonUnits: Unit[] = [
+  ...([
+    ['A01-G', 147],
+    ['A02-G', 140],
+    ['A03-G', 149],
+    ['A04-G', 146],
+    ['A05-G', 140],
+    ['A06-G', 170],
+    ['A07-G', 150],
+  ] as const).map(([code, area]) => sukoonUnit(code, 'الدور الأول', 'First floor', area)),
+  ...([
+    ['B01', 150],
+    ['B02', 155],
+    ['CB2', 162],
+    ['B03', 156],
+    ['CB4', 202],
+    ['B05', 190],
+  ] as const).map(([code, area]) => sukoonUnit(code, 'الدور الثاني', 'Second floor', area)),
+  ...([
+    ['C1', 149],
+    ['C2', 170],
+    ['C3', 184],
+  ] as const).map(([code, area]) => sukoonUnit(code, 'الدور الثاني', 'Second floor', area)),
+  ...([
+    ['D1', 167],
+    ['D2', 154],
+    ['D3', 198],
+  ] as const).map(([code, area]) => sukoonUnit(code, 'الملحق', 'Annex', area)),
+]
 
 export const demoProjects: Project[] = [
   {
-    id: 'p1',
+    id: 'dora-safa',
     image: '/images/proj-1.jpg',
-    title: 'The Oasis Residences',
-    titleAr: 'واحة السكن',
-    location: 'Riyadh, North Ring Road',
-    locationAr: 'الرياض، طريق الدائري الشمالي',
-    type: 'residential',
-    typeAr: 'شقق',
-    deliveryDate: 'Q1 2027',
-    deliveryDateAr: 'الربع الأول 2027',
-    startingPrice: 850000,
-    developer: 'Dar Al Arkan',
-    developerAr: 'دار الأركان',
-    status: 'selling-fast',
-    statusAr: 'ينفد بسرعة',
+    gallery: ['/images/proj-1.jpg', '/images/proj-2.jpg', '/images/proj-3.jpg', '/images/proj-4.jpg'],
+    plans: [],
+    title: 'Dora - Al Safa District',
+    titleAr: 'دورا - حي الصفا',
+    location: 'Riyadh - Al Safa District',
+    locationAr: 'الرياض - حي الصفا',
+    type: 'Floors',
+    typeAr: 'أدوار',
+    deliveryDate: '07-2027',
+    deliveryDateAr: '7-2027م',
+    startingPrice: 689000,
+    units: doraSafaUnits,
   },
   {
-    id: 'p2',
+    id: 'sukoon-arid',
     image: '/images/proj-2.jpg',
-    title: 'Jeddah Tower View',
-    titleAr: 'إطلالة برج جدة',
-    location: 'Jeddah, Corniche',
-    locationAr: 'جدة، الكورنيش',
-    type: 'mixed',
-    typeAr: 'استخدامات متعددة',
-    deliveryDate: 'Q3 2026',
-    deliveryDateAr: 'الربع الثالث 2026',
-    startingPrice: 1200000,
-    developer: 'Emaar The Economic City',
-    developerAr: 'إعمار المدينة الاقتصادية',
-    status: 'available',
-    statusAr: 'متاح',
-  },
-  {
-    id: 'p3',
-    image: '/images/proj-3.jpg',
-    title: 'Al Yasmin Office Park',
-    titleAr: 'ياسين بارك للمكاتب',
-    location: 'Riyadh, Al Yasmin District',
-    locationAr: 'الرياض، حي الياسمين',
-    type: 'commercial',
-    typeAr: 'مكاتب',
-    deliveryDate: 'Q2 2027',
-    deliveryDateAr: 'الربع الثاني 2027',
-    startingPrice: 2200000,
-    developer: 'Roshn Group',
-    developerAr: 'مجموعة روشن',
-    status: 'coming-soon',
-    statusAr: 'قريباً',
-  },
-  {
-    id: 'p4',
-    image: '/images/proj-4.jpg',
-    title: 'Red Sea Luxury Resorts',
-    titleAr: 'منتجعات البحر الأحمر الفاخرة',
-    location: 'Umluj, Red Sea Coast',
-    locationAr: 'أملج، ساحل البحر الأحمر',
-    type: 'residential',
+    gallery: ['/images/proj-2.jpg'],
+    plans: [],
+    title: 'Sukoon 10, 11 - Al Arid District',
+    titleAr: 'سكون 10، 11 - حي العارض',
+    location: 'Riyadh - Al Arid District',
+    locationAr: 'الرياض - حي العارض',
+    type: 'Apartments',
     typeAr: 'شقق',
-    deliveryDate: 'Q4 2028',
-    deliveryDateAr: 'الربع الرابع 2028',
-    startingPrice: 3500000,
-    developer: 'Red Sea Global',
-    developerAr: 'البحر الأحمر العالمية',
-    status: 'available',
-    statusAr: 'متاح',
+    deliveryDate: 'Ready',
+    deliveryDateAr: 'جاهز',
+    startingPrice: 999000,
+    units: sukoonUnits,
   },
   {
-    id: 'p5',
-    image: '/images/proj-5.jpg',
-    title: 'KAFD Business Hub',
-    titleAr: 'مركز الأعمال في كافد',
-    location: 'Riyadh, KAFD',
-    locationAr: 'الرياض، مركز الملك عبد الله المالي',
-    type: 'commercial',
-    typeAr: 'مكاتب',
-    deliveryDate: 'Q1 2026',
-    deliveryDateAr: 'الربع الأول 2026',
-    startingPrice: 5000000,
-    developer: 'KAFD DMC',
-    developerAr: 'كافد لإدارة المراكز',
-    status: 'selling-fast',
-    statusAr: 'ينفد بسرعة',
+    id: 'project-3',
+    image: '/images/proj-3.jpg',
+    gallery: ['/images/proj-3.jpg'],
+    plans: [],
+    title: 'Project 3',
+    titleAr: 'المشروع الثالث',
+    location: 'Riyadh',
+    locationAr: 'الرياض',
+    type: 'Floors',
+    typeAr: 'أدوار',
+    deliveryDate: 'Soon',
+    deliveryDateAr: 'قريباً',
+    startingPrice: 0,
+    units: [],
   },
   {
-    id: 'p6',
-    image: '/images/proj-6.jpg',
-    title: 'Diriyah Gate Village',
-    titleAr: 'قرية بوابة الدرعية',
-    location: 'Riyadh, Diriyah',
-    locationAr: 'الرياض، الدرعية',
-    type: 'mixed',
-    typeAr: 'استخدامات متعددة',
-    deliveryDate: 'Q3 2027',
-    deliveryDateAr: 'الربع الثالث 2027',
-    startingPrice: 1800000,
-    developer: 'Diriyah Company',
-    developerAr: 'شركة الدرعية',
-    status: 'coming-soon',
-    statusAr: 'قريباً',
+    id: 'project-4',
+    image: '/images/proj-4.jpg',
+    gallery: ['/images/proj-4.jpg'],
+    plans: [],
+    title: 'Project 4',
+    titleAr: 'المشروع الرابع',
+    location: 'Riyadh',
+    locationAr: 'الرياض',
+    type: 'Floors',
+    typeAr: 'أدوار',
+    deliveryDate: 'Soon',
+    deliveryDateAr: 'قريباً',
+    startingPrice: 0,
+    units: [],
   },
 ]
+
+export const getProject = (id: string) => demoProjects.find((p) => p.id === id)
