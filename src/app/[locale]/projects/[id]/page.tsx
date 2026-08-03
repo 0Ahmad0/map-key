@@ -23,6 +23,8 @@ function SectionHead({ title }: { title: string }) {
 function UnitRow({ unit, isRTL, locale, waLink }: { unit: Unit; isRTL: boolean; locale: string; waLink: (u: Unit) => string }) {
   const t = (ar: string, en: string) => (isRTL ? ar : en)
   const total = unit.area + unit.privateArea
+  // ponytail: سعر 0 = لسه ما تحدد
+  const price = unit.price ? formatPrice(unit.price, 'SAR', locale) : t('قريباً', 'Soon')
 
   return (
     <details className="group border-b border-neutral-200 last:border-0 open:bg-[#fbfaf7]">
@@ -40,8 +42,10 @@ function UnitRow({ unit, isRTL, locale, waLink }: { unit: Unit; isRTL: boolean; 
           {unit.rooms} {t('غرف', 'rooms')}
         </span>
         <span className="shrink-0 text-sm font-black text-[#8a6a2e] md:text-base">
-          {unit.priceFrom && <span className="me-1 text-xs font-normal text-neutral-400">{t('تبدأ من', 'from')}</span>}
-          {formatPrice(unit.price, 'SAR', locale)}
+          {unit.priceFrom && unit.price > 0 && (
+            <span className="me-1 text-xs font-normal text-neutral-400">{t('تبدأ من', 'from')}</span>
+          )}
+          {price}
         </span>
         <ChevronDown className="h-5 w-5 shrink-0 text-neutral-400 transition group-open:rotate-180" />
       </summary>
@@ -56,7 +60,7 @@ function UnitRow({ unit, isRTL, locale, waLink }: { unit: Unit; isRTL: boolean; 
             [t('الغرف', 'Rooms'), String(unit.rooms)],
             [
               t('السعر', 'Price'),
-              `${unit.priceFrom ? t('تبدأ من ', 'from ') : ''}${formatPrice(unit.price, 'SAR', locale)}`,
+              `${unit.priceFrom && unit.price > 0 ? t('تبدأ من ', 'from ') : ''}${price}`,
             ],
           ].map(([label, value]) => (
             <div key={label} className="flex items-center justify-between gap-3 border-b border-neutral-100 pb-2">
@@ -175,7 +179,7 @@ export default function ProjectDetailPage() {
               <span className="w-5 shrink-0" />
             </div>
             {project.units.map((unit) => (
-              <UnitRow key={unit.code} unit={unit} isRTL={isRTL} locale={locale} waLink={waLink} />
+              <UnitRow key={`${unit.floor}-${unit.code}`} unit={unit} isRTL={isRTL} locale={locale} waLink={waLink} />
             ))}
           </div>
         </section>

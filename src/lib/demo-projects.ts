@@ -111,6 +111,44 @@ const sukoonUnits: Unit[] = [
   ] as const).map(([code, area]) => sukoonUnit(code, 'الملحق', 'Annex', area)),
 ]
 
+// سكون 12 - حي بريدة: 5 أدوار × 5 وحدات + الملحق، غرفتين، السعر غير محدد بعد
+const sukoon12Unit = (code: string, floorAr: string, floor: string, area: number): Unit => ({
+  code,
+  floorAr,
+  floor,
+  area,
+  privateArea: 0,
+  rooms: 2,
+  price: 0,
+  status: 'available',
+})
+
+const SUKOON12_FLOOR_UNITS = [
+  ['B01', 160],
+  ['B02', 142],
+  ['B03', 109],
+  ['B04', 123],
+  ['B05', 168],
+] as const
+
+const sukoon12Units: Unit[] = [
+  ...([
+    ['الدور الأول', 'First floor'],
+    ['الدور الثاني', 'Second floor'],
+    ['الدور الثالث', 'Third floor'],
+    ['الدور الرابع', 'Fourth floor'],
+    ['الدور الخامس', 'Fifth floor'],
+  ] as const).flatMap(([floorAr, floor]) =>
+    SUKOON12_FLOOR_UNITS.map(([code, area]) => sukoon12Unit(code, floorAr, floor, area))
+  ),
+  // ponytail: الملحق - الملف يذكر 4 وحدات لكن B07 مكرر فيه، فالمتوفر 3 بمساحاتها
+  ...([
+    ['B06', 157],
+    ['B07', 165],
+    ['B08', 134],
+  ] as const).map(([code, area]) => sukoon12Unit(code, 'الملحق', 'Annex', area)),
+]
+
 export const demoProjects: Project[] = [
   {
     id: 'dora-safa',
@@ -145,20 +183,20 @@ export const demoProjects: Project[] = [
     units: sukoonUnits,
   },
   {
-    id: 'project-3',
+    id: 'sukoon-buraydah',
     image: '/images/proj-3.jpg',
     gallery: ['/images/proj-3.jpg'],
     plans: [],
-    title: 'Project 3',
-    titleAr: 'المشروع الثالث',
-    location: 'Riyadh',
-    locationAr: 'الرياض',
-    type: 'Floors',
-    typeAr: 'أدوار',
-    deliveryDate: 'Soon',
-    deliveryDateAr: 'قريباً',
+    title: 'Sukoon 12 - Buraydah District',
+    titleAr: 'سكون 12 - حي بريدة بالقصيم',
+    location: 'Buraydah - Al Qassim',
+    locationAr: 'بريدة - القصيم',
+    type: 'Apartments',
+    typeAr: 'شقق',
+    deliveryDate: 'Ready',
+    deliveryDateAr: 'جاهز',
     startingPrice: 0,
-    units: [],
+    units: sukoon12Units,
   },
   {
     id: 'project-4',
