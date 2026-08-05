@@ -57,7 +57,7 @@ Mobile performance varies between runs; the one-point score change is not eviden
 - Shared first-load JavaScript reported by Next.js: 87.8 kB.
 - Home route first-load JavaScript: 179 kB.
 - Largest emitted raw chunks include Next/React framework chunks; no single application page chunk exceeds 43 kB raw.
-- Radix packages and Embla packages with no imports are dependency-cleanup candidates, but were not removed because they do not enter the production bundle and removal would not improve runtime performance.
+- Removed 12 unused dependencies (unused Radix primitives, Embla, and React Query) plus 15 dead component/store files. This reduces install size and maintenance surface; runtime route sizes are unchanged because the dead code was already excluded from production bundles.
 - No service worker or PWA cache is present; none was added.
 
 ## Verification
