@@ -152,9 +152,17 @@ const sukoon12Units: Unit[] = [
 export const demoProjects: Project[] = [
   {
     id: 'dora-safa',
-    image: '/images/proj-1.jpg',
-    gallery: ['/images/proj-1.jpg', '/images/proj-2.jpg', '/images/proj-3.jpg', '/images/proj-4.jpg'],
-    plans: [],
+    image: '/images/projects/dora-safa/gallery-01.jpg',
+    gallery: [
+      '/images/projects/dora-safa/gallery-01.jpg',
+      '/images/projects/dora-safa/gallery-02.jpg',
+      '/images/projects/dora-safa/gallery-03.jpg',
+    ],
+    plans: [
+      '/images/projects/dora-safa/plan-01.jpg',
+      '/images/projects/dora-safa/plan-02.jpg',
+      '/images/projects/dora-safa/plan-03.jpg',
+    ],
     title: 'Dora - Al Safa District',
     titleAr: 'دورا - حي الصفا',
     location: 'Riyadh - Al Safa District',
@@ -184,9 +192,15 @@ export const demoProjects: Project[] = [
   },
   {
     id: 'sukoon-buraydah',
-    image: '/images/proj-3.jpg',
-    gallery: ['/images/proj-3.jpg'],
-    plans: [],
+    image: '/images/projects/sukoon-12/gallery-01.jpg',
+    gallery: [
+      '/images/projects/sukoon-12/gallery-01.jpg',
+      '/images/projects/sukoon-12/gallery-02.jpg',
+      '/images/projects/sukoon-12/gallery-03.jpg',
+    ],
+    plans: Array.from({ length: 8 }, (_, index) =>
+      `/images/projects/sukoon-12/plan-${String(index + 1).padStart(2, '0')}.jpg`
+    ),
     title: 'Sukoon 12 - Buraydah District',
     titleAr: 'سكون 12 - حي بريدة بالقصيم',
     location: 'Buraydah - Al Qassim',
