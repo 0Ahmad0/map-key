@@ -24,6 +24,7 @@ const tajawal = Tajawal({
 // ponytail: the local network kept aborting Google Fonts downloads mid-build, so it lives locally like the images
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://mapkey.sa'),
   title: {
     default: 'Map-Key | The Secure Real Estate Gateway',
     template: '%s | Map-Key',
@@ -41,7 +42,7 @@ export const metadata: Metadata = {
     'Dammam',
     'Map-Key',
   ],
-  authors: [{ name: 'Map-Key', url: 'https://map-key.com' }],
+  authors: [{ name: 'Map-Key', url: 'https://mapkey.sa' }],
   robots: { index: true, follow: true },
   openGraph: {
     type: 'website',
@@ -50,10 +51,10 @@ export const metadata: Metadata = {
     title: 'Map-Key | The Secure Real Estate Gateway',
     description:
       'A secure and trusted digital real estate platform with enterprise-grade security and zero-trust architecture.',
-    url: 'https://map-key.com',
+    url: 'https://mapkey.sa',
     images: [
       {
-        url: 'https://map-key.com/og-image.png',
+        url: '/images/proj-1.jpg',
         width: 1200,
         height: 630,
         alt: 'Map-Key - Real Estate Platform',
@@ -65,12 +66,13 @@ export const metadata: Metadata = {
     title: 'Map-Key | The Secure Real Estate Gateway',
     description:
       'A secure and trusted digital real estate platform with enterprise-grade security and zero-trust architecture.',
-    images: ['https://map-key.com/og-image.png'],
+    images: ['/images/proj-1.jpg'],
   },
   alternates: {
+    canonical: 'https://mapkey.sa/ar',
     languages: {
-      ar: 'https://map-key.com/ar',
-      en: 'https://map-key.com/en',
+      ar: 'https://mapkey.sa/ar',
+      en: 'https://mapkey.sa/en',
     },
   },
 }
@@ -90,7 +92,7 @@ export default async function RootLayout({
     name: 'Map-Key',
     description:
       'A secure and trusted digital real estate platform with enterprise-grade security and zero-trust architecture.',
-    url: 'https://map-key.com',
+    url: 'https://mapkey.sa',
     foundingDate: '2024',
     areaServed: [
       { '@type': 'City', name: 'Riyadh' },

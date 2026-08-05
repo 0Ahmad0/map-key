@@ -222,22 +222,6 @@ export const demoProjects: Project[] = [
     units: sukoon12Units,
   },
   {
-    id: 'project-4',
-    image: '/images/proj-4.jpg',
-    gallery: ['/images/proj-4.jpg'],
-    plans: [],
-    title: 'Project 4',
-    titleAr: 'المشروع الرابع',
-    location: 'Riyadh',
-    locationAr: 'الرياض',
-    type: 'Floors',
-    typeAr: 'أدوار',
-    deliveryDate: 'Soon',
-    deliveryDateAr: 'قريباً',
-    startingPrice: 0,
-    units: [],
-  },
-  {
     id: 'sukoon-arid',
     image: '/images/projects/sukoon-10-11/gallery-01.jpg',
     gallery: Array.from({ length: 3 }, (_, index) =>

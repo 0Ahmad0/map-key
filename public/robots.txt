@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /api/
 
-Sitemap: https://map-key.com/sitemap.xml
+Sitemap: https://mapkey.sa/sitemap.xml

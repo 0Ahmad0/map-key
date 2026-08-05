@@ -4,10 +4,10 @@ const locales = ['ar', 'en'] as const
 
 const staticRoutes = [
   '',
+  '/about',
+  '/faq',
+  '/projects',
   '/properties',
-  '/dashboard',
-  '/auth/login',
-  '/auth/register',
 ] as const
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -16,14 +16,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
   for (const locale of locales) {
     for (const route of staticRoutes) {
       entries.push({
-        url: `https://map-key.com/${locale}${route}`,
+        url: `https://mapkey.sa/${locale}${route}`,
         lastModified: new Date(),
         changeFrequency: 'weekly',
         priority: route === '' ? 1 : 0.8,
         alternates: {
           languages: {
-            ar: `https://map-key.com/ar${route}`,
-            en: `https://map-key.com/en${route}`,
+            ar: `https://mapkey.sa/ar${route}`,
+            en: `https://mapkey.sa/en${route}`,
           },
         },
       })
