@@ -233,7 +233,7 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-[#f8f7f4] text-neutral-950">
       <section className="relative min-h-[720px] overflow-hidden bg-neutral-950 pt-24 text-white md:min-h-[820px]">
-        <video autoPlay loop muted playsInline className="absolute inset-0 h-full w-full object-cover opacity-55">
+        <video autoPlay loop muted playsInline preload="metadata" className="absolute inset-0 h-full w-full object-cover opacity-55">
           <source src="/hero_video.mp4" type="video/mp4" />
         </video>
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_25%,rgba(185,151,80,.22),transparent_32%),linear-gradient(180deg,rgba(0,0,0,.35),rgba(0,0,0,.82))]" />
