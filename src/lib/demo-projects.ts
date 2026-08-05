@@ -68,6 +68,13 @@ const doraSafaUnits: Unit[] = [
   { code: '8B', ...B_FIRST },
 ]
 
+const doraAridUnits: Unit[] = [
+  { code: 'A1', ...spec('الدور الأرضي + القبو', 'Ground + Basement', 274, 3, 1_450_000) },
+  { code: 'A2', ...spec('الدور الأرضي + القبو', 'Ground + Basement', 284, 3, 1_499_000) },
+  { code: 'B1', ...spec('الدور الأول', 'First floor', 140, 3, 1_099_000) },
+  { code: 'B2', ...spec('الدور الأول', 'First floor', 161, 3, 1_199_000) },
+]
+
 // سكون 10، 11 - حي العارض: كل الشقق غرفتين والسعر يبدأ من 999,000
 const sukoonUnit = (code: string, floorAr: string, floor: string, area: number): Unit => ({
   code,
@@ -175,20 +182,22 @@ export const demoProjects: Project[] = [
     units: doraSafaUnits,
   },
   {
-    id: 'sukoon-arid',
-    image: '/images/proj-2.jpg',
-    gallery: ['/images/proj-2.jpg'],
-    plans: [],
-    title: 'Sukoon 10, 11 - Al Arid District',
-    titleAr: 'سكون 10، 11 - حي العارض',
+    id: 'dora-arid',
+    image: '/images/projects/dora-arid/gallery-01.jpg',
+    gallery: ['/images/projects/dora-arid/gallery-01.jpg'],
+    plans: Array.from({ length: 4 }, (_, index) =>
+      `/images/projects/dora-arid/plan-${String(index + 1).padStart(2, '0')}.jpg`
+    ),
+    title: 'Dora - Al Arid District',
+    titleAr: 'دورا - حي العارض',
     location: 'Riyadh - Al Arid District',
     locationAr: 'الرياض - حي العارض',
-    type: 'Apartments',
-    typeAr: 'شقق',
-    deliveryDate: 'Ready',
-    deliveryDateAr: 'جاهز',
-    startingPrice: 999000,
-    units: sukoonUnits,
+    type: 'Floors',
+    typeAr: 'أدوار',
+    deliveryDate: 'Soon',
+    deliveryDateAr: 'قريباً',
+    startingPrice: 1_099_000,
+    units: doraAridUnits,
   },
   {
     id: 'sukoon-buraydah',
@@ -227,6 +236,26 @@ export const demoProjects: Project[] = [
     deliveryDateAr: 'قريباً',
     startingPrice: 0,
     units: [],
+  },
+  {
+    id: 'sukoon-arid',
+    image: '/images/projects/sukoon-10-11/gallery-01.jpg',
+    gallery: Array.from({ length: 3 }, (_, index) =>
+      `/images/projects/sukoon-10-11/gallery-${String(index + 1).padStart(2, '0')}.jpg`
+    ),
+    plans: Array.from({ length: 8 }, (_, index) =>
+      `/images/projects/sukoon-10-11/plan-${String(index + 1).padStart(2, '0')}.jpg`
+    ),
+    title: 'Sukoon 10, 11 - Al Arid District',
+    titleAr: 'سكون 10، 11 - حي العارض',
+    location: 'Riyadh - Al Arid District',
+    locationAr: 'الرياض - حي العارض',
+    type: 'Apartments',
+    typeAr: 'شقق',
+    deliveryDate: 'Ready',
+    deliveryDateAr: 'جاهز',
+    startingPrice: 999000,
+    units: sukoonUnits,
   },
 ]
 
