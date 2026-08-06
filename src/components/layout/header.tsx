@@ -70,7 +70,7 @@ export function Header() {
       )}
     >
       <div className="container mx-auto flex h-[108px] items-center justify-between gap-6 px-4">
-          <Link href="/" className="flex shrink-0 items-center">
+        <Link href="/" className="relative flex shrink-0 items-center pb-2 after:absolute after:inset-x-[8%] after:bottom-0 after:h-1 after:rounded-full after:bg-[#b99750]">
           <Image src="/new_logo.svg" alt="Map Key" width={280} height={165} priority className="h-24 w-auto" />
         </Link>
 

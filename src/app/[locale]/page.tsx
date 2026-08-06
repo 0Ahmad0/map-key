@@ -56,10 +56,11 @@ const copy = {
     exclusive: 'مشاريعنا',
     exclusiveText: 'لا نعرض كل ما هو موجود. نعرض فقط ما يستحق الظهور.',
     all: 'الكل',
-    readyOffPlan: 'جاهز على الخارطة',
+    ready: 'جاهز',
+    onMap: 'على الخارطة',
     rentalUnits: 'وحدات تأجير',
     residential: 'سكني',
-    neighborhoods: 'ليه تختار ماب كي Map Key?',
+    neighborhoods: 'ليه تختار ماب كي Map Key؟',
     neighborhoodsText: 'نحدد لك الخيار المثالي بعد اخذ احتياجاتك ونجيب لك العروض',
     priceMap: 'أسعار العقارات في المملكة العربية السعودية بالموقع',
     sellBuy: 'هل تبيع أم تشتري؟',
@@ -106,7 +107,8 @@ const copy = {
     exclusive: 'Our Projects',
     exclusiveText: 'We do not show everything on the market. We show what deserves attention.',
     all: 'All',
-    readyOffPlan: 'Ready off-plan',
+    ready: 'Ready',
+    onMap: 'Off-plan',
     rentalUnits: 'Rental units',
     residential: 'Residential',
     neighborhoods: 'Why choose Map Key?',
@@ -225,9 +227,9 @@ export default function HomePage() {
   const [projectFilter, setProjectFilter] = useState('all')
 
   const filteredProjects = useMemo(() => {
-    if (projectFilter === 'all') return demoProjects.slice(0, 3)
-    if (projectFilter === 'commercial') return demoProjects.filter((p) => p.type === 'commercial').slice(0, 3)
-    return demoProjects.slice(0, 3)
+    if (projectFilter === 'ready') return demoProjects.filter((project) => project.id.startsWith('sukoon'))
+    if (projectFilter === 'on-map') return demoProjects.filter((project) => project.id.startsWith('dora'))
+    return demoProjects
   }, [projectFilter])
 
   return (
@@ -306,7 +308,8 @@ export default function HomePage() {
             <div className="flex flex-wrap gap-2">
               {[
                 ['all', t.all],
-                ['ready-off-plan', t.readyOffPlan],
+                ['ready', t.ready],
+                ['on-map', t.onMap],
               ].map(([value, label]) => (
                 <button
                   key={value}
@@ -335,7 +338,7 @@ export default function HomePage() {
       <section className="container mx-auto px-4 py-16 md:py-32">
         <SectionTitle title={isRTL ? 'عقارات للتأجير' : 'Properties for rent'} text={isRTL ? 'واجهات بطاقات فاخرة، واضحة، ومهيأة للبحث والتصفية.' : 'Premium property cards ready for search and filtering.'} />
         <div className="grid gap-7 md:grid-cols-2 lg:grid-cols-3">
-          {demoProperties.slice(0, 3).map((property, index) => (
+          {demoProperties.filter((property) => property.type === 'rent').map((property, index) => (
             <PropertyCard key={property.id} property={property} index={index} isRTL={isRTL} locale={locale} />
           ))}
         </div>
