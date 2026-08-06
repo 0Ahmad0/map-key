@@ -133,7 +133,7 @@ export function Header() {
                   ))}
                 </nav>
                 <div className="shrink-0 space-y-3 border-t border-neutral-100 pt-4">
-                  <a href="tel:+966541646755" className="flex items-center justify-center gap-2 rounded-2xl border border-neutral-200 px-5 py-4 font-bold">
+                  <a href="tel:+966541646755" className="flex items-center justify-center gap-2 rounded-2xl border border-neutral-200 px-5 py-4 font-bold text-neutral-950">
                     <Phone className="h-4 w-4 text-[#b99750]" />
                     <span dir="ltr" className="[unicode-bidi:isolate]">{t.phone}</span>
                   </a>
