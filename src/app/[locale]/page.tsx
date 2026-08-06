@@ -7,7 +7,7 @@ import { useLocale } from 'next-intl'
 import { Link } from '@/i18n/navigation'
 import { demoProjects } from '@/lib/demo-projects'
 import { ProjectCard } from '@/components/properties/project-card'
-import { demoProperties, propertyTypes } from '@/lib/demo-properties'
+import { demoProperties } from '@/lib/demo-properties'
 import { cn, formatPrice } from '@/lib/utils'
 import {
   ArrowLeft,
@@ -15,7 +15,6 @@ import {
   Bath,
   BedDouble,
   Building2,
-  Expand,
   HelpCircle,
   Mail,
   MapPin,
@@ -62,7 +61,6 @@ const copy = {
     residential: 'سكني',
     neighborhoods: 'ليه تختار ماب كي Map Key؟',
     neighborhoodsText: 'نحدد لك الخيار المثالي بعد اخذ احتياجاتك ونجيب لك العروض',
-    priceMap: 'أسعار العقارات في المملكة العربية السعودية بالموقع',
     sellBuy: 'هل تبيع أم تشتري؟',
     sellBuyText: 'كل الاتجاهات تبدأ من Map Key. أضف عقارك أو أخبرنا بما تبحث عنه، وسنتولى الباقي.',
     request: 'اطلب عقار',
@@ -113,7 +111,6 @@ const copy = {
     residential: 'Residential',
     neighborhoods: 'Why choose Map Key?',
     neighborhoodsText: 'We define the ideal option after understanding your needs, then bring you the offers.',
-    priceMap: 'Property prices in Saudi Arabia by location',
     sellBuy: 'Selling or buying?',
     sellBuyText: 'Every direction starts with Map Key. Add your property or tell us what you need, and we handle the rest.',
     request: 'Request property',
@@ -223,7 +220,6 @@ export default function HomePage() {
   const isRTL = locale === 'ar'
   const t = copy[locale]
   const [subscribed, setSubscribed] = useState(false)
-  const [mapMode, setMapMode] = useState('villa')
   const [projectFilter, setProjectFilter] = useState('all')
 
   const filteredProjects = useMemo(() => {
@@ -349,75 +345,6 @@ export default function HomePage() {
           <div className="mx-auto mb-5 h-1 w-16 rounded-full bg-[#b99750]" />
           <h2 className="text-3xl font-black leading-tight md:text-5xl">{t.neighborhoods}</h2>
           <p className="mx-auto mt-5 max-w-3xl text-lg leading-9 text-white/70">{t.neighborhoodsText}</p>
-        </div>
-      </section>
-
-      <section className="container mx-auto px-4 py-16 md:py-32">
-        <div className="mb-10 flex flex-col items-center justify-between gap-6 lg:flex-row">
-          <SectionTitle title={t.priceMap} align="start" />
-          <div className="flex max-w-full flex-wrap justify-center gap-2 rounded-2xl border border-neutral-200 bg-white p-2 shadow-sm lg:max-w-[680px] lg:justify-end">
-            {propertyTypes.filter((type) => type.value !== 'all').map((type) => (
-              <button
-                key={type.value}
-                onClick={() => setMapMode(type.value)}
-                className={cn('min-h-11 rounded-full px-4 py-2 text-sm font-bold transition whitespace-nowrap', mapMode === type.value ? 'bg-[#b99750] text-white' : 'text-neutral-600 hover:bg-neutral-100')}
-              >
-                {isRTL ? type.labelAr : type.label}
-              </button>
-            ))}
-          </div>
-        </div>
-        <div className="relative min-h-[560px] overflow-hidden rounded-[34px] bg-[#e8e1d2] shadow-2xl shadow-black/5">
-          <div className="absolute inset-0 opacity-90 [background-image:linear-gradient(28deg,transparent_0_46%,#f3a247_47%_49%,transparent_50%),linear-gradient(115deg,transparent_0_48%,#e4c356_49%_50%,transparent_51%),linear-gradient(#d9d4c9_1px,transparent_1px),linear-gradient(90deg,#d9d4c9_1px,transparent_1px)] [background-size:420px_240px,360px_300px,46px_46px,46px_46px]" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_55%,rgba(142,198,74,.28),transparent_15%),radial-gradient(circle_at_34%_42%,rgba(142,198,74,.18),transparent_13%)]" />
-          <div className="absolute bottom-10 left-1/2 text-4xl font-black text-neutral-950/80">الرياض</div>
-          <div className="absolute left-[48%] top-[22%] h-28 w-20 -translate-x-1/2 rotate-[-18deg] rounded-[55%_55%_45%_45%] border-4 border-neutral-950 bg-[#8fc64a]/70 shadow-xl" />
-          <button className="absolute start-6 top-6 inline-flex items-center gap-3 rounded-full border border-[#8fc64a] bg-white px-6 py-4 text-lg font-bold shadow-sm">
-            {isRTL ? 'الخريطة الكاملة' : 'Full map'}
-            <Expand className="h-5 w-5" />
-          </button>
-          <div className="absolute bottom-8 start-6 overflow-hidden rounded-lg bg-white shadow-md">
-            {['+', '−', '▲'].map((item) => (
-              <button key={item} className="grid h-10 w-10 place-items-center border-b border-neutral-200 text-xl font-bold last:border-b-0">
-                {item}
-              </button>
-            ))}
-          </div>
-
-          <aside className="absolute inset-x-5 bottom-5 rounded-[28px] bg-white p-6 shadow-2xl lg:inset-x-auto lg:bottom-8 lg:end-8 lg:top-8 lg:w-[360px]">
-            <button className="mb-6 flex items-center gap-2 text-sm text-neutral-500">
-              {isRTL ? 'عودة' : 'Back'}
-              {isRTL ? <ArrowLeft className="h-4 w-4" /> : <ArrowRight className="h-4 w-4" />}
-            </button>
-            <div className="border-t border-neutral-200 pt-6">
-              <h3 className="text-2xl font-black">{isRTL ? 'حي الصحافة' : 'Al Sahafa District'}</h3>
-              <p className="mt-1 text-neutral-400">{(isRTL ? propertyTypes.find((type) => type.value === mapMode)?.labelAr : propertyTypes.find((type) => type.value === mapMode)?.label) ?? ''}</p>
-            </div>
-            <div className="mt-6 overflow-hidden rounded-xl">
-              {[
-                [isRTL ? 'الأعلى' : 'High', '2,305,000+'],
-                [isRTL ? 'المتوسط' : 'Average', '1,691,859'],
-                [isRTL ? 'الأدنى' : 'Low', '995,000'],
-              ].map(([label, value], index) => (
-                <div key={label} className={cn('flex items-center justify-between p-4 text-white', index === 0 ? 'bg-[#8fc64a]' : index === 1 ? 'bg-[#b6da89]' : 'bg-[#d5eabd]')}>
-                  <span className="font-bold">{label}</span>
-                  <strong>{value}</strong>
-                  <span>﷼</span>
-                </div>
-              ))}
-            </div>
-            <p className="mt-4 text-sm leading-7 text-neutral-400">
-              {isRTL ? 'يتم حساب البيانات باستخدام القوائم المنشورة خلال آخر 90 يوماً.' : 'Data is calculated from listings published during the last 90 days.'}
-            </p>
-            <div className="mt-5 space-y-3">
-              <button className="h-12 w-full rounded-full border border-neutral-200 font-bold">
-                {isRTL ? 'عرض المجتمع' : 'View community'}
-              </button>
-              <button className="h-12 w-full rounded-full bg-[#8fc64a] font-bold text-white">
-                {isRTL ? 'تصفح 17 عقارات' : 'Browse 17 properties'}
-              </button>
-            </div>
-          </aside>
         </div>
       </section>
 
