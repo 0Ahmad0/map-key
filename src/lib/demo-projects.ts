@@ -210,10 +210,10 @@ export const demoProjects: Project[] = [
     plans: Array.from({ length: 8 }, (_, index) =>
       `/images/projects/sukoon-12/plan-${String(index + 1).padStart(2, '0')}.jpg`
     ),
-    title: 'Sukoon 12 - Buraydah District',
-    titleAr: 'سكون 12 - حي بريدة بالقصيم',
-    location: 'Buraydah - Al Qassim',
-    locationAr: 'بريدة - القصيم',
+    title: 'Sukoon 12 - Al Rayyan District',
+    titleAr: 'سكون 12 - حي الريان، مدينة بريدة',
+    location: 'Al Rayyan District - Buraydah',
+    locationAr: 'حي الريان - مدينة بريدة',
     type: 'Apartments',
     typeAr: 'شقق',
     deliveryDate: 'Ready',
