@@ -181,7 +181,6 @@ export default function PropertiesPage() {
               <PropertyMap
                 properties={filtered}
                 selectedId={selectedId}
-                onSelect={setSelectedId}
               />
             </div>
           </div>

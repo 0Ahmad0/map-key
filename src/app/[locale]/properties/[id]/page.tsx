@@ -38,8 +38,8 @@ export default function PropertyDetailPage() {
   const title = isRTL && property.titleAr ? property.titleAr : property.title
   const specs = [
     ...(property.bedrooms > 0 ? [{ icon: BedDouble, label: t('bedrooms'), value: property.bedrooms }] : []),
-    { icon: Bath, label: t('bathrooms'), value: property.bathrooms },
-    { icon: Maximize, label: t('area'), value: `${property.area} m²` },
+    ...(property.bathrooms > 0 ? [{ icon: Bath, label: t('bathrooms'), value: property.bathrooms }] : []),
+    ...(property.area > 0 ? [{ icon: Maximize, label: t('area'), value: `${property.area} m²` }] : []),
   ]
 
   return (
@@ -96,7 +96,7 @@ export default function PropertyDetailPage() {
             className="lg:col-span-2 space-y-8"
           >
             {/* Specs */}
-            <div className="glass-card rounded-2xl p-6 grid grid-cols-3 gap-4">
+            <div className="glass-card rounded-2xl p-6 grid grid-cols-2 gap-4 md:grid-cols-3">
               {specs.map((s) => (
                 <div key={s.label} className="text-center">
                   <s.icon className="w-6 h-6 text-accent-gold mx-auto mb-2" />
@@ -138,7 +138,7 @@ export default function PropertyDetailPage() {
               <p className="text-3xl font-black text-gold-gradient mb-6">
                 {formatPrice(property.price, property.currency, locale)}
                 {property.type === 'rent' && (
-                  <span className="text-sm font-normal text-text-muted"> /{isRTL ? 'سنوي' : 'yr'}</span>
+                  <span className="text-sm font-normal text-text-muted"> {isRTL ? property.priceNoteAr || '/سنوي' : property.priceNote || '/yr'}</span>
                 )}
               </p>
 

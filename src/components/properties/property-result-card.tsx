@@ -183,24 +183,18 @@ export function PropertyResultCard({
         </div>
 
         {/* Specs */}
-        <div className={cn(
-          'flex items-center gap-4 mb-4',
-          isRTL && 'flex-row-reverse'
-        )}>
+          <div className={cn(
+            'flex items-center gap-4 mb-4',
+            isRTL && 'flex-row-reverse'
+          )}>
           {property.bedrooms > 0 && (
             <div className={cn('flex items-center gap-1.5 text-xs text-text-secondary', isRTL && 'flex-row-reverse')}>
               <BedDouble className="w-3.5 h-3.5 text-text-muted" />
               <span>{property.bedrooms} {t('bedrooms')}</span>
             </div>
           )}
-          <div className={cn('flex items-center gap-1.5 text-xs text-text-secondary', isRTL && 'flex-row-reverse')}>
-            <Bath className="w-3.5 h-3.5 text-text-muted" />
-            <span>{property.bathrooms} {t('bathrooms')}</span>
-          </div>
-          <div className={cn('flex items-center gap-1.5 text-xs text-text-secondary', isRTL && 'flex-row-reverse')}>
-            <Maximize className="w-3.5 h-3.5 text-text-muted" />
-            <span>{property.area} m²</span>
-          </div>
+          {property.bathrooms > 0 && <div className={cn('flex items-center gap-1.5 text-xs text-text-secondary', isRTL && 'flex-row-reverse')}><Bath className="w-3.5 h-3.5 text-text-muted" /><span>{property.bathrooms} {t('bathrooms')}</span></div>}
+          {property.area > 0 && <div className={cn('flex items-center gap-1.5 text-xs text-text-secondary', isRTL && 'flex-row-reverse')}><Maximize className="w-3.5 h-3.5 text-text-muted" /><span>{property.area} m²</span></div>}
         </div>
 
         {/* Price */}
@@ -210,7 +204,7 @@ export function PropertyResultCard({
               {formatPrice(property.price, property.currency, locale)}
               {property.type === 'rent' && (
                 <span className="text-[11px] text-text-muted font-normal ml-1">
-                  /{isRTL ? 'سنوي' : 'yr'}
+                  {isRTL ? property.priceNoteAr || '/سنوي' : property.priceNote || '/yr'}
                 </span>
               )}
             </span>

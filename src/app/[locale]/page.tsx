@@ -193,7 +193,7 @@ function PropertyCard({ property, index, isRTL, locale }: { property: (typeof de
     >
       <Link href={`/properties/${property.id}`}>
         <div className="relative h-64 overflow-hidden">
-          <Image src={property.images[0]} alt={isRTL ? property.titleAr ?? property.title : property.title} fill sizes="(max-width: 1024px) 90vw, 33vw" className="object-cover transition duration-700 group-hover:scale-105" />
+          {property.images[0] ? <Image src={property.images[0]} alt={isRTL ? property.titleAr ?? property.title : property.title} fill sizes="(max-width: 1024px) 90vw, 33vw" className="object-cover transition duration-700 group-hover:scale-105" /> : <div className="grid h-full place-items-center bg-gradient-to-br from-neutral-800 to-neutral-950"><Building2 className="h-16 w-16 text-[#b99750]" /></div>}
           <div className="absolute inset-0 bg-gradient-to-t from-black/55 to-transparent" />
           <span className="absolute start-4 top-4 rounded-full bg-white px-3 py-1 text-xs font-bold text-[#8a6a2e]">{copy[locale as 'ar' | 'en'].available}</span>
           <strong className="absolute bottom-4 start-4 text-xl text-white">{formatPrice(property.price, property.currency, locale)}</strong>
@@ -206,8 +206,8 @@ function PropertyCard({ property, index, isRTL, locale }: { property: (typeof de
           </p>
           <div className="mt-5 flex items-center justify-between border-t border-neutral-100 pt-4 text-sm text-neutral-500">
             <span className="flex items-center gap-1"><BedDouble className="h-4 w-4" /> {property.bedrooms}</span>
-            <span className="flex items-center gap-1"><Bath className="h-4 w-4" /> {property.bathrooms}</span>
-            <span className="flex items-center gap-1"><Maximize2 className="h-4 w-4" /> {property.area}m²</span>
+            {property.bathrooms > 0 && <span className="flex items-center gap-1"><Bath className="h-4 w-4" /> {property.bathrooms}</span>}
+            {property.area > 0 && <span className="flex items-center gap-1"><Maximize2 className="h-4 w-4" /> {property.area}m²</span>}
           </div>
         </div>
       </Link>
@@ -333,8 +333,8 @@ export default function HomePage() {
 
       <section className="container mx-auto px-4 py-16 md:py-32">
         <SectionTitle title={isRTL ? 'عقارات للتأجير' : 'Properties for rent'} text={isRTL ? 'واجهات بطاقات فاخرة، واضحة، ومهيأة للبحث والتصفية.' : 'Premium property cards ready for search and filtering.'} />
-        <div className="grid gap-7 md:grid-cols-2 lg:grid-cols-3">
-          {demoProperties.filter((property) => property.type === 'rent').map((property, index) => (
+        <div className="grid gap-7 md:grid-cols-2 lg:grid-cols-4">
+          {demoProperties.filter((property) => property.type === 'rent').slice(0, 4).map((property, index) => (
             <PropertyCard key={property.id} property={property} index={index} isRTL={isRTL} locale={locale} />
           ))}
         </div>

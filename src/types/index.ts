@@ -18,6 +18,8 @@ export interface Property {
   bedrooms: number
   bathrooms: number
   images: string[]
+  priceNoteAr?: string
+  priceNote?: string
   type: 'sale' | 'rent'
   status: 'available' | 'sold' | 'rented' | 'pending'
   featured: boolean
