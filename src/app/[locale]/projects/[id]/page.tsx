@@ -104,6 +104,8 @@ export default function ProjectDetailPage() {
   if (!project) notFound()
 
   const title = isRTL ? project.titleAr : project.title
+  const mapsKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
+  const mapQuery = `${project.titleAr}, ${project.locationAr}`
   const waLink = (unit: Unit) =>
     `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(
       isRTL
@@ -198,6 +200,20 @@ export default function ProjectDetailPage() {
               </div>
             ))}
           </div>
+        </section>
+      )}
+
+      {mapsKey && (
+        <section className="container mx-auto px-4 pb-14 md:pb-20">
+          <SectionHead title={t('موقع المشروع', 'Project location')} />
+          <iframe
+            title={`${title} ${t('على الخريطة', 'on Google Maps')}`}
+            src={`https://www.google.com/maps/embed/v1/place?key=${mapsKey}&q=${encodeURIComponent(mapQuery)}&zoom=14`}
+            className="h-[360px] w-full rounded-[24px] border-0 md:h-[500px]"
+            loading="lazy"
+            allowFullScreen
+            referrerPolicy="no-referrer-when-downgrade"
+          />
         </section>
       )}
 

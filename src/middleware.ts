@@ -12,7 +12,7 @@ const CSP_HEADER = {
     "img-src 'self' data: blob: https:",
     "font-src 'self' data:",
     "connect-src 'self' https: wss:",
-    "frame-src 'none'",
+    "frame-src https://www.google.com",
     "object-src 'none'",
     "base-uri 'self'",
     "form-action 'self'",

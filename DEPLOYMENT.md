@@ -24,6 +24,7 @@ In hPanel, use **Websites → Add website → Node.js Web App**, then import the
 - Build: `npm run build`
 - Start: `npm start`
 - Domain: `mapkey.sa`
+- Environment variable: `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` (use the restricted Google Maps key)
 
 Hostinger installs dependencies, creates `.next`, runs the Node.js process, and manages HTTPS. Future pushes to `main` can trigger automatic redeployment.
 
