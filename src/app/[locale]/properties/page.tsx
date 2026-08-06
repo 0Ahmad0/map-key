@@ -1,18 +1,15 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import dynamic from 'next/dynamic'
+import * as Dialog from '@radix-ui/react-dialog'
 import { motion, AnimatePresence } from 'framer-motion'
-import { useTranslations } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
+import { MapPin, X } from 'lucide-react'
 import { PropertyFilters } from '@/components/properties/property-filters'
 import { PropertyResultCard } from '@/components/properties/property-result-card'
+import { PropertyMap } from '@/components/properties/property-map'
 import { cn } from '@/lib/utils'
 import { demoProperties, cities, propertyTypes, roomOptions, priceRanges } from '@/lib/demo-properties'
-
-const PropertyMap = dynamic(
-  () => import('@/components/properties/property-map').then((m) => m.PropertyMap),
-  { ssr: false, loading: () => <div className="w-full h-full rounded-2xl bg-bg-secondary animate-pulse" /> }
-)
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 30 },
@@ -21,10 +18,13 @@ const fadeInUp = {
 
 export default function PropertiesPage() {
   const t = useTranslations('properties')
+  const locale = useLocale() as 'ar' | 'en'
   const [filters, setFilters] = useState({ city: 'all', type: 'all', rooms: '0', price: 'all' })
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const [favorites, setFavorites] = useState<Set<string>>(new Set())
   const [selectedId, setSelectedId] = useState<string | null>(null)
+  const [page, setPage] = useState(1)
+  const pageSize = 8
 
   const filtered = useMemo(() => {
     return demoProperties.filter((p) => {
@@ -65,6 +65,10 @@ export default function PropertiesPage() {
     })
   }, [filters])
 
+  const pageCount = Math.ceil(filtered.length / pageSize)
+  const paginated = filtered.slice((page - 1) * pageSize, page * pageSize)
+  const selectedProperty = filtered.find((property) => property.id === selectedId)
+
   const toggleFavorite = (id: string) => {
     setFavorites((prev) => {
       const next = new Set(prev)
@@ -97,12 +101,15 @@ export default function PropertiesPage() {
             roomOptions={roomOptions}
             priceRanges={priceRanges}
             filters={filters}
-            onFilterChange={(key, value) => setFilters((prev) => ({ ...prev, [key]: value }))}
+            onFilterChange={(key, value) => {
+              setFilters((prev) => ({ ...prev, [key]: value }))
+              setPage(1)
+            }}
           />
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          <div className="lg:col-span-7 order-2 lg:order-1">
+        <div>
+          <div>
             <div className="flex items-center justify-between mb-4">
               <p className="text-sm text-text-secondary">
                 <span className="text-accent-gold font-semibold">{filtered.length}</span> properties found
@@ -161,7 +168,7 @@ export default function PropertiesPage() {
                       : 'flex flex-col gap-3'
                   )}
                 >
-                  {filtered.map((property) => (
+                  {paginated.map((property) => (
                     <PropertyResultCard
                       key={property.id}
                       property={property}
@@ -174,17 +181,37 @@ export default function PropertiesPage() {
                 </motion.div>
               )}
             </AnimatePresence>
-          </div>
-
-          <div className="lg:col-span-5 order-1 lg:order-2 max-lg:h-[300px] lg:h-auto">
-            <div className="sticky top-24 h-full max-lg:h-full rounded-2xl overflow-hidden border border-border/10">
-              <PropertyMap
-                properties={filtered}
-                selectedId={selectedId}
-              />
-            </div>
+            {pageCount > 1 && (
+              <nav className="mt-8 flex justify-center gap-2" aria-label={locale === 'ar' ? 'صفحات العقارات' : 'Property pages'}>
+                {Array.from({ length: pageCount }, (_, index) => index + 1).map((number) => (
+                  <button key={number} onClick={() => setPage(number)} className={cn('grid h-11 w-11 place-items-center rounded-full border font-bold transition', page === number ? 'border-[#b99750] bg-[#b99750] text-white' : 'border-neutral-200 bg-white hover:border-[#b99750]')} aria-current={page === number ? 'page' : undefined}>{number}</button>
+                ))}
+              </nav>
+            )}
           </div>
         </div>
+
+        <Dialog.Root open={Boolean(selectedProperty)} onOpenChange={(open) => !open && setSelectedId(null)}>
+          <Dialog.Portal>
+            <Dialog.Overlay className="fixed inset-0 z-50 bg-black/65 backdrop-blur-sm" />
+            <Dialog.Content className="fixed left-1/2 top-1/2 z-50 w-[min(920px,92vw)] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-[28px] bg-white shadow-2xl">
+              {selectedProperty && (
+                <>
+                  <div className="flex items-center justify-between gap-4 border-b border-neutral-100 p-5">
+                    <div>
+                      <Dialog.Title className="text-xl font-black text-neutral-950">{locale === 'ar' ? selectedProperty.titleAr : selectedProperty.title}</Dialog.Title>
+                      <Dialog.Description className="mt-1 flex items-center gap-1.5 text-sm text-neutral-500"><MapPin className="h-4 w-4 text-[#b99750]" />{locale === 'ar' ? selectedProperty.locationAr : selectedProperty.location}</Dialog.Description>
+                    </div>
+                    <Dialog.Close className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-neutral-100" aria-label={locale === 'ar' ? 'إغلاق' : 'Close'}><X className="h-5 w-5" /></Dialog.Close>
+                  </div>
+                  <div className="h-[65vh] min-h-[360px]">
+                    <PropertyMap properties={[selectedProperty]} selectedId={selectedProperty.id} />
+                  </div>
+                </>
+              )}
+            </Dialog.Content>
+          </Dialog.Portal>
+        </Dialog.Root>
       </div>
     </div>
   )
