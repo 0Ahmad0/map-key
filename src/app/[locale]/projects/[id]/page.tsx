@@ -105,7 +105,7 @@ export default function ProjectDetailPage() {
 
   const title = isRTL ? project.titleAr : project.title
   const mapsKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
-  const mapQuery = `${project.titleAr}, ${project.locationAr}`
+  const mapQuery = project.mapLocation ?? `${project.titleAr}, ${project.locationAr}`
   const waLink = (unit: Unit) =>
     `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(
       isRTL

@@ -23,6 +23,7 @@ export interface Project {
   titleAr: string
   location: string
   locationAr: string
+  mapLocation?: string
   type: string
   typeAr: string
   deliveryDate: string
@@ -214,6 +215,7 @@ export const demoProjects: Project[] = [
     titleAr: 'سكون 12 - حي الريان، مدينة بريدة',
     location: 'Al Rayyan District - Buraydah',
     locationAr: 'حي الريان - مدينة بريدة',
+    mapLocation: '26.393713,43.917236',
     type: 'Apartments',
     typeAr: 'شقق',
     deliveryDate: 'Ready',
@@ -234,6 +236,7 @@ export const demoProjects: Project[] = [
     titleAr: 'سكون 10، 11 - حي العارض',
     location: 'Riyadh - Al Arid District',
     locationAr: 'الرياض - حي العارض',
+    mapLocation: '24.8989286,46.6067542',
     type: 'Apartments',
     typeAr: 'شقق',
     deliveryDate: 'Ready',
