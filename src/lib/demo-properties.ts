@@ -1,77 +1,27 @@
 import type { Property } from '@/types'
 
-const rent = (
-  id: string,
-  titleAr: string,
-  title: string,
-  price: number,
-  locationAr: string,
-  location: string,
-  area = 0,
-  bedrooms = 0,
-  bathrooms = 0,
-  priceNoteAr = '/سنوي',
-  priceNote = '/yr'
-): Property => ({
-  id,
-  title,
-  titleAr,
-  description: `Rental opportunity in ${location}.`,
-  descriptionAr: `فرصة تأجير في ${locationAr}.`,
-  price,
-  currency: 'SAR',
-  location,
-  locationAr,
-  lat: 24.7136,
-  lng: 46.6753,
-  area,
-  bedrooms,
-  bathrooms,
-  images: [],
-  priceNoteAr,
-  priceNote,
-  type: 'rent',
-  status: 'available',
-  featured: false,
-  createdAt: '2026-08-07',
-  updatedAt: '2026-08-07',
-})
+const listing = (data: Omit<Property, 'currency' | 'status' | 'featured' | 'createdAt' | 'updatedAt'>): Property => ({ ...data, currency: 'SAR', status: 'available', featured: false, createdAt: '2026-08-09', updatedAt: '2026-08-09' })
+const images = (folder: number, count: number) => Array.from({ length: count }, (_, i) => `/images/listings/${folder}-${String(i + 1).padStart(2, '0')}.jpeg`)
 
-// بيانات مبسطة من مشاريع وإعلانات التأجير العامة المنشورة على منصة عقار.
 export const demoProperties: Property[] = [
-  rent('hayat-khurais', 'كمباوند حياة خريص', 'Hayat Khurais Compound', 42_240, 'شارع أحمد بن الحسن الأنصاري، حي النسيم الغربي، الرياض', 'Ahmed Bin Al Hassan Al Ansari St, Al Naseem Al Gharbi, Riyadh', 0, 1, 1),
-  rent('office-peace', 'السلام المكتبي', 'Office Peace', 2_200, 'طريق الإمام سعود بن فيصل، حي العقيق، الرياض', 'Imam Saud Bin Faisal Rd, Al Aqiq, Riyadh', 370, 0, 0, '/م² سنوي', '/m² yr'),
-  rent('zaki-offices', 'ذكي مكاتب للإيجار', 'Zaki Offices', 1_350, 'شارع السويدي العام، حي السويدي، الرياض', 'Al Suwaidi Al Am St, Al Suwaidi, Riyadh', 10, 0, 0, '/شهري', '/mo'),
-  rent('alpha-business', 'ALPHA BUSINESS', 'ALPHA BUSINESS', 2_000, 'طريق الأمير تركي بن عبدالعزيز الأول، حي الملقا، الرياض', 'Prince Turki Bin Abdulaziz I Rd, Al Malqa, Riyadh', 78, 0, 0, '/م² سنوي', '/m² yr'),
-  rent('core-commercial', 'برج كور التجاري', 'Core Commercial Tower', 20_000_000, 'شارع العليا، حي الصحافة، الرياض', 'Olaya St, Al Sahafah, Riyadh'),
-  rent('agate-191', 'العقيق 191', 'Al Aqiq 191', 4_000, 'شارع التحلية، حي العقيق، الرياض', 'Tahlia St, Al Aqiq, Riyadh', 0, 1, 1, '/شهري', '/mo'),
-  rent('drive-through', 'درايف ثرو وفلل مكتبية', 'Drive-through & Office Villas', 550_000, 'طريق الإمام سعود بن فيصل الفرعي، حي الملقا، الرياض', 'Imam Saud Bin Faisal Branch Rd, Al Malqa, Riyadh'),
-  rent('tahlia-vintage', 'التحلية فنتج', 'Tahlia Vintage', 1_500, 'شارع الأمير محمد بن عبدالعزيز، حي السليمانية، الرياض', 'Prince Mohammed Bin Abdulaziz St, Al Sulimaniyah, Riyadh', 0, 0, 0, '/م² سنوي', '/m² yr'),
-  rent('waref-offices', 'وارف مكاتب للإيجار', 'Waref Offices', 330_000, 'طريق الثمامة، حي الياسمين، الرياض', 'Thumamah Rd, Al Yasmin, Riyadh'),
-  rent('ready-offices', 'مكاتب جاهزة للإيجار', 'Ready Offices', 1_000, 'شارع الحديقة، حي الدريهمية، الرياض', 'Al Hadiqah St, Al Duraihimiyah, Riyadh', 0, 0, 0, '/شهري', '/mo'),
-  rent('taawun-3', 'عمارة التعاون 3', 'Al Taawun 3', 48_000, 'شارع الحسن بن علي، حي التعاون، الرياض', 'Al Hassan Bin Ali St, Al Taawun, Riyadh', 122, 1, 1),
-  rent('dubbat-2', 'الضباط 2', 'Al Dubbat 2', 36_000, 'شارع الأميرة سارة بنت أحمد السديري، حي الضباط، الرياض', 'Princess Sarah Bint Ahmed Al Sudairi St, Al Dubbat, Riyadh', 130, 1, 1),
-  rent('mohammadiyah-building', 'عمارة المحمدية', 'Al Mohammadiyah Building', 36_000, 'شارع سعود بن عبدالعزيز بن محمد الفرعي، حي المحمدية، الرياض', 'Saud Bin Abdulaziz Bin Mohammed Branch St, Al Mohammadiyah, Riyadh', 100, 1, 1),
-  rent('worood-building', 'عمارة الورود', 'Al Worood Building', 34_000, 'شارع الأمير سلطان بن سلمان، حي الورود، الرياض', 'Prince Sultan Bin Salman St, Al Worood, Riyadh', 100, 1, 1),
-  rent('rawas-30', 'مشروع رواس 30', 'Rawas 30', 63_000, 'شارع سعيد بن المسيب، حي الجامعة، الظهران', 'Saeed Bin Al Musayyib St, Al Jamiah, Dhahran', 154, 3, 3),
-  rent('az-arabia-safa', 'عز العربية - حي الصفا', 'Ezz Al Arabia - Al Safa', 2_500, 'شارع عبدالله الشربتلي، حي الصفا، جدة', 'Abdullah Al Sharbatli St, Al Safa, Jeddah', 50, 1, 1, '/شهري', '/mo'),
-  rent('marwah-apartments', 'شقق حي المروة', 'Al Marwah Apartments', 42_000, 'شارع أبو قتادة الأنصاري، حي المروة، جدة', 'Abu Qatadah Al Ansari St, Al Marwah, Jeddah', 80, 2, 1),
-  rent('safwa-homes', 'مجمع منازل الصفوة', 'Al Safwa Homes', 70_000, 'حي الصفا، جدة', 'Al Safa, Jeddah', 194, 4, 4),
-  rent('sawari-roof', 'روف حي الصواري', 'Al Sawari Rooftop', 45_000, 'شارع قتادة بن إدريس، حي الصواري، جدة', 'Qatadah Bin Idris St, Al Sawari, Jeddah', 152, 4, 3),
-  rent('rayyan-smart', 'شقة ذكية - حي الريان', 'Smart Apartment - Al Rayyan', 80_000, 'شارع وادي الرمة، حي الريان، الرياض', 'Wadi Al Rumah St, Al Rayyan, Riyadh', 88, 2, 3),
+  listing({ id: 'al-majdiah-109', title: 'Luxury Apartment - Al Majdiah 109', titleAr: 'شقة فاخرة في حي الريان – مشروع الماجدية 109', description: 'Move-in-ready premium apartment with 3 bedrooms, 4 bathrooms, an ALBA-equipped kitchen, a maid’s room and 6 installed air conditioners.', descriptionAr: 'شقة راقية بتشطيبات فاخرة، جاهزة للسكن، تجمع بين الأناقة والعملية في عمارة هادئة. تضم 3 غرف، و4 حمامات، وصالة واسعة، ومطبخاً مجهزاً بالكامل بأجهزة ALBA، وغرفة خادمة بحمام خاص، و6 مكيفات راكبة.', price: 87_000, location: 'Al Rayyan, Riyadh', locationAr: 'حي الريان، الرياض', mapLocation: '24.708697,46.768366', lat: 24.708697, lng: 46.768366, area: 0, bedrooms: 3, bathrooms: 4, images: images(1, 5), priceNoteAr: '/سنوي', priceNote: '/yr', type: 'rent' }),
+  listing({ id: 'al-nakheel-apartment', title: 'Premium Apartment in Al Nakheel', titleAr: 'شقة مميزة للإيجار في حي النخيل', description: 'Premium apartment with concealed and split air conditioning, a fitted kitchen and private parking.', descriptionAr: 'شقة مميزة للإيجار في حي النخيل الشرقي، بها مكيفات مخفية وسبليت، ومطبخ راكب، وموقف خاص، في موقع مميز لعشاق التميز.', price: 150_000, location: 'Prince Abdulilah Bin Abdulaziz St, Al Nakheel, Riyadh', locationAr: 'شارع الأمير عبدالإله بن عبدالعزيز، حي النخيل، الرياض', mapLocation: '24.743984,46.650038', lat: 24.743984, lng: 46.650038, area: 0, bedrooms: 3, bathrooms: 0, images: images(2, 3), priceNoteAr: '/سنوي', priceNote: '/yr', type: 'rent' }),
+  listing({ id: 'offices-zone', title: 'First Projects - Offices Zone', titleAr: 'مشروع المشاريع الأولى – Offices Zone', description: 'Offices 206 and 207 on the second floor, with a combined area of 575 m², directly on King Abdullah Road.', descriptionAr: 'مكتبان رقم 206 و207 في الدور الثاني، بمساحة إجمالية 575 م²، على طريق الملك عبدالله مباشرة.', price: 2_000, location: 'King Abdullah Rd, Al Nuzha, Riyadh', locationAr: 'طريق الملك عبدالله، حي النزهة، الرياض', mapLocation: '24.746551,46.706826', lat: 24.746551, lng: 46.706826, area: 575, bedrooms: 0, bathrooms: 0, images: images(3, 5), priceNoteAr: '/م² سنوي', priceNote: '/m² yr', type: 'rent' }),
+  listing({ id: 'adal-apartment', title: 'Residential Apartment - Adal Project', titleAr: 'شقة سكنية في مشروع أدل', description: 'Seventh-floor apartment with a direct lake view, 3 bedrooms, a majlis, an American kitchen and 2 bathrooms.', descriptionAr: 'شقة سكنية في الدور السابع بإطلالة مباشرة على البحيرة، تتكون من 3 غرف نوم، ومجلس، ومطبخ أمريكي، ودورتي مياه.', price: 90_000, location: 'Adal Project, Eastern Province', locationAr: 'مشروع أدل، المنطقة الشرقية', mapLocation: '26.22519874572754,50.21672058105469', lat: 26.22519874572754, lng: 50.21672058105469, area: 168.21, bedrooms: 3, bathrooms: 2, images: images(4, 7), priceNoteAr: '/سنوي', priceNote: '/yr', type: 'rent' }),
+  listing({ id: 'al-rawdah-villa', title: 'Villa for Sale in Al Rawdah', titleAr: 'فيلا للبيع في حي الروضة', description: 'A 900 m² south-facing villa on a 15 m street, with generous reception and living spaces across three levels.', descriptionAr: 'فيلا بمساحة 900 م² وواجهة جنوبية على شارع بعرض 15م. الدور الأرضي: صالة واسعة، مجلسان، ديوانية، مقلط، مطبخان، ملحق، مستودع، 4 دورات مياه وغرفة سائق بدورة مياه مستقلة. الدور العلوي: 5 غرف نوم، صالة و3 دورات مياه. السطح: غرفة عاملة ودورة مياه.', price: 7_000_000, location: 'Al Rawdah, Riyadh', locationAr: 'حي الروضة، الرياض', mapLocation: '24.737349,46.752254', lat: 24.737349, lng: 46.752254, area: 900, bedrooms: 5, bathrooms: 9, images: images(5, 9), type: 'sale' }),
 ]
 
 export const cities = [
   { value: 'all', label: 'All Cities', labelAr: 'جميع المدن' },
   { value: 'riyadh', label: 'Riyadh', labelAr: 'الرياض' },
-  { value: 'jeddah', label: 'Jeddah', labelAr: 'جدة' },
-  { value: 'dhahran', label: 'Dhahran', labelAr: 'الظهران' },
+  { value: 'eastern', label: 'Eastern Province', labelAr: 'المنطقة الشرقية' },
 ]
 
 export const propertyTypes = [
   { value: 'all', label: 'All Types', labelAr: 'جميع الأنواع' },
   { value: 'apartment', label: 'Apartment', labelAr: 'شقة' },
   { value: 'office', label: 'Office', labelAr: 'مكتب' },
+  { value: 'villa', label: 'Villa', labelAr: 'فيلا' },
 ]
 
 export const roomOptions = [

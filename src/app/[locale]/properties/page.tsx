@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useMemo } from 'react'
+import { useSearchParams } from 'next/navigation'
 import * as Dialog from '@radix-ui/react-dialog'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useLocale, useTranslations } from 'next-intl'
@@ -19,6 +20,7 @@ const fadeInUp = {
 export default function PropertiesPage() {
   const t = useTranslations('properties')
   const locale = useLocale() as 'ar' | 'en'
+  const purpose = useSearchParams().get('purpose')
   const [filters, setFilters] = useState({ city: 'all', type: 'all', rooms: '0', price: 'all' })
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const [favorites, setFavorites] = useState<Set<string>>(new Set())
@@ -28,11 +30,11 @@ export default function PropertiesPage() {
 
   const filtered = useMemo(() => {
     return demoProperties.filter((p) => {
+      if ((purpose === 'rent' || purpose === 'sale') && p.type !== purpose) return false
       if (filters.city !== 'all') {
         const cityMap: Record<string, string[]> = {
           riyadh: ['Riyadh'],
-          jeddah: ['Jeddah'],
-          dubai: ['Dubai'],
+          eastern: ['Eastern Province'],
         }
         const match = cityMap[filters.city]?.some((c) => p.location.includes(c))
         if (!match) return false
@@ -63,7 +65,7 @@ export default function PropertiesPage() {
       }
       return true
     })
-  }, [filters])
+  }, [filters, purpose])
 
   const pageCount = Math.ceil(filtered.length / pageSize)
   const paginated = filtered.slice((page - 1) * pageSize, page * pageSize)

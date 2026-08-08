@@ -87,6 +87,16 @@ export default function PropertyDetailPage() {
           </div>
         </motion.div>
 
+        {property.images.length > 1 && (
+          <div className="mb-8 grid grid-cols-2 gap-3 md:grid-cols-4">
+            {property.images.slice(1).map((image, index) => (
+              <div key={image} className="relative aspect-[4/3] overflow-hidden rounded-2xl">
+                <Image src={image} alt={`${title} ${index + 2}`} fill sizes="(max-width: 768px) 50vw, 25vw" className="object-cover" />
+              </div>
+            ))}
+          </div>
+        )}
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Details */}
           <motion.div

@@ -51,7 +51,7 @@ export function Header() {
     { href: '/', label: t.home },
     { href: '/projects', label: t.projects },
     { href: '/about', label: t.about },
-    { href: '/properties?status=off-plan', label: t.offPlan },
+    { href: '/properties?purpose=sale', label: t.offPlan },
     { href: '/properties?purpose=rent', label: t.rent },
   ]
 

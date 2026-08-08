@@ -12,6 +12,7 @@ export interface Property {
   currency: string
   location: string
   locationAr?: string
+  mapLocation?: string
   lat: number
   lng: number
   area: number

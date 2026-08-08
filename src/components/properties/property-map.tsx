@@ -15,7 +15,7 @@ export function PropertyMap({ properties, selectedId }: PropertyMapProps) {
     return <div className="grid h-full min-h-[300px] place-items-center bg-neutral-100 text-sm text-neutral-500">Google Maps</div>
   }
 
-  const query = property.locationAr || property.location
+  const query = property.mapLocation || property.locationAr || property.location
 
   return (
     <iframe

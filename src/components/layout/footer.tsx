@@ -14,7 +14,7 @@ const email = 'mapkey.sa@outlook.com'
 const content = {
   ar: {
     summary: 'منصة عقارية سعودية تقرأ السوق بعين خبيرة، وتعرض فرصاً مختارة للسكن والاستثمار.',
-    address: 'طريق الإمام سعود بن فيصل، حي الصحافة، الرياض',
+    address: 'الرياض - حي الورود - طريق الملك فهد',
     quick: 'روابط أخرى',
     projects: 'المشاريع',
     properties: 'عقارات',
@@ -25,7 +25,7 @@ const content = {
   },
   en: {
     summary: 'A Saudi real estate platform that reads the market with expert judgment and presents curated opportunities.',
-    address: 'Imam Saud Bin Faisal Road, Al Sahafa, Riyadh',
+    address: 'Riyadh - Al Worood - King Fahd Road',
     quick: 'Other Links',
     projects: 'Projects',
     properties: 'Properties',
