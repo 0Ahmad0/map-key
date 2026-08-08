@@ -41,6 +41,10 @@ export const metadata: Metadata = {
     'Map-Key',
   ],
   authors: [{ name: 'Map-Key', url: 'https://mapkey.sa' }],
+  icons: {
+    icon: '/icon.png',
+    apple: '/icon.png',
+  },
   robots: { index: true, follow: true },
   openGraph: {
     type: 'website',
@@ -52,7 +56,7 @@ export const metadata: Metadata = {
     url: 'https://mapkey.sa',
     images: [
       {
-        url: '/images/proj-1.jpg',
+        url: '/map-key-share.jpg',
         width: 1200,
         height: 630,
         alt: 'Map-Key - Real Estate Platform',
@@ -64,7 +68,7 @@ export const metadata: Metadata = {
     title: 'Map-Key | The Secure Real Estate Gateway',
     description:
       'A secure and trusted digital real estate platform with enterprise-grade security and zero-trust architecture.',
-    images: ['/images/proj-1.jpg'],
+    images: ['/map-key-share.jpg'],
   },
   alternates: {
     canonical: 'https://mapkey.sa/ar',
