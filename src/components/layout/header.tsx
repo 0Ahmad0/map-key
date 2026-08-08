@@ -90,9 +90,9 @@ export function Header() {
         </nav>
 
         <div className="hidden shrink-0 items-center gap-5 lg:flex">
-          <span className="inline-flex h-11 items-center gap-3 text-lg font-medium text-neutral-950">
+          <span className="inline-flex h-11 items-center gap-2 rounded-full border border-[#b99750]/25 bg-white/75 px-3 text-base font-semibold text-neutral-950 shadow-sm">
+            <span className="text-xl leading-none" aria-hidden="true">🇸🇦</span>
             {locale === 'ar' ? 'السعودية' : 'Saudi'}
-            <span className="grid h-8 w-8 place-items-center rounded-sm bg-[#245d31] text-sm leading-none">🇸🇦</span>
           </span>
           <button onClick={switchLocale} className="inline-flex h-11 items-center gap-2 text-lg font-medium text-neutral-950">
             <span>{t.arabic}</span>
@@ -112,10 +112,11 @@ export function Header() {
             <Dialog.Overlay className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm" />
             <Dialog.Content asChild>
               <motion.aside
-                initial={{ x: locale === 'ar' ? '-100%' : '100%' }}
+                initial={{ x: locale === 'ar' ? '100%' : '-100%' }}
                 animate={{ x: 0 }}
-                exit={{ x: locale === 'ar' ? '-100%' : '100%' }}
-                className={cn('fixed top-0 z-50 flex h-full w-[340px] max-w-[88vw] flex-col bg-white p-6 shadow-2xl', locale === 'ar' ? 'left-0' : 'right-0')}
+                exit={{ x: locale === 'ar' ? '100%' : '-100%' }}
+                dir={locale === 'ar' ? 'rtl' : 'ltr'}
+                className={cn('fixed top-0 z-50 flex h-full w-[340px] max-w-[88vw] flex-col bg-white p-6 text-start shadow-2xl', locale === 'ar' ? 'right-0' : 'left-0')}
               >
                 <div className="mb-6 flex shrink-0 items-center justify-between">
                   <Image src="/new_logo.svg" alt="Map Key" width={140} height={84} className="h-12 w-auto" />

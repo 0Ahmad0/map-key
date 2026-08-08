@@ -80,7 +80,7 @@ export default function PropertiesPage() {
   }
 
   return (
-    <div className="min-h-screen pt-24 pb-12">
+    <div className="min-h-screen pb-12 pt-36 md:pt-40">
       <div className="container mx-auto px-4">
         <motion.div
           initial="hidden"

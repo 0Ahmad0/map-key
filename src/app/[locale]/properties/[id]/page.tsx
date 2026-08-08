@@ -43,7 +43,7 @@ export default function PropertyDetailPage() {
   ]
 
   return (
-    <div className="min-h-screen pt-24 pb-16">
+    <div className="min-h-screen pb-16 pt-36 md:pt-40">
       <div className="container mx-auto px-4 max-w-5xl">
         {/* Back link */}
         <Link

@@ -9,7 +9,7 @@ export default function ProjectsPage() {
   const isRTL = locale === 'ar'
 
   return (
-    <div className="min-h-screen bg-[#f8f7f4] pb-20 pt-32 text-neutral-950 md:pt-40">
+    <div className="min-h-screen bg-[#f8f7f4] pb-20 pt-40 text-neutral-950 md:pt-44">
       <div className="container mx-auto px-4">
         <div className="mb-10 text-center">
           <div className="mx-auto mb-5 h-1 w-16 rounded-full bg-[#b99750]" />
