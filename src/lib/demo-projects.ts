@@ -76,7 +76,7 @@ const doraAridUnits: Unit[] = [
   { code: 'B2', ...spec('الدور الأول', 'First floor', 161, 3, 1_199_000) },
 ]
 
-// سكون 10، 11 - حي العارض: كل الشقق غرفتين والسعر يبدأ من 999,000
+// سكون 10، 11 - حي العارض: كل الشقق غرفتين والسعر غير محدد بعد
 const sukoonUnit = (code: string, floorAr: string, floor: string, area: number): Unit => ({
   code,
   floorAr,
@@ -84,7 +84,7 @@ const sukoonUnit = (code: string, floorAr: string, floor: string, area: number):
   area,
   privateArea: 0,
   rooms: 2,
-  price: 999_000,
+  price: 0,
   priceFrom: true,
   status: 'available',
 })
@@ -243,7 +243,7 @@ export const demoProjects: Project[] = [
     typeAr: 'شقق',
     deliveryDate: 'Ready',
     deliveryDateAr: 'جاهز',
-    startingPrice: 999000,
+    startingPrice: 0,
     units: sukoonUnits,
   },
 ]
