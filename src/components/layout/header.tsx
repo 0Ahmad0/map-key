@@ -14,7 +14,6 @@ const labels = {
     home: 'الرئيسية',
     projects: 'مشاريعنا',
     about: 'من نحن',
-    offPlan: 'البيع على الخارطة',
     rent: 'للتأجير',
     lang: 'EN',
     arabic: 'ع',
@@ -25,7 +24,6 @@ const labels = {
     home: 'Home',
     projects: 'Our Projects',
     about: 'About Us',
-    offPlan: 'Off-plan Sales',
     rent: 'For Rent',
     lang: 'AR',
     arabic: 'EN',
@@ -51,7 +49,6 @@ export function Header() {
     { href: '/', label: t.home },
     { href: '/projects', label: t.projects },
     { href: '/about', label: t.about },
-    { href: '/properties?purpose=sale', label: t.offPlan },
     { href: '/properties?purpose=rent', label: t.rent },
   ]
 

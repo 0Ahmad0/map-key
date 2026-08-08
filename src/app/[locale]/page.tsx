@@ -223,7 +223,7 @@ export default function HomePage() {
   const [projectFilter, setProjectFilter] = useState('all')
 
   const filteredProjects = useMemo(() => {
-    if (projectFilter === 'ready') return demoProjects.filter((project) => project.id.startsWith('sukoon'))
+    if (projectFilter === 'ready') return demoProjects.filter((project) => project.deliveryDate === 'Ready')
     if (projectFilter === 'on-map') return demoProjects.filter((project) => project.id.startsWith('dora'))
     return demoProjects
   }, [projectFilter])

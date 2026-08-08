@@ -246,6 +246,27 @@ export const demoProjects: Project[] = [
     startingPrice: 0,
     units: sukoonUnits,
   },
+  {
+    id: 'al-rawdah-villa',
+    image: '/images/listings/5-01.jpeg',
+    gallery: Array.from({ length: 9 }, (_, index) =>
+      `/images/listings/5-${String(index + 1).padStart(2, '0')}.jpeg`
+    ),
+    plans: [],
+    title: 'Villa in Al Rawdah District',
+    titleAr: 'فيلا حي الروضة',
+    location: 'Riyadh - Al Rawdah District',
+    locationAr: 'الرياض - حي الروضة',
+    mapLocation: '24.737349,46.752254',
+    type: 'Villa',
+    typeAr: 'فيلا',
+    deliveryDate: 'Ready',
+    deliveryDateAr: 'جاهز',
+    startingPrice: 7_000_000,
+    units: [
+      { code: 'VILLA', floorAr: 'فيلا كاملة', floor: 'Full villa', area: 900, privateArea: 0, rooms: 5, price: 7_000_000, priceFrom: false, status: 'available' },
+    ],
+  },
 ]
 
 export const getProject = (id: string) => demoProjects.find((p) => p.id === id)
